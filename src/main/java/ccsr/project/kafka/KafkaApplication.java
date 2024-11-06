@@ -20,4 +20,6 @@ public class KafkaApplication {
 		System.out.println("Hello World");
 		return "index";
 	}
+
+
 }
