@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Omega Alerts</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <header class="header">
     <div class="header-logo">
-        <img src="/static/images/a-clean-modern-logo-for-an-omega-alerts-service-th-teRc4vyUROqILbBJuSB7wQ-kxVs_jmHQy2iioc8rW7KHg-removebg-preview.png" alt="Logo Omega Alerts">
+        <img src="/images/a-clean-modern-logo-for-an-omega-alerts-service-th-teRc4vyUROqILbBJuSB7wQ-kxVs_jmHQy2iioc8rW7KHg-removebg-preview.png" alt="Logo Omega Alerts">
         <span>OMEGA ALERTS</span>
     </div>
     <div>
-        <input type="text" placeholder="Entrez votre adresse">
-        <button>Connecter</button>
+        <form method="post" action="/receive-address">
+        <input type="text" name="address" placeholder="Entrez l'adresse du serveur" pattern="^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}(:\d{1,5})?$" title="Entrez une adresse de serveur valide" required>
+            <button type="submit">Connecter</button>
+        </form>
     </div>
 </header>
 
@@ -24,12 +26,13 @@
             <h1>Consulter vos alertes</h1>
             <p>Soyez informés sur vos thèmes favoris</p>
         </div>
-        <img name="airplane-icon" src="/static/images/avion-en-papier.png" alt="" height="100">
+        <img name="airplane-icon" src="/images/avion-en-papier.png" alt="" height="100">
     </div>
 
     <div class="search-bar">
+
         <input type="text" placeholder="rechercher un thème">
-        <button>🔍</button>
+        <button type="submit">🔍</button>
     </div>
 
     <div class="content">
@@ -45,7 +48,7 @@
         <section class="alert-list">
             <div class="alert-card">
                 <div class="alert-card-header">
-                    <img class="user-icon" src="/static/images/user.png" alt="Icone utilisateur">
+                    <img class="user-icon" src="/images/user.png" alt="Icone utilisateur">
                     <h3>Mika Low</h3>
                 </div>
                 <p>Nom de l'alerte: information sur la vie...</p>
@@ -53,7 +56,7 @@
             </div>
             <div class="alert-card">
                 <div class="alert-card-header">
-                    <img class="user-icon" src="/static/images/user.png" alt="Icone utilisateur">
+                    <img class="user-icon" src="/images/user.png" alt="Icone utilisateur">
                     <h3>Lauris Brown</h3>
                 </div>
                 <p>Nom de l'alerte: information sur la vie...</p>

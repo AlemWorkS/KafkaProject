@@ -17,7 +17,7 @@ public class KafkaApplication {
 	@GetMapping("/hello")
 	public String hello(Model model) {
 		model.addAttribute("message","Bienvenue");
-		return "index";
+		return "home";
 	}
 
 
