@@ -1,0 +1,78 @@
+/* CSS */
+
+/* Styles généraux */
+body {
+font-family: Arial, sans-serif;
+background-color: #f0f0f5;
+margin: 0;
+padding: 0;
+}
+
+/* Header */
+.header {
+background-color: #1a1a55;
+color: white;
+padding: 5px 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.header-logo {
+display: flex;
+align-items: center;
+}
+
+.header-logo img {
+height: 80px;
+margin-right: 10px;
+}
+
+/* Statut de connexion */
+.connection-status {
+margin: 20px 0;
+text-align: center;
+font-weight: bold;
+}
+
+/* Création de topic */
+.create-topic {
+text-align: center;
+margin: 20px 0;
+}
+
+.create-topic input {
+padding: 10px;
+border-radius: 10px;
+border: 1px solid #ddd;
+margin-right: 10px;
+}
+
+.create-topic button {
+padding: 10px 20px;
+border-radius: 10px;
+background-color: #4a6ed9;
+border: none;
+color: white;
+cursor: pointer;
+}
+
+/* Liste des topics */
+.created-topics {
+background-color: white;
+border-radius: 10px;
+padding: 20px;
+margin: 20px;
+}
+
+.created-topics ul {
+list-style: none;
+padding: 0;
+}
+
+.created-topics li {
+background-color: #f5f5f5;
+padding: 10px;
+margin-bottom: 5px;
+border-radius: 5px;
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omega Alerts - Publisher Interface</title>
+    <link rel="stylesheet" href="/css/styles2.css">
+</head>
+<body>
+<header class="header">
+    <div class="header-logo">
+        <img src="/images/a-clean-modern-logo-for-an-omega-alerts-service-th-teRc4vyUROqILbBJuSB7wQ-kxVs_jmHQy2iioc8rW7KHg-removebg-preview.png" alt="Logo Omega Alerts">
+        <span>OMEGA ALERTS - PUBLISHER</span>
+    </div>
+    <div>
+        <form method="post" action="#" id="connect-publisher-form">
+            <input type="text" name="serverAddress" id="serverAddress" placeholder="Adresse du serveur" pattern="^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}(:\d{1,5})?$" title="Entrez une adresse de serveur valide" required>
+            <button type="button" id="connectButton">Se connecter</button>
+        </form>
+    </div>
+</header>
+
+<div class="main">
+    <div class="main-header">
+        <div>
+            <h1>Gestion des Topics</h1>
+            <p>Créez et gérez vos sujets de publication facilement.</p>
+        </div>
+        <img name="topics-icon" src="/images/topics.png" alt="Icone Topic" height="100">
+    </div>
+
+    <div class="connection-status">
+        <p id="status-message">Statut : Non connecté</p>
+    </div>
+
+    <div class="create-topic">
+        <form method="post" action="#" id="create-topic-form">
+            <input type="text" name="topicName" placeholder="Nom du Topic" required>
+            <input type="hidden" name="serverAddress" id="serverAddressInput">
+            <button type="button" id="createTopicButton">Créer un Topic</button>
+        </form>
+    </div>
+
+    <div class="created-topics">
+        <h2>Topics Créés</h2>
+        <ul id="topic-list">
+            <!-- Liste des topics créés s'affichera ici -->
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const connectButton = document.getElementById('connectButton');
+        const serverAddressInput = document.getElementById('serverAddress');
+        const serverAddressHiddenInput = document.getElementById('serverAddressInput');
+        const createTopicButton = document.getElementById('createTopicButton');
+        let serverAddress = '';
+
+        // Gérer la connexion au serveur Kafka
+        connectButton.addEventListener('click', function () {
+            serverAddress = serverAddressInput.value;
+            if (serverAddress) {
+                fetch('/connect-publisher', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        serverAddress: serverAddress
+                    })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('status-message').innerText = data.includes('Connecté') ? 'Statut : Connecté' : 'Statut : Non connecté';
+                    if (data.includes('Connecté')) {
+                        serverAddressHiddenInput.value = serverAddress; // Mettre à jour l'adresse du serveur pour la création de topic
+                        loadTopics();
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('status-message').innerText = 'Statut : Non connecté';
+                });
+            }
+        });
+
+        // Gérer la création d'un topic
+        createTopicButton.addEventListener('click', function () {
+            const topicName = document.querySelector("input[name='topicName']").value;
+            if (serverAddress && topicName) {
+                fetch('/create-topic', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        topicName: topicName,
+                        serverAddress: serverAddress
+                    })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    if (data.includes('succès')) {
+                        alert('Topic créé avec succès');
+                        loadTopics(); // Actualiser la liste des topics
+                    } else {
+                        alert('Erreur: ' + data);
+                    }
+                })
+                .catch(error => alert('Erreur lors de la création du topic : ' + error));
+            } else {
+                alert("Veuillez vous connecter au serveur avant de créer un topic");
+            }
+        });
+
+        // Charger les topics existants
+        function loadTopics() {
+            if (serverAddress) {
+                fetch(`/list-topics?serverAddress=${serverAddress}`)
+                    .then(response => response.json())
+                    .then(topics => {
+                        let topicList = document.getElementById("topic-list");
+                        topicList.innerHTML = ""; // Vider la liste existante
+                        topics.forEach(topic => {
+                            let listItem = document.createElement("li");
+                            listItem.textContent = topic;
+                            topicList.appendChild(listItem);
+                        });
+                    })
+                    .catch(error => console.error('Erreur lors de la récupération des topics:', error));
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
