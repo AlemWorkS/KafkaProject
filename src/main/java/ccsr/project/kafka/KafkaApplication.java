@@ -20,5 +20,10 @@ public class KafkaApplication {
 		return "home";
 	}
 
-
+	// Endpoint pour afficher la page Publisher
+	@GetMapping("/publisher")
+	public String publisher(Model model) {
+		model.addAttribute("message", "Bienvenue");
+		return "Publisher";
+	}
 }
