@@ -33,16 +33,21 @@ public class KafkaTopicController {
     // Endpoint pour créer un nouveau topic sur le serveur Kafka fourni
     @PostMapping("/create-topic")
     public ResponseEntity<String> createTopic(@RequestParam String topicName, @RequestParam String serverAddress) {
+
         Properties config = new Properties();
         config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddress);
 
         try (AdminClient adminClient = AdminClient.create(config)) {
-            NewTopic newTopic = new NewTopic(topicName, 1, (short) 1);
+
+            NewTopic newTopic = new NewTopic(topicName, 1, (short) 3);
             adminClient.createTopics(Collections.singleton(newTopic)).all().get();
             return ResponseEntity.ok("Topic créé avec succès");
+
         } catch (Exception e) {
+
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Échec de la création du topic");
+
         }
     }
 }
