@@ -110,14 +110,9 @@ public class Main {
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
 
-                if (records.isEmpty() && !messageReceived) {
-                    System.out.println("Aucun message disponible pour le moment.");
-                    messageReceived = true; // Affiche une seule fois si aucun message
-                }
-
                 for (ConsumerRecord<String, String> record : records) {
-                    System.out.println("Message reçu depuis le topic " + record.topic() + ": " + record.value());
-                    messageReceived = false; // Réinitialise lorsque des messages sont reçus
+                    System.out.println("Message  " + record.topic() + ":=>   " + record.value());
+                    messageReceived = true; // Réinitialise lorsque des messages sont reçus
                 }
             }
         } catch (Exception e) {
