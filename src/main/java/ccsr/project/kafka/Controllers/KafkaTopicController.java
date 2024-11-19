@@ -44,5 +44,8 @@ public class KafkaTopicController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Échec de la création du topic");
         }
+
     }
+
+
 }

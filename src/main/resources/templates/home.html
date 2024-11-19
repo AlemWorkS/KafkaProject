@@ -31,8 +31,8 @@
 
     <div class="search-bar">
 
-        <input type="text" placeholder="rechercher un thème">
-        <button type="submit">🔍</button>
+        <input id="interestInput" type="text" placeholder="rechercher un thème">
+        <button id="searchButton" type="submit">🔍</button>
     </div>
 
     <div class="content">
@@ -46,23 +46,13 @@
         </aside>
 
         <section class="alert-list">
-            <div class="alert-card">
-                <div class="alert-card-header">
-                    <img class="user-icon" src="/images/user.png" alt="Icone utilisateur">
-                    <h3>Mika Low</h3>
-                </div>
-                <p>Nom de l'alerte: information sur la vie...</p>
-                <button>Voir en détails</button>
-            </div>
-            <div class="alert-card">
-                <div class="alert-card-header">
-                    <img class="user-icon" src="/images/user.png" alt="Icone utilisateur">
-                    <h3>Lauris Brown</h3>
-                </div>
-                <p>Nom de l'alerte: information sur la vie...</p>
-                <button>Voir en détails</button>
-            </div>
+            <section class="alert-list">
+                <!-- Les alert-cards seront générées dynamiquement ici -->
+            </section>
+
         </section>
+        <!-- Ajouter votre lien vers le fichier JS -->
+        <script src="/js/home.js"></script>
     </div>
 </div>
 </body>
