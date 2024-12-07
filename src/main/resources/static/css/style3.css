@@ -1,0 +1,106 @@
+/* Général */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f3f4f6;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+}
+
+header {
+    background-color: #4CAF50;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+}
+
+header .header-logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+header .header-logo span {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Conteneur principal */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    background-color: #e8f0fe;
+}
+
+/* Carte de connexion */
+.login-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px 40px;
+    width: 350px;
+    text-align: center;
+}
+
+.login-card h2 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.login-card p {
+    margin-bottom: 25px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Groupes d'entrée */
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Bouton de connexion */
+.login-button {
+    width: 100%;
+    padding: 10px 15px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #45a049;
+}
+
+/* Footer */
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
