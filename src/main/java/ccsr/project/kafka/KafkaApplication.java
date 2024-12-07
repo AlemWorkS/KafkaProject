@@ -14,19 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-@Controller
 public class KafkaApplication {
-	private final KafkaService kafkaService;
-
-	// Injection via le constructeur
-	@Autowired
-	public KafkaApplication(KafkaService kafkaService) {
-		this.kafkaService = kafkaService;
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(KafkaApplication.class, args);
 
