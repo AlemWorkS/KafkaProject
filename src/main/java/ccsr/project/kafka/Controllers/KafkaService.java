@@ -110,9 +110,19 @@ public class KafkaService {
 
 
     // Abonnement d'un consumer à un topic
-    public void subscribeConsumerToTopic(String consumerId, String topicName) {
-        // Vous pouvez utiliser une base de données ou un stockage local pour enregistrer l'abonnement
-        System.out.println("Consumer " + consumerId + " s'est abonné au topic " + topicName);
-        // Logique supplémentaire à implémenter ici
+    public boolean subscribeUserToTopic(String email, String topicName) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "INSERT INTO subscriptions (user_email, topic_id) " +
+                    "SELECT ?, id FROM topics WHERE name = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            statement.setString(2, topicName);
+            int rowsInserted = statement.executeUpdate();
+            return rowsInserted > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+
 }
