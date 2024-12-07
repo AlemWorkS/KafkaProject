@@ -18,6 +18,11 @@ public class Router {
     public String publisher(Model model) {
         return "Publisher";
     }
+    @GetMapping("/")
+    public String redirectToLogin() {
+        return "redirect:/connexion"; // Redirige vers la page de connexion
+    }
+
 
 
 }

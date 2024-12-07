@@ -19,7 +19,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
                             <h3>${topic}</h3>
                         </div>
                         <p>Messages : <span id="messages-${topic}">Chargement...</span></p>
-                        <button onclick="subscribe('${topic}')">S'abonner</button>
+                        <button class="subscribe-button" data-topic="${topic}">S'abonner</button>
                     `;
 
                     alertList.appendChild(card);
@@ -38,6 +38,9 @@ document.getElementById("searchButton").addEventListener("click", function () {
                             messageSpan.innerText = "Erreur lors du chargement des messages.";
                         });
                 });
+
+                // Attacher les gestionnaires d'événements après avoir ajouté les boutons
+                attachSubscribeEventHandlers();
             })
             .catch(error => {
                 console.error("Erreur lors de la recherche :", error);
@@ -47,22 +50,66 @@ document.getElementById("searchButton").addEventListener("click", function () {
     }
 });
 
+function attachSubscribeEventHandlers() {
+    const subscribeButtons = document.querySelectorAll(".subscribe-button");
+
+    subscribeButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const topicName = this.dataset.topic;
+            subscribe(topicName);
+        });
+    });
+}
 function subscribe(topicName) {
-    fetch(`/subscribe`, {
+    const userEmail = document.getElementById("userEmail").value;
+
+    if (!userEmail) {
+        alert("Erreur : utilisateur non identifié !");
+        return;
+    }
+
+    fetch(`/subscriptions/subscribe`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
             topicName: topicName,
-            consumerId: "user123" // Remplacez par l'ID réel du consommateur
+            userEmail: userEmail
         })
     })
-    .then(response => response.text())
-    .then(message => {
-        alert(`Abonné au topic : ${topicName}`);
-    })
-    .catch(error => {
-        alert("Erreur lors de l'abonnement : " + error);
-    });
+        .then(response => response.text())
+        .then(message => {
+            alert(message); // Affiche le message de succès ou d'erreur
+            updateSubscriptions(); // Met à jour la liste des abonnements
+        })
+        .catch(error => {
+            alert("Erreur lors de l'abonnement : " + error);
+        });
+}
+
+// Fonction pour charger les abonnements d'un utilisateur
+function updateSubscriptions() {
+    const userEmail = document.getElementById("userEmail").value;
+
+    if (!userEmail) {
+        console.error("Utilisateur non connecté");
+        return;
+    }
+
+    fetch(`/subscriptions/user?userEmail=${userEmail}`)
+        .then(response => response.json())
+        .then(subscriptions => {
+            const publishersList = document.querySelector(".sidebar ul");
+            publishersList.innerHTML = ""; // Vider la liste actuelle
+
+            subscriptions.forEach(subscription => {
+                const li = document.createElement("li");
+                li.textContent = subscription;
+                publishersList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error("Erreur lors de la mise à jour des abonnements :", error);
+        });
 }
