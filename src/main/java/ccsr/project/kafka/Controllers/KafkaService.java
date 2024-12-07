@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,6 +74,38 @@ public class KafkaService {
             messages.add("Erreur lors de la récupération des messages.");
         }
         return messages;
+    }
+    public static boolean verifyOrRegisterUser(String email, String username) {
+        // Vérifie si l'utilisateur existe déjà
+        String query = "SELECT * FROM users WHERE email = ?";
+        String insertQuery = "INSERT INTO users (email, username) VALUES (?, ?)";
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            System.out.println("Connexion réussie à la base de données");
+
+            try (PreparedStatement checkStatement = connection.prepareStatement(query)) {
+                checkStatement.setString(1, email);
+                ResultSet resultSet = checkStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    System.out.println("Utilisateur trouvé : " + email);
+                    return true;
+                } else {
+                    System.out.println("Utilisateur non trouvé, insertion en cours : " + email);
+                    try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+                        insertStatement.setString(1, email);
+                        insertStatement.setString(2, username);
+                        insertStatement.executeUpdate();
+                        System.out.println("Utilisateur enregistré avec succès : " + email);
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur SQL : " + e.getMessage());
+            return false;
+        }
+
     }
 
 

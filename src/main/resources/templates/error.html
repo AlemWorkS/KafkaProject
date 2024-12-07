@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Erreur - Omega Alerts</title>
+  <link rel="stylesheet" href="/css/style3.css">
+</head>
+<body>
+<div class="error-container">
+  <h1>Une erreur est survenue</h1>
+  <p th:text="${message}"></p>
+  <a href="/login" class="back-button">Retour à la connexion</a>
+</div>
+</body>
+</html>
