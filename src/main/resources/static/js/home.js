@@ -30,9 +30,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
                         .then(messages => {
                             const messageSpan = document.getElementById(`messages-${topic}`);
                             // Vérifier si des messages sont disponibles
-                            messageSpan.innerText = messages.length > 0
-                                ? messages.join(", ")
-                                : "Aucun message disponible.";
+                            messageSpan.innerText = messages.length > 0 ? messages.join(", ") : "Aucun message disponible.";
                         })
                         .catch(err => {
                             console.error(`Erreur lors de la récupération des messages pour le topic ${topic} :`, err);

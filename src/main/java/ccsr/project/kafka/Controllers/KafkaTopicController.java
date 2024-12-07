@@ -1,8 +1,7 @@
 package ccsr.project.kafka.Controllers;
 
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.NewTopic;
+import ccsr.project.kafka.Models.Consumer;
+import ccsr.project.kafka.Models.Publisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 public class KafkaTopicController {
@@ -18,11 +18,9 @@ public class KafkaTopicController {
     // Endpoint pour lister tous les topics sur le serveur Kafka fourni
     @GetMapping("/list-topics")
     public ResponseEntity<List<String>> listTopics(@RequestParam String serverAddress) {
-        Properties config = new Properties();
-        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddress);
 
-        try (AdminClient adminClient = AdminClient.create(config)) {
-            Set<String> topics = adminClient.listTopics().names().get();
+        try {
+            Set<String> topics = Publisher.listTopic();
             return ResponseEntity.ok(new ArrayList<>(topics));
         } catch (Exception e) {
             e.printStackTrace();
@@ -34,23 +32,28 @@ public class KafkaTopicController {
     @PostMapping("/create-topic")
     public ResponseEntity<String> createTopic(@RequestParam String topicName, @RequestParam String serverAddress) {
 
-        Properties config = new Properties();
-        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddress);
-
-        try (AdminClient adminClient = AdminClient.create(config)) {
-
-            NewTopic newTopic = new NewTopic(topicName, 1, (short) 3);
-            adminClient.createTopics(Collections.singleton(newTopic)).all().get();
+        try {
+            Publisher.creerTopic(topicName);
             return ResponseEntity.ok("Topic créé avec succès");
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Échec de la création du topic");
-
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
     }
 
+    /**
+     * @param interest
+     * @return
+     */
+    @GetMapping("/search-topics")
+    public ResponseEntity<List<String>> searchTopics(@RequestParam String interest) {
+        try {
+            // Appel correct de la méthode du service Kafka
+            List<String> topics = Consumer.searchTopicsByInterest(interest);
+            return ResponseEntity.ok(topics);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+        }
+    }
 
 }
