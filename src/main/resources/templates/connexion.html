@@ -27,7 +27,7 @@
         <label for="username">Nom d'utilisateur</label>
         <input type="text" id="username" name="username" placeholder="Entrez votre nom d'utilisateur" required>
       </div>
-      <button type="submit" class="login-button">Se connecter</button>
+      <button id="submit" type="submit" class="login-button">Se connecter</button>
     </form>
 
   </div>
@@ -36,5 +36,12 @@
 <footer class="footer">
   <p>© 2024 Omega Alerts. Tous droits réservés.</p>
 </footer>
+<script>
+  document.getElementById("submit").addEventListener("click", function () {
+    sessionStorage.setItem("userEmail",document.getElementById("email").value);
+    console.log(sessionStorage.getItem("userEmail"));
+
+  });
+</script>
 </body>
 </html>

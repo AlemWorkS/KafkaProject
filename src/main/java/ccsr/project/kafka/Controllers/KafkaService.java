@@ -75,6 +75,7 @@ public class KafkaService {
         }
         return messages;
     }
+
     public static boolean verifyOrRegisterUser(String email, String username) {
         // Vérifie si l'utilisateur existe déjà
         String query = "SELECT * FROM users WHERE email = ?";
@@ -110,10 +111,9 @@ public class KafkaService {
 
 
     // Abonnement d'un consumer à un topic
-    public boolean subscribeUserToTopic(String email, String topicName) {
+    public static boolean subscribeUserToTopic(String email, String topicName) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO subscriptions (user_email, topic_id) " +
-                    "SELECT ?, id FROM topics WHERE name = ?";
+            String query = "INSERT INTO subscription (email,topic_name) VALUES (?,?);";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             statement.setString(2, topicName);

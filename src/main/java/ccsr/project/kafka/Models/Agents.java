@@ -4,6 +4,7 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.util.Properties;
@@ -14,6 +15,7 @@ abstract class Agents {
     private final static Properties props = new Properties();
     private static final AdminClient adminClient;
     private static final KafkaConsumer kafkaConsumer;
+    //private static final KafkaProducer kafkaProducer;
 
 
     static {
@@ -24,6 +26,7 @@ abstract class Agents {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         adminClient = AdminClient.create(props);
         kafkaConsumer = new KafkaConsumer(props);
+        //kafkaProducer = new KafkaProducer(props);
     }
 
 
@@ -34,5 +37,8 @@ abstract class Agents {
         return kafkaConsumer;
     }
 
+    /*public static KafkaProducer getProducer() {
+        return kafkaProducer;
+    }*/
 
 }
