@@ -1,27 +1,41 @@
 package ccsr.project.kafka.Controllers;
 
 import ccsr.project.kafka.Controllers.SubscriptionService;
+import ccsr.project.kafka.Models.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
+
 @RestController
 public class SubscriptionController {
 
-    @Autowired
-    private SubscriptionService subscriptionService;
 
     @PostMapping("/subscriptions/subscribe")
     public ResponseEntity<String> subscribe(@RequestParam String topicName, @RequestParam String userEmail) {
         try {
-            subscriptionService.addSubscription(userEmail, topicName);
+            KafkaService.subscribeUserToTopic(userEmail,topicName);
             return ResponseEntity.ok("Abonnement enregistré avec succès !");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erreur lors de l'abonnement : " + e.getMessage());
         }
     }
+
+    @GetMapping("/subscriptions/user")
+    public ResponseEntity<String> subscribe(@RequestParam String userEmail) {
+        try {
+            Set<String> topics = Publisher.listTopic();
+            return ResponseEntity.ok("Abonnement enregistré avec succès !");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors de l'abonnement : " + e.getMessage());
+        }
+    }
+
 }

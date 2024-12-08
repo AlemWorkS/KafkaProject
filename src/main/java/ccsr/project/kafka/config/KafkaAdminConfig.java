@@ -13,7 +13,7 @@ public class KafkaAdminConfig {
 
     @Bean
     public AdminClient adminClient() {
-        String bootstrapServers = "localhost:29092,localhost:39093,localhost:49094";
+        String bootstrapServers = "localhost:29092,localhost:39092,localhost:49092";
 
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers); // Adresse de votre cluster Kafka

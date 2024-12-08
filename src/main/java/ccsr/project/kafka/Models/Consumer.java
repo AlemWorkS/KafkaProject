@@ -9,8 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class Consumer{
-
+public class Consumer {
 
 
     public static List<String> searchTopicsByInterest(String interest) throws ExecutionException, InterruptedException {
@@ -19,8 +18,10 @@ public class Consumer{
             ListTopicsResult topicsResult = Agents.getAdminClient().listTopics();
             Set<String> allTopics = topicsResult.names().get();
 
-            // Filtre les topics par mot-clé (intérêt)
-            return allTopics.stream().filter(topic -> topic.toLowerCase().contains(interest.toLowerCase())).collect(Collectors.toList());
+            System.out.println(allTopics.size());
+
+        // Filtre les topics par mot-clé (intérêt)
+        return allTopics.stream().filter(topic -> topic.toLowerCase().contains(interest.toLowerCase())).collect(Collectors.toList());
 
     }
 

@@ -52,6 +52,7 @@ public class KafkaTopicController {
             List<String> topics = Consumer.searchTopicsByInterest(interest);
             return ResponseEntity.ok(topics);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
     }

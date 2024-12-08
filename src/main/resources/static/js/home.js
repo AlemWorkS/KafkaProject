@@ -35,7 +35,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
                         .catch(err => {
                             console.error(`Erreur lors de la récupération des messages pour le topic ${topic} :`, err);
                             const messageSpan = document.getElementById(`messages-${topic}`);
-                            messageSpan.innerText = "Erreur lors du chargement des messages.";
+                            messageSpan.innerText = "2 Erreur lors du chargement des messages.";
                         });
                 });
 
@@ -43,7 +43,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
                 attachSubscribeEventHandlers();
             })
             .catch(error => {
-                console.error("Erreur lors de la recherche :", error);
+                console.error("1 Erreur lors de la recherche :", error);
             });
     } else {
         alert("Veuillez entrer un centre d'intérêt !");
@@ -60,13 +60,18 @@ function attachSubscribeEventHandlers() {
         });
     });
 }
+
 function subscribe(topicName) {
-    const userEmail = document.getElementById("userEmail").value;
+
+
+    const userEmail = sessionStorage.getItem("userEmail");
+    console.log(userEmail);
 
     if (!userEmail) {
         alert("Erreur : utilisateur non identifié !");
         return;
     }
+
 
     fetch(`/subscriptions/subscribe`, {
         method: 'POST',
@@ -81,14 +86,13 @@ function subscribe(topicName) {
         .then(response => response.text())
         .then(message => {
             alert(message); // Affiche le message de succès ou d'erreur
-            updateSubscriptions(); // Met à jour la liste des abonnements
         })
         .catch(error => {
             alert("Erreur lors de l'abonnement : " + error);
         });
 }
 
-// Fonction pour charger les abonnements d'un utilisateur
+/*// Fonction pour charger les abonnements d'un utilisateur
 function updateSubscriptions() {
     const userEmail = document.getElementById("userEmail").value;
 
@@ -113,3 +117,4 @@ function updateSubscriptions() {
             console.error("Erreur lors de la mise à jour des abonnements :", error);
         });
 }
+*/

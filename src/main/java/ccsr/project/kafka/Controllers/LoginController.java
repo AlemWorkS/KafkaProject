@@ -18,14 +18,6 @@ public class LoginController {
         this.kafkaService = kafkaService;
     }
 
-    /**
-     * Affiche la page de connexion
-     * URL : /connexion
-     */
-    @GetMapping("/connexion")
-    public String showLoginPage() {
-        return "connexion"; // Charge le fichier connexion.html depuis le dossier templates
-    }
 
     /**
      * Traite la requête de connexion
@@ -39,14 +31,14 @@ public class LoginController {
             Model model
     ) {
         // Validation côté serveur
-        if (email.isEmpty() || !email.contains("@") || username.isEmpty()) {
+        if (!email.contains("@") || username.isEmpty()) {
             model.addAttribute("error", "Email ou nom d'utilisateur invalide.");
-            return "connexion"; // Retourne à la page de connexion avec un message d'erreur
+            return "redirect:/"; // Retourne à la page de connexion avec un message d'erreur
         }
 
         // Vérifie ou enregistre l'utilisateur
         try {
-            boolean userExists = kafkaService.verifyOrRegisterUser(email, username);
+            boolean userExists = KafkaService.verifyOrRegisterUser(email, username);
 
             if (userExists) {
                 // Enregistre les informations utilisateur dans la session
@@ -55,11 +47,11 @@ public class LoginController {
                 return "redirect:/home"; // Redirige vers la page d'accueil
             } else {
                 model.addAttribute("error", "Erreur lors de la connexion.");
-                return "connexion"; // Retourne à la page de connexion
+                return "redirect:/"; // Retourne à la page de connexion
             }
         } catch (Exception e) {
             model.addAttribute("error", "Une erreur est survenue : " + e.getMessage());
-            return "connexion"; // Retourne à la page de connexion avec une erreur
+            return "redirect:/"; // Retourne à la page de connexion avec une erreur
         }
     }
 }

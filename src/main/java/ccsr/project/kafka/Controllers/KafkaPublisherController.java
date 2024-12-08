@@ -14,10 +14,12 @@ import java.util.Map;
 @RestController
 public class KafkaPublisherController {
 
+    Publisher publisher = new Publisher();
+
     @PostMapping("/connect-publisher")
     public ResponseEntity<String> connectPublisher(@RequestParam String serverAddress) {
         try {
-            Publisher.connexion(); // Essayer d'obtenir des informations du cluster
+            publisher.connexion(); // Essayer d'obtenir des informations du cluster
             return ResponseEntity.ok("Connecté au serveur Kafka avec succès");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Impossible de se connecter au serveur Kafka");
