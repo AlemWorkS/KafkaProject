@@ -24,12 +24,17 @@ public class KafkaMessageController {
     @GetMapping("/get-messages")
     public ResponseEntity<List<String>> getMessages(@RequestParam String topicName) {
         try {
-            List<String> messages = Message.getMessagesFromTopic(topicName);
+            // Nettoyer le nom du topic avant de le passer au modèle
+            String sanitizedTopicName = Message.sanitizeTopicName(topicName);
+
+            List<String> messages = Message.getMessagesFromTopic(sanitizedTopicName);
             return ResponseEntity.ok(messages);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList("Erreur lors de la récupération des messages."));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonList("Erreur lors de la récupération des messages."));
         }
     }
+
 
     /*@PostMapping("/post-messages")
     public ResponseEntity<List<String>> postMessages(@RequestParam String user,@RequestParam String topic,@RequestParam String message,@RequestParam String article){

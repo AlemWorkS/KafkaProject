@@ -12,14 +12,23 @@ import java.util.List;
 
 public class Message {
 
-    public static List<String> getMessagesFromTopic(String topicName) {
 
+    // Nettoyage et validation des noms de topics avant interaction
+    public static String sanitizeTopicName(String topicName) {
+        return topicName
+                .replaceAll("[^a-zA-Z0-9._-]", "") // Supprime les caractères non valides
+                .replaceAll("\\s+", "-")           // Remplace les espaces par des tirets
+                .toLowerCase();
+    }
+
+    public static List<String> getMessagesFromTopic(String topicName) {
         List<String> messages = new ArrayList<>();
 
         try {
-            Agents.getConsummer().subscribe(Collections.singletonList(topicName));
+            String sanitizedTopicName = sanitizeTopicName(topicName);
+            Agents.getConsummer().subscribe(Collections.singletonList(sanitizedTopicName));
 
-            System.out.println("Connexion au topic : " + topicName);
+            System.out.println("Connexion au topic : " + sanitizedTopicName);
             ConsumerRecords<String, String> records = Agents.getConsummer().poll(Duration.ofSeconds(5));
 
             for (ConsumerRecord<String, String> record : records) {
@@ -33,36 +42,9 @@ public class Message {
             System.out.println("Erreur lors de la récupération des messages : " + e.getMessage());
             messages.add("Erreur lors de la récupération des messages.");
         }
-        System.out.println(messages);
         return messages;
-
     }
 
-    public static List<String> getMessagesFromTopic(String topicName) {
-
-        List<String> messages = new ArrayList<>();
-
-        try {
-            Agents.getConsummer().subscribe(Collections.singletonList(topicName));
-
-            System.out.println("Connexion au topic : " + topicName);
-            ConsumerRecords<String, String> records = Agents.getConsummer().poll(Duration.ofSeconds(5));
-
-            for (ConsumerRecord<String, String> record : records) {
-                messages.add(record.value());
-            }
-
-            if (messages.isEmpty()) {
-                messages.add("Aucun message disponible pour le moment.");
-            }
-        } catch (Exception e) {
-            System.out.println("Erreur lors de la récupération des messages : " + e.getMessage());
-            messages.add("Erreur lors de la récupération des messages.");
-        }
-        System.out.println(messages);
-        return messages;
-
-    }
 
     /*public static void creerMessage(String topic,String article,String message,String user){
         ProducerRecord<String,String> producerRecord = new ProducerRecord<>(topic,article,message);
