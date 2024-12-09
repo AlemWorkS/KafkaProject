@@ -40,6 +40,10 @@ public class Router {
     public String publisherPublish(Model model) {
         return "PublisherPublish";
     }
+    @GetMapping("/producer")
+    public String producer(Model model) {
+        return "producer";
+    }
 
 
 }
