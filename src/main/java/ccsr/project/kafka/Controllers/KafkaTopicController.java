@@ -1,6 +1,7 @@
 package ccsr.project.kafka.Controllers;
 
 import ccsr.project.kafka.Models.Consumer;
+import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,14 +47,14 @@ public class KafkaTopicController {
      * @return
      */
     @GetMapping("/search-topics")
-    public ResponseEntity<List<String>> searchTopics(@RequestParam String interest) {
+    public ResponseEntity<Map<String,List<String>>> searchTopics(@RequestParam String interest) {
         try {
             // Appel correct de la méthode du service Kafka
-            List<String> topics = Consumer.searchTopicsByInterest(interest);
+            Map<String,List<String>> topics = Message.searchMessagesInAllTopics(interest);
             return ResponseEntity.ok(topics);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((Map<String, List<String>>) Collections.emptyList());
         }
     }
 

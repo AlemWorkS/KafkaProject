@@ -4,7 +4,9 @@ document.getElementById("searchButton").addEventListener("click", function () {
     if (interest) {
         fetch(`/search-topics?interest=${interest}`)
             .then(response => response.json())
-            .then(topics => {
+            .then(topics => { console.log(topics)
+
+            /*
                 const alertList = document.querySelector(".alert-list");
                 alertList.innerHTML = ""; // Vider les cartes existantes
 
@@ -40,7 +42,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
                 });
 
                 // Attacher les gestionnaires d'événements après avoir ajouté les boutons
-                attachSubscribeEventHandlers();
+                attachSubscribeEventHandlers();*/
             })
             .catch(error => {
                 console.error("1 Erreur lors de la recherche :", error);
