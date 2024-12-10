@@ -46,6 +46,10 @@ public class Router {
     public String publisherPublish(Model model) {
         return "PublisherPublish";
     }
+    @GetMapping("/producer")
+    public String producer(Model model) {
+        return "producer";
+    }
 
     // Api des messages
     @GetMapping("/messages")
@@ -57,5 +61,9 @@ public class Router {
         }
     }
 
+    @GetMapping("/connexion")
+    public String connexion(Model model) {
+        return "connexion";
+    }
 
 }
