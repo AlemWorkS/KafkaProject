@@ -14,14 +14,23 @@ import java.util.function.BiConsumer;
 
 public class Message {
 
-    public static List<String> getMessagesFromTopic(String topicName) {
 
+    // Nettoyage et validation des noms de topics avant interaction
+    public static String sanitizeTopicName(String topicName) {
+        return topicName
+                .replaceAll("[^a-zA-Z0-9._-]", "") // Supprime les caractères non valides
+                .replaceAll("\\s+", "-")           // Remplace les espaces par des tirets
+                .toLowerCase();
+    }
+
+    public static List<String> getMessagesFromTopic(String topicName) {
         List<String> messages = new ArrayList<>();
 
         try {
-            Agents.getConsummer().subscribe(Collections.singletonList(topicName));
+            String sanitizedTopicName = sanitizeTopicName(topicName);
+            Agents.getConsummer().subscribe(Collections.singletonList(sanitizedTopicName));
 
-            System.out.println("Connexion au topic : " + topicName);
+            System.out.println("Connexion au topic : " + sanitizedTopicName);
             ConsumerRecords<String, String> records = Agents.getConsummer().poll(Duration.ofSeconds(5));
 
             for (ConsumerRecord<String, String> record : records) {
@@ -35,9 +44,7 @@ public class Message {
             System.out.println("Erreur lors de la récupération des messages : " + e.getMessage());
             messages.add("Erreur lors de la récupération des messages.");
         }
-        System.out.println(messages);
         return messages;
-
     }
 
 
