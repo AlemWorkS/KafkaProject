@@ -19,10 +19,9 @@ public class ProducerController {
 
     @PostMapping("/send-message")
     public ResponseEntity<String> sendMessage(
+            @RequestParam String topicName,
             @RequestParam(required = false) String message,
             @RequestParam(required = false) String link,
-            @RequestParam String theme,
-            @RequestParam String category,
             @RequestParam String serverAddress) {
 
         // Validation : Message ou lien, mais pas les deux
@@ -34,17 +33,12 @@ public class ProducerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vous ne pouvez pas envoyer un message et un lien en même temps.");
         }
 
-        // Assurez-vous que le topic existe avant d'envoyer le message
-        String topic = theme + "-" + category;
-        try {
-            createTopicIfNotExists(serverAddress, topic);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Échec de la création du topic : " + e.getMessage());
-        }
+        // Nettoyage du nom du topic
+        String sanitizedTopicName = sanitizeTopicName(topicName);
 
         // Configuration du Kafka Producer
         Properties props = new Properties();
-        props.put("bootstrap.servers", serverAddress); // Adresse du serveur Kafka
+        props.put("bootstrap.servers", serverAddress);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
@@ -52,16 +46,27 @@ public class ProducerController {
             // Préparation du message à envoyer
             String content = message != null ? message : "Lien : " + link;
 
-            // Envoi du message à Kafka
-            ProducerRecord<String, String> record = new ProducerRecord<>(topic, content);
-            Future<RecordMetadata> future = producer.send(record);
+            // Vérifier si le topic existe
+            if (!topicExists(serverAddress, sanitizedTopicName)) {
+                createTopicIfNotExists(serverAddress, sanitizedTopicName);
+            }
 
-            // Attendre la confirmation de l'envoi
-            RecordMetadata metadata = future.get();
-            return ResponseEntity.ok("Message envoyé avec succès au topic \"" + topic + "\". Partition: " + metadata.partition() + ", Offset: " + metadata.offset());
+            ProducerRecord<String, String> record = new ProducerRecord<>(sanitizedTopicName, content);
+            producer.send(record);
+            return ResponseEntity.ok("Message envoyé avec succès au topic \"" + sanitizedTopicName + "\".");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Échec de l'envoi du message.");
+        }
+
+    }
+
+    // Vérifie si un topic existe
+    private boolean topicExists(String serverAddress, String topicName) throws Exception {
+        Properties config = new Properties();
+        config.put("bootstrap.servers", serverAddress);
+        try (AdminClient adminClient = AdminClient.create(config)) {
+            return adminClient.listTopics().names().get().contains(topicName);
         }
     }
 
@@ -76,4 +81,8 @@ public class ProducerController {
         }
     }
 
+    // Nettoyage du nom du topic
+    private String sanitizeTopicName(String topicName) {
+        return topicName.replaceAll("[^a-zA-Z0-9._-]", "").toLowerCase();
+    }
 }

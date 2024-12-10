@@ -45,5 +45,9 @@ public class Router {
         return "producer";
     }
 
+    @GetMapping("/connexion")
+    public String connexion(Model model) {
+        return "connexion";
+    }
 
 }

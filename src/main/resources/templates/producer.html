@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -27,30 +29,30 @@
     <!-- Formulaire pour envoyer un message -->
     <h1>Envoyer un Message</h1>
     <form id="producer-form">
+        <!-- Sélection ou création du topic -->
+        <div class="form-group">
+            <label for="existingTopic">Topic existant :</label>
+            <select id="existingTopic" name="existingTopic">
+                <option value="">Sélectionnez un topic existant</option>
+                <!-- Les topics seront chargés dynamiquement ici -->
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="newTopic">Ou créer un nouveau topic :</label>
+            <input type="text" id="newTopic" name="newTopic" placeholder="Nom du nouveau topic">
+        </div>
+
+        <!-- Champs pour le message -->
         <div class="form-group">
             <label for="message">Message (ou lien vers un site web, mais pas les deux en même temps) :</label>
             <textarea id="message" name="message" rows="4" placeholder="Entrez votre message ici"></textarea>
             <input type="url" id="link" name="link" placeholder="Entrez un lien vers un site web">
         </div>
 
-        <div class="form-group">
-            <label for="theme">Thème :</label>
-            <input type="text" id="theme" name="theme" placeholder="Entrez le thème du message" required>
-        </div>
-
-        <div class="form-group">
-            <label for="category">Catégorie :</label>
-            <select id="category" name="category">
-                <option value="actualités">Actualités</option>
-                <option value="site-de-ventes">Site de Ventes</option>
-                <option value="article-simple">Article Simple</option>
-                <option value="custom">Autre (spécifiez ci-dessous)</option>
-            </select>
-            <input type="text" id="custom-category" name="customCategory" placeholder="Entrez une catégorie personnalisée">
-        </div>
-
         <button type="submit">Envoyer</button>
     </form>
+
 </div>
 
 <script>
@@ -61,6 +63,8 @@
         const form = document.getElementById('producer-form');
         const messageInput = document.getElementById('message');
         const linkInput = document.getElementById('link');
+        const existingTopicSelect = document.getElementById('existingTopic');
+        const newTopicInput = document.getElementById('newTopic');
 
         let isConnected = false; // Vérifie si l'utilisateur est connecté
         let serverAddress = '';
@@ -87,6 +91,7 @@
                     if (data.includes('Connecté')) {
                         statusMessage.textContent = 'Statut : Connecté';
                         isConnected = true;
+                        loadExistingTopics();
                     } else {
                         statusMessage.textContent = 'Statut : Non connecté';
                         isConnected = false;
@@ -117,60 +122,83 @@
             }
         });
 
-    // Gestion de l'envoi du formulaire
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        const theme = document.getElementById('theme').value.trim();
-        const category = document.getElementById('category').value;
-        const customCategory = document.getElementById('custom-category').value.trim();
-
-        // Nettoyage et validation du nom du topic
-        const topicName = (theme + "-" + (category === 'custom' ? customCategory : category))
-            .replace(/[^a-zA-Z0-9._-]/g, '') // Supprime les caractères non valides
-            .replace(/\s+/g, '-')           // Remplace les espaces par des tirets
-            .toLowerCase();
-
-        if (!topicName) {
-            alert('Le nom du topic est invalide. Veuillez vérifier vos entrées.');
-            return;
+        // Charger les topics existants
+        function loadExistingTopics() {
+            fetch(`/list-topics?serverAddress=${serverAddress}`)
+                .then(response => response.json())
+                .then(topics => {
+                    existingTopicSelect.innerHTML = '<option value="">Sélectionnez un topic existant</option>';
+                    topics.forEach(topic => {
+                        const option = document.createElement('option');
+                        option.value = topic;
+                        option.textContent = topic;
+                        existingTopicSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erreur lors de la récupération des topics :', error));
         }
 
-        console.log('Nom du topic nettoyé :', topicName);
+        // Validation du formulaire
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
 
-        // Préparation des données pour l'envoi
-        const data = new URLSearchParams({
-            topicName: topicName,
-            serverAddress: serverAddressInput.value.trim()
-        });
+            const selectedTopic = existingTopicSelect.value;
+            const newTopic = newTopicInput.value.trim();
+            const message = document.getElementById('message').value.trim();
+            const link = document.getElementById('link').value.trim();
 
-        fetch('/create-topic', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: data
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(err => {
-                        throw new Error(err);
-                    });
-                }
-                return response.text();
-            })
-            .then(result => {
-                alert(result);
-                form.reset();
-            })
-            .catch(error => {
-                console.error('Erreur lors de la création du topic :', error);
-                alert('Échec de la création du topic.');
+            if (!message && !link) {
+                alert('Veuillez entrer un message ou un lien.');
+                return;
+            }
+
+            if (message && link) {
+                alert('Vous ne pouvez pas entrer un message et un lien en même temps.');
+                return;
+            }
+
+            if (!selectedTopic && !newTopic) {
+                alert('Veuillez sélectionner un topic existant ou en créer un nouveau.');
+                return;
+            }
+
+            const topicName = selectedTopic || newTopic;
+
+            // Préparation des données
+            const data = new URLSearchParams({
+                topicName: topicName,
+                message: message || '',
+                link: link || '',
+                serverAddress: serverAddress
             });
-    });
+
+            // Envoyer le message
+            fetch('/producer/send-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: data
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(err => {
+                            throw new Error(err);
+                        });
+                    }
+                    return response.text();
+                })
+                .then(result => {
+                    alert(result);
+                    form.reset();
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l\'envoi du message :', error);
+                    alert('Échec de l\'envoi du message.');
+                });
+        });
     });
 </script>
-
 
 <style>
     /* Styles CSS pour l'interface */
