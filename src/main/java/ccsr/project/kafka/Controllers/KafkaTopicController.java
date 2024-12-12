@@ -1,6 +1,7 @@
 package ccsr.project.kafka.Controllers;
 
 import ccsr.project.kafka.Models.Consumer;
+import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,17 +29,40 @@ public class KafkaTopicController {
         }
     }
 
+
+    // Méthode pour nettoyer le nom du topic
+    private String sanitizeTopicName(String topicName) {
+        return topicName
+                .replaceAll("[^a-zA-Z0-9._-]", "") // Supprime les caractères non valides
+                .replaceAll("\\s+", "-")           // Remplace les espaces par des tirets
+                .toLowerCase();                    // Convertir en minuscules pour la cohérence
+    }
+
+    // Validation avancée du nom du topic
+    private boolean isValidKafkaTopicName(String topicName) {
+        return topicName.matches("[a-zA-Z0-9._-]{1,249}");
+    }
+
+
+
     // Endpoint pour créer un nouveau topic sur le serveur Kafka fourni
     @PostMapping("/create-topic")
     public ResponseEntity<String> createTopic(@RequestParam String topicName, @RequestParam String serverAddress) {
+        // Nettoyer le nom du topic
+        String sanitizedTopicName = sanitizeTopicName(topicName);
 
-        try {
-            Publisher.creerTopic(topicName);
-            return ResponseEntity.ok("Topic créé avec succès");
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
+        // Validation du nom du topic
+        if (!isValidKafkaTopicName(sanitizedTopicName)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le nom du topic est invalide : " + sanitizedTopicName);
         }
 
+        try {
+            Publisher.creerTopic(sanitizedTopicName);
+            return ResponseEntity.ok("Topic \"" + sanitizedTopicName + "\" créé avec succès");
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Échec de la création du topic.");
+        }
     }
 
     /**
@@ -46,15 +70,17 @@ public class KafkaTopicController {
      * @return
      */
     @GetMapping("/search-topics")
-    public ResponseEntity<List<String>> searchTopics(@RequestParam String interest) {
+    public ResponseEntity<Map<String, HashMap<String, String>>> searchTopics(@RequestParam String interest) {
         try {
             // Appel correct de la méthode du service Kafka
-            List<String> topics = Consumer.searchTopicsByInterest(interest);
+            Map<String,HashMap<String,String>> topics = Message.searchMessagesInAllTopics(interest);
             return ResponseEntity.ok(topics);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((Map<String, HashMap<String,String>>) Collections.emptyList());
         }
     }
+
+
 
 }
