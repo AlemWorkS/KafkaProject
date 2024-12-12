@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/omegadb";
+    private static final String URL = "jdbc:mysql://localhost:3308/Omegabd";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "";
     public static Connection getConnection() throws SQLException {
