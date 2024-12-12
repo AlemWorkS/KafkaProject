@@ -1,6 +1,7 @@
 package ccsr.project.kafka.Controllers;
 import ccsr.project.kafka.Controllers.KafkaService;
 
+import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -21,7 +22,7 @@ public class KafkaPublisherController {
     @PostMapping("/connect-publisher")
     public ResponseEntity<String> connectPublisher(@RequestParam String serverAddress) {
         try {
-            publisher.connexion(); // Essayer d'obtenir des informations du cluster
+            Publisher.connexion(); // Essayer d'obtenir des informations du cluster
             return ResponseEntity.ok("Connecté au serveur Kafka avec succès");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Impossible de se connecter au serveur Kafka");
@@ -48,5 +49,19 @@ public class KafkaPublisherController {
         }
     }
 
+
+    @PostMapping("producer/send-message")
+    public ResponseEntity<String> sendMessage(@RequestParam String theme,@RequestParam String message,@RequestParam String link,@RequestParam boolean isLink) {
+        try {
+            String topic = isLink ? "LienWeb" : "Articles";
+            String valeur = isLink ? link : message;
+
+            Message.creerMessage(topic,theme,valeur,"fred");
+
+            return ResponseEntity.ok("L'article est enregistré sur les serveurs");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Impossible de se connecter au serveur Kafka");
+        }
+    }
 }
 

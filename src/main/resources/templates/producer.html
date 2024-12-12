@@ -17,20 +17,36 @@
 </header>
 
 <div class="main">
+    <!-- Statut de connexion -->
+    <div class="connection-status">
+        <p id="status-message">Statut : Non connecté</p>
+        <div>
+            <input type="text" id="serverAddress" placeholder="Adresse du serveur Kafka">
+            <button id="connectButton">Se connecter</button>
+        </div>
+    </div>
 
     <!-- Formulaire pour envoyer un message -->
     <h1>Envoyer un Message</h1>
     <form id="producer-form">
+        <!-- Sélection ou création du topic -->
+        <div class="form-group">
+            <label for="existingTopic">Topic existant :</label>
+            <select id="existingTopic" name="existingTopic">
+                <option value="">Sélectionnez un topic existant</option>
+                <!-- Les topics seront chargés dynamiquement ici -->
+            </select>
+        </div>
 
         <div class="form-group">
-            <label for="newTopic">Thème de votre message:</label>
-            <input type="text" id="newTopic" name="theme" placeholder="Nom du nouveau topic">
+            <label for="newTopic">Ou créer un nouveau topic :</label>
+            <input type="text" id="newTopic" name="newTopic" placeholder="Nom du nouveau topic">
         </div>
 
         <!-- Champs pour le message -->
         <div class="form-group">
             <label for="message">Message (ou lien vers un site web, mais pas les deux en même temps) :</label>
-            <textarea id="message" name="message" style="min-width:300px;min-height:300px" rows="4" placeholder="Entrez votre message ici"></textarea>
+            <textarea id="message" name="message" rows="4" placeholder="Entrez votre message ici"></textarea>
             <input type="url" id="link" name="link" placeholder="Entrez un lien vers un site web">
         </div>
 
@@ -41,15 +57,20 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
+        const connectButton = document.getElementById('connectButton');
+        const serverAddressInput = document.getElementById('serverAddress');
+        const statusMessage = document.getElementById('status-message');
         const form = document.getElementById('producer-form');
         const messageInput = document.getElementById('message');
         const linkInput = document.getElementById('link');
         const existingTopicSelect = document.getElementById('existingTopic');
         const newTopicInput = document.getElementById('newTopic');
 
+        let isConnected = false; // Vérifie si l'utilisateur est connecté
+        let serverAddress = '';
+
         // Gestion de la connexion
-        /*connectButton.addEventListener('click', function () {
+        connectButton.addEventListener('click', function () {
             serverAddress = serverAddressInput.value.trim();
             if (!serverAddress) {
                 alert('Veuillez entrer une adresse serveur valide.');
@@ -80,7 +101,7 @@
                     console.error('Erreur de connexion :', error);
                     statusMessage.textContent = 'Statut : Non connecté';
                 });
-        });*/
+        });
 
         // Désactiver l'autre champ si l'un est rempli
         messageInput.addEventListener('input', function () {
@@ -121,15 +142,10 @@
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            var link = true;
-
-            if(linkInput.disabled==true){
-                link = false;
-            }
-
-            const theme = newTopicInput.value.trim();
+            const selectedTopic = existingTopicSelect.value;
+            const newTopic = newTopicInput.value.trim();
             const message = document.getElementById('message').value.trim();
-            const linki = document.getElementById('link').value.trim();
+            const link = document.getElementById('link').value.trim();
 
             if (!message && !link) {
                 alert('Veuillez entrer un message ou un lien.');
@@ -141,12 +157,19 @@
                 return;
             }
 
+            if (!selectedTopic && !newTopic) {
+                alert('Veuillez sélectionner un topic existant ou en créer un nouveau.');
+                return;
+            }
+
+            const topicName = selectedTopic || newTopic;
+
             // Préparation des données
             const data = new URLSearchParams({
-                theme: theme,
+                topicName: topicName,
                 message: message || '',
-                link: linki || '',
-                isLink: link,
+                link: link || '',
+                serverAddress: serverAddress
             });
 
             // Envoyer le message

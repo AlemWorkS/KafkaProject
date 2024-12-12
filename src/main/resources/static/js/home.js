@@ -5,6 +5,31 @@ document.getElementById("searchButton").addEventListener("click", function () {
         fetch(`/search-topics?interest=${interest}`)
             .then(response => response.json())
             .then(topics => {
+
+            // Vider les cartes existantes
+            const alertList = document.querySelector(".alert-list");
+                                                alertList.innerHTML = "";
+
+                Object.keys(topics).forEach(topic=>{
+                console.log(topic+"");
+                const data = topics[topic];
+
+                                        const card = document.createElement("div");
+                                        card.classList.add("alert-card");
+
+                                        // Ajouter la structure HTML de chaque topic
+                                        card.innerHTML = `
+                                            <div class="alert-card-header">
+                                                <h2>Theme : ${data.theme}</h2>
+
+                                            </div>
+                                            <p><span>Message : </span><br>${data.message}</p>
+                                        `;
+                                                            alertList.appendChild(card);
+
+
+                })
+            /*
                 const alertList = document.querySelector(".alert-list");
                 alertList.innerHTML = ""; // Vider les cartes existantes
 
@@ -40,7 +65,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
                 });
 
                 // Attacher les gestionnaires d'événements après avoir ajouté les boutons
-                attachSubscribeEventHandlers();
+                attachSubscribeEventHandlers();*/
             })
             .catch(error => {
                 console.error("1 Erreur lors de la recherche :", error);
