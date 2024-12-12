@@ -63,42 +63,22 @@ public class SubscriptionService {
             if (connection != null) connection.close();
         }
     }
-    public List<String> getSubscribersForTopic(String topicName) throws SQLException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+    public static List<String> getSubscribersForTopic(String topicName) {
         List<String> subscribers = new ArrayList<>();
-
-        try {
-            connection = DatabaseConnection.getConnection();
-
-            // Rechercher l'ID du topic
-            String getTopicIdQuery = "SELECT topics_id FROM topics WHERE name = ?";
-            preparedStatement = connection.prepareStatement(getTopicIdQuery);
-            preparedStatement.setString(1, topicName);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                int topicId = resultSet.getInt("topics_id");
-
-                // Récupérer les emails des abonnés
-                String getSubscribersQuery = "SELECT email FROM subscription WHERE topics_id = ?";
-                preparedStatement = connection.prepareStatement(getSubscribersQuery);
-                preparedStatement.setInt(1, topicId);
-                resultSet = preparedStatement.executeQuery();
-
-                while (resultSet.next()) {
-                    subscribers.add(resultSet.getString("email"));
-                }
+        String query = "SELECT email FROM subscription WHERE topics_id = (SELECT id FROM topics WHERE name = ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, topicName);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                subscribers.add(resultSet.getString("email"));
             }
-
-        } finally {
-            if (resultSet != null) resultSet.close();
-            if (preparedStatement != null) preparedStatement.close();
-            if (connection != null) connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
         return subscribers;
     }
+
+
 
 }

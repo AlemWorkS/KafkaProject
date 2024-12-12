@@ -6,6 +6,9 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -124,5 +127,33 @@ public class KafkaService {
             return false;
         }
     }
+    public static void publishMessage(String topicName, String message) throws Exception {
+        Producer<String, String> producer = getProducer();
+        ProducerRecord<String, String> record = new ProducerRecord<>(topicName, message);
+        producer.send(record);
+        producer.close();
+    }
+
+    public static Producer<String, String> getProducer() {
+        // Crée un objet Properties pour stocker les configurations nécessaires du producteur Kafka
+        Properties props = new Properties();
+
+        // Définir l'adresse du broker Kafka auquel le producteur doit se connecter
+        // Ici, on utilise "localhost:9092", ce qui signifie que Kafka est exécuté localement sur le port 9092.
+        props.put("bootstrap.servers", "localhost:9092");
+
+        // Configurer le sérialiseur pour les clés des messages.
+        // Ce sérialiseur transforme les clés en chaînes de caractères pour qu'elles soient compréhensibles par Kafka.
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        // Configurer le sérialiseur pour les valeurs des messages.
+        // De même, cela transforme les valeurs en chaînes de caractères compréhensibles par Kafka.
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        // Crée et retourne une instance de KafkaProducer en utilisant les propriétés configurées.
+        // Ce producteur sera utilisé pour envoyer des messages à des topics Kafka.
+        return new KafkaProducer<>(props);
+    }
+
 
 }

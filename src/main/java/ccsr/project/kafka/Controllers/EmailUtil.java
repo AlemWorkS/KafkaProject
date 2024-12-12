@@ -1,10 +1,10 @@
 package ccsr.project.kafka.Controllers;
 
-import jakarta.validation.constraints.Email;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
+
 
 
 
@@ -16,10 +16,10 @@ public class EmailUtil {
             Email email = new SimpleEmail();
             email.setHostName("smtp.gmail.com");
             email.setSmtpPort(587);
-            email.setAuthenticator(new DefaultAuthenticator("votre.email@example.com", "votreMotDePasse"));
+            email.setAuthenticator(new DefaultAuthenticator("eoyotode@gmail.com", "jojo225@"));
             email.setStartTLSEnabled(true);
 
-            email.setFrom("votre.email@example.com", "Nom de l'expéditeur");
+            email.setFrom("eoyotode@gmail.com", "Omega");
             email.setSubject(subject);
             email.setMsg(body);
             email.addTo(recipient);
@@ -32,8 +32,5 @@ public class EmailUtil {
         }
     }
 
-    public static void main(String[] args) {
-        // Exemple d'utilisation
-        sendEmail("destinataire@example.com", "Sujet Test", "Ceci est un test d'envoi d'email.");
-    }
+
 }
