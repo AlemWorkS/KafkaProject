@@ -263,11 +263,13 @@ public class Message {
             System.out.println(allTopics);
 
         }
+        }
+
 
         return result;
 
-    }
 
+    }
 
     public static void creerMessage(String topic, String article, String message, String user) {
 
@@ -275,10 +277,11 @@ public class Message {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, "zaha", message);
         if(article == null){
             article = "ArticleInconnu";
+            producerRecord.headers().add("theme", article.getBytes(S));
+
         }
 
         // Ajouter l'en-tête "theme"
-        producerRecord.headers().add("theme",(article != null && article.isEmpty()) ? "ArticleInconnu".getBytes(StandardCharsets.UTF_8) : article.getBytes(StandardCharsets.UTF_8));
 
         // Afficher un message pour vérifier que l'en-tête a bien été ajouté
         //System.out.println("En-tête 'theme' ajouté avec la valeur : " + article);
@@ -295,4 +298,8 @@ public class Message {
         });
     }
 
+
+
+
 }
+
