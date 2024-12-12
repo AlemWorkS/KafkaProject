@@ -24,8 +24,11 @@ document.getElementById("searchButton").addEventListener("click", function () {
 
                                             </div>
                                             <p><span>Message : </span><br>${data.message}</p>
+                                                                    <button class="subscribe-button" data-topic="${data.topic}">S'abonner</button>
+
                                         `;
                                                             alertList.appendChild(card);
+                                                            attachSubscribeEventHandlers();
 
 
                 })
@@ -65,7 +68,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
                 });
 
                 // Attacher les gestionnaires d'événements après avoir ajouté les boutons
-                attachSubscribeEventHandlers();*/
+                */
             })
             .catch(error => {
                 console.error("1 Erreur lors de la recherche :", error);

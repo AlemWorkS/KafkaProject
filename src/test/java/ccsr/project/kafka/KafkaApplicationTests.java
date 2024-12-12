@@ -1,6 +1,7 @@
 package ccsr.project.kafka;
 
 import ccsr.project.kafka.Models.Consumer;
+import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,5 +45,22 @@ class KafkaApplicationTests {
 		}
 
 	}
+
+	@Test
+	void testMessageSearchMessagesInAllTopics() {
+
+        try {
+
+            Message.searchMessagesInAllTopics("flapacha").forEach((key,Message) -> {
+				System.out.println(key);
+				System.out.println(Message.get("producer"));
+				System.out.println(Message.get("theme"));
+				System.out.println(Message.get("message"));
+			});
+
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
