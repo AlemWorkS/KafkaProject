@@ -4,8 +4,31 @@ document.getElementById("searchButton").addEventListener("click", function () {
     if (interest) {
         fetch(`/search-topics?interest=${interest}`)
             .then(response => response.json())
-            .then(topics => { console.log(topics)
+            .then(topics => {
 
+            // Vider les cartes existantes
+            const alertList = document.querySelector(".alert-list");
+                                                alertList.innerHTML = "";
+
+                Object.keys(topics).forEach(topic=>{
+                console.log(topic+"");
+                const data = topics[topic];
+
+                                        const card = document.createElement("div");
+                                        card.classList.add("alert-card");
+
+                                        // Ajouter la structure HTML de chaque topic
+                                        card.innerHTML = `
+                                            <div class="alert-card-header">
+                                                <h2>Theme : ${data.theme}</h2>
+
+                                            </div>
+                                            <p><span>Message : </span><br>${data.message}</p>
+                                        `;
+                                                            alertList.appendChild(card);
+
+
+                })
             /*
                 const alertList = document.querySelector(".alert-list");
                 alertList.innerHTML = ""; // Vider les cartes existantes
