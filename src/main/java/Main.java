@@ -1,3 +1,4 @@
+package src.main.java;
 import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -8,6 +9,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+
 
 import java.time.Duration;
 import java.util.*;
