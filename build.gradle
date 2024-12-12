@@ -26,6 +26,7 @@ dependencies {
 
 
 
+
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -36,6 +37,10 @@ dependencies {
 }
 dependencies {
 	implementation 'mysql:mysql-connector-java:8.0.33'
+
+}
+dependencies {
+	implementation 'org.apache.commons:commons-email:1.5'
 }
 
 
