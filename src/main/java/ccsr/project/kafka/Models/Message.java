@@ -60,35 +60,40 @@ public class Message {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public static Map<String, HashMap<String,String>> searchMessagesInAllTopics(String keywords) throws ExecutionException, InterruptedException {
+    public static Map<Integer, HashMap<String,String>> searchMessagesInAllTopics(String keywords) throws ExecutionException, InterruptedException {
 
         // 1ere partie : Recherhce du ou des mot(s) clé(s) parmi les topics et retour des différents messages
 
         // Séparer les mots-clés par espace et les stocker dans une liste
         ArrayList<String> listInteret = new ArrayList<>(Arrays.asList(keywords.split("\\s+")));
+        ArrayList<String> listInteretExistant = new ArrayList<>();
 
         //La map qui va recevoir les topics et les messages assoiés
-        Map<String, HashMap<String,String>> result = new HashMap<>();
+        Map<Integer, HashMap<String,String>> result = new HashMap<>();
 
         // Récupérer la liste de tous les topics disponibles dans Kafka (supposons que tu as une méthode pour cela)
         Set<String> allTopics = Publisher.listTopic(); // Cette ligne pourrait retourner la liste des topics recherchées
 
-        for (String topicName : allTopics) {
+
+
+        allTopics.forEach(topicName ->{
+
+            System.out.println(1);
 
             if(listInteret.contains(topicName)) {
-
+                listInteretExistant.add(topicName);
                 //Variable de la récupération des messages
-                HashMap<String, String> messages = new HashMap<>();
 
                 try {
                     // S'abonner au topic pour consommer TOUT les messages
                     Agents.getConsummer().subscribe(Collections.singletonList(topicName));
                     Agents.getConsummer().assignment().forEach(partition -> {
+
                         // Positionner l'offset au début de chaque partition pour consommer tout les messages sinon on consommera juste les nouveaux
                         Agents.getConsummer().seekToBeginning(Collections.singletonList(partition));
+
                     });
                     //System.out.println("Connexion au topic : " + topicName);
-
 
                     // Poll des messages (on peut ajuster la durée en fonction des besoins)
                     ConsumerRecords<String, String> records = Agents.getConsummer().poll(Duration.ofSeconds(5));
@@ -99,34 +104,141 @@ public class Message {
 
                     // Parcourir les messages du topic ( appelés records )
                     for (ConsumerRecord<String, String> record : records) {
+                        HashMap<String, String> messages = new HashMap<>();
+
 
                         //Récupérer les messages du topic
                         String message = record.value();
+                        System.out.println(message);
 
                         //Hashmap pour récupérer le theme et le producer du message
                         record.headers().headers("theme").forEach(header -> {
-                            messages.put("theme", new String(header.value()));
-                            messages.put("producer", record.key());
+                            messages.put("theme", new String(header.value()).isEmpty()? "Inconnu" : String.valueOf(header));
+                            messages.put("producer", record.key().isEmpty() ? "Key" : record.key());
                         });
+
                         messages.put("message", message);
+                        messages.put("topic", topicName);
+                        result.put(result.size()+1, messages);
+
                         // Si le mot-clé est trouvé, on arrête la recherche pour ce message
                     }
 
-                    // Si des messages ont été trouvés pour ce topic, on les ajoute au résultat
-                    if (!messages.isEmpty()) {
-                        result.put(topicName, messages);
-                    }
                 } catch (Exception e) {
                     System.out.println("Erreur lors de la récupération des messages pour le topic " + topicName + ": " + e.getMessage());
                 }
             }
+        });
+
+        // 2ème partie : Création et remplissage d'un nouveau topic contenant le(s) mot(s) clé(s) recherché(s), cas où le topic n'existe pas
+
+        ArrayList<String> listInteretInexistant = new ArrayList<>();
+        listInteret.forEach(i ->{
+            if(!listInteretExistant.contains(i)) {listInteretInexistant.add(i);System.out.println(i);}
+            //System.out.println(listInteretInexistant.get(listInteretInexistant.indexOf(i)));
+        });
+
+        //Si aucun topic ne porte le lib de l'intérêt
+        if(result.isEmpty()){
+
+            System.out.println(2);
+            // Si aucun message n'a été trouvé pour les mots-clés dans les topics, on crée un ou des nouveau(x) topic(s) avec le(s) mots-clé(s)
+
+            // Parcourir les mots-clés et crée un nouveau topic pour chaque mot-clé
+            listInteret.forEach(interet->{
+
+                    try {
+                        if(listInteretInexistant.contains(interet)) {
+                            Publisher.creerTopic(interet);
+                            System.out.println("Nouveau topic créé avec le mot-clé : " + interet);
+                        }
+
+                        //Variable de la récupération des messages
+                        HashMap<String, String> messages = new HashMap<>();
+
+
+                        for (String topicName : Publisher.listTopic()) {
+
+                            // Rechercher les messages dans les topics existants pour les mettre dans le nouveau topic
+
+                            try {
+
+                                // S'abonner au topic pour consommer TOUT les messages
+                                Agents.getConsummer().subscribe(Collections.singletonList(topicName));
+                                Agents.getConsummer().assignment().forEach(partition -> {
+
+                                    // Positionner l'offset au début de chaque partition pour consommer tout les messages sinon on consommera juste les nouveaux
+                                    Agents.getConsummer().seekToBeginning(Collections.singletonList(partition));
+
+                                });
+                                //System.out.println("Connexion au topic : " + topicName);
+
+                                // Poll des messages (on peut ajuster la durée en fonction des besoins)
+                                ConsumerRecords<String, String> records = Agents.getConsummer().poll(Duration.ofSeconds(5));
+
+                                /*records.forEach(stringStringConsumerRecord -> {
+                                    stringStringConsumerRecord.value().contains(keywordList);
+                                });*/
+
+                                // Parcourir les messages du topic ( appelés records )
+                                for (ConsumerRecord<String, String> record : records) {
+
+                                    HashMap<String, String> messages2 = new HashMap<>();
+
+                                    //Récupérer les messages du topic
+                                    String message = record.value();
+                                    System.out.println(message+" "+topicName);
+
+                                    if (message.contains(interet)) {
+
+                                        int drap = 0;
+
+                                        //Hashmap pour récupérer le theme et le producer du message
+                                        while(record.headers().iterator().hasNext() && !Objects.equals(record.headers().iterator().next().key(), "theme")){
+                                            String header = "";
+                                            = record.headers().iterator().next();
+
+                                        }
+
+                                        System.out.println();
+                                        record.headers().headers("theme").forEach(header -> {
+                                            messages2.put("theme", new String(header.value()).isEmpty() ? "Inconnu" : new String(header.value()));
+                                            messages2.put("producer", record.key().isEmpty() ? "Key" : record.key());
+                                        });
+                                        messages.put("message", message);
+                                        // Si des messages ont été trouvés pour ce topic, on les ajoute au résultat
+                                        Message.creerMessage(interet, messages.get("theme"), messages.get("message"), messages.get("producer"));
+                                        result.put(result.size()+1, messages);
+
+                                        // Si le mot-clé est trouvé, on arrête la recherche pour ce message
+                                    }
+                                }
+
+
+
+                            } catch (Exception e) {
+                                System.out.println("Erreur lors de la récupération des messages pour le topic " + topicName + ": " + e.getMessage());
+                            }
+                        }
+
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+            });
         }
 
         // Si aucun message n'a été trouvé pour les mots-clés dans les topics, on retourne un message spécifique
         if (result.isEmpty()) {
-            result.put("Aucun topic ne contient les mots-clés spécifiés "+keywords,null);
-        }
 
+            HashMap<String,String> empty = new HashMap<>();
+            empty.put("producer", "System");
+            empty.put("theme","null");
+            empty.put("message", "Aucun message ne contient les mots-clés spécifiés "+keywords);
+            result.put(0, empty);
+
+            System.out.println(allTopics);
+
+        }
 
         return result;
 
@@ -138,11 +250,12 @@ public class Message {
         // Créer le ProducerRecord avec les en-têtes
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, "zaha", message);
 
+
         // Ajouter l'en-tête "theme"
-        producerRecord.headers().add("theme", article.getBytes(StandardCharsets.UTF_8));
+        producerRecord.headers().add("theme",article.isEmpty() ? "ArticleInconnu".getBytes(StandardCharsets.UTF_8) : article.getBytes(StandardCharsets.UTF_8));
 
         // Afficher un message pour vérifier que l'en-tête a bien été ajouté
-        System.out.println("En-tête 'theme' ajouté avec la valeur : " + article);
+        //System.out.println("En-tête 'theme' ajouté avec la valeur : " + article);
 
         // Envoi du message avec un callback pour gérer les erreurs
         Agents.getProducer().send(producerRecord, (metadata, exception) -> {

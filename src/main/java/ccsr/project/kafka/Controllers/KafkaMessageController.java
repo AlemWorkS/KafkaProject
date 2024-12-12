@@ -22,14 +22,14 @@ public class KafkaMessageController {
 
 
     @GetMapping("/get-messages")
-    public ResponseEntity<Map<String, HashMap<String, String>>> getMessages(@RequestParam String topicName) {
+    public ResponseEntity<Map<Integer, HashMap<String, String>>> getMessages(@RequestParam String topicName) {
         try {
             // Nettoyer le nom du topic avant de le passer au modèle
             String sanitizedTopicName = Message.sanitizeTopicName(topicName);
-            Map<String, HashMap<String, String>> messages = Message.searchMessagesInAllTopics(sanitizedTopicName);
+            Map<Integer, HashMap<String, String>> messages = Message.searchMessagesInAllTopics(sanitizedTopicName);
             return ResponseEntity.ok(messages);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((Map<String, HashMap<String, String>>) Collections.singletonList("Erreur lors de la récupération des messages."));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((Map<Integer, HashMap<String, String>>) Collections.singletonList("Erreur lors de la récupération des messages."));
         }
     }
 
