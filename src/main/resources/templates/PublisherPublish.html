@@ -1,10 +1,241 @@
+
+
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producer Interface</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+<header class="header">
+    <div class="header-logo">
+        <img src="/images/producer-logo.png" alt="Producer Logo">
+        <span>Producer Interface</span>
+    </div>
+</header>
+
+<div class="main">
+
+    <!-- Formulaire pour envoyer un message -->
+    <h1>Envoyer un Message</h1>
+    <form id="producer-form">
+
+        <div class="form-group">
+            <label for="newTopic">Thème de votre message:</label>
+            <input type="text" id="newTopic" name="theme" placeholder="Nom du nouveau topic">
+        </div>
+
+        <!-- Champs pour le message -->
+        <div class="form-group">
+            <label for="message">Message (ou lien vers un site web, mais pas les deux en même temps) :</label>
+            <textarea id="message" name="message" style="min-width:300px;min-height:300px" rows="4" placeholder="Entrez votre message ici"></textarea>
+            <input type="url" id="link" name="link" placeholder="Entrez un lien vers un site web">
+        </div>
+
+        <button type="submit">Envoyer</button>
+    </form>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const form = document.getElementById('producer-form');
+        const messageInput = document.getElementById('message');
+        const linkInput = document.getElementById('link');
+        const existingTopicSelect = document.getElementById('existingTopic');
+        const newTopicInput = document.getElementById('newTopic');
+
+        // Gestion de la connexion
+        /*connectButton.addEventListener('click', function () {
+            serverAddress = serverAddressInput.value.trim();
+            if (!serverAddress) {
+                alert('Veuillez entrer une adresse serveur valide.');
+                return;
+            }
+
+            fetch('/connect-publisher', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    serverAddress: serverAddress
+                })
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data.includes('Connecté')) {
+                        statusMessage.textContent = 'Statut : Connecté';
+                        isConnected = true;
+                        loadExistingTopics();
+                    } else {
+                        statusMessage.textContent = 'Statut : Non connecté';
+                        isConnected = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur de connexion :', error);
+                    statusMessage.textContent = 'Statut : Non connecté';
+                });
+        });*/
+
+        // Désactiver l'autre champ si l'un est rempli
+        messageInput.addEventListener('input', function () {
+            if (messageInput.value.trim()) {
+                linkInput.disabled = true;
+                linkInput.value = '';
+            } else {
+                linkInput.disabled = false;
+            }
+        });
+
+        linkInput.addEventListener('input', function () {
+            if (linkInput.value.trim()) {
+                messageInput.disabled = true;
+                messageInput.value = '';
+            } else {
+                messageInput.disabled = false;
+            }
+        });
+
+        // Charger les topics existants
+        function loadExistingTopics() {
+            fetch(`/list-topics?serverAddress=${serverAddress}`)
+                .then(response => response.json())
+                .then(topics => {
+                    existingTopicSelect.innerHTML = '<option value="">Sélectionnez un topic existant</option>';
+                    topics.forEach(topic => {
+                        const option = document.createElement('option');
+                        option.value = topic;
+                        option.textContent = topic;
+                        existingTopicSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erreur lors de la récupération des topics :', error));
+        }
+
+        // Validation du formulaire
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var link = true;
+
+            if(linkInput.disabled==true){
+                link = false;
+            }
+
+            const theme = newTopicInput.value.trim();
+            const message = document.getElementById('message').value.trim();
+            const linki = document.getElementById('link').value.trim();
+
+            if (!message && !link) {
+                alert('Veuillez entrer un message ou un lien.');
+                return;
+            }
+
+            if (message && link) {
+                alert('Vous ne pouvez pas entrer un message et un lien en même temps.');
+                return;
+            }
+
+            // Préparation des données
+            const data = new URLSearchParams({
+                theme: theme,
+                message: message || '',
+                link: linki || '',
+                isLink: link,
+            });
+
+            // Envoyer le message
+            fetch('/producer/send-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: data
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(err => {
+                            throw new Error(err);
+                        });
+                    }
+                    return response.text();
+                })
+                .then(result => {
+                    alert(result);
+                    form.reset();
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l\'envoi du message :', error);
+                    alert('Échec de l\'envoi du message.');
+                });
+        });
+    });
+</script>
+
+<style>
+    /* Styles CSS pour l'interface */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .header {
+        background-color: #35424a;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .header-logo img {
+        height: 50px;
+    }
+
+    .main {
+        max-width: 600px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    input, textarea, select, button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    button {
+        background-color: #35424a;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #2c3e50;
+    }
+</style>
 
 </body>
 </html>

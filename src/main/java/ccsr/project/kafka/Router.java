@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -53,7 +53,7 @@ public class Router {
 
     // Api des messages
     @GetMapping("/messages")
-    public Map<String, List<String>> messages(Model model, @RequestParam String i) {
+    public Map<String, HashMap<String, String>> messages(Model model, @RequestParam String i) {
         try {
             return Message.searchMessagesInAllTopics(i);
         } catch (ExecutionException | InterruptedException e) {

@@ -1,4 +1,5 @@
 import ccsr.project.kafka.Models.Message;
+import ccsr.project.kafka.Models.Publisher;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ListTopicsOptions;
@@ -14,15 +15,24 @@ import java.util.concurrent.ExecutionException;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
 
-        String key = scanner.nextLine();
+        //Message.creerMessage("Articles","Zama","moi encore ?","fred");
+        /*Message.creerMessage("Articles","THZ","meilssa","fred");
+
 
         try {
-            Message.searchMessagesInAllTopics(key);
+            System.out.println(Message.searchMessagesInAllTopics("meilssa"));
+
+
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
+
+        /*try {
+            System.out.println(Message.searchMessagesInAllTopics("felix"));
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }*/
 
     }
 
