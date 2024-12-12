@@ -125,7 +125,7 @@ public class Message {
                         } else {
                             // Si l'en-tête "theme" n'existe pas ou est vide
                             messages.put("theme", "Inconnu");
-                            messages.put("producer", (record.key() == null || record.key().isEmpty()) ? "Key" : record.key());
+                            messages.put("producer", "Inconu");
                         }
 
 
@@ -213,12 +213,12 @@ public class Message {
                                         } else {
                                             // Si l'en-tête "theme" n'existe pas ou est vide
                                             messages2.put("theme", "Inconnu");
-                                            messages2.put("producer", (record.key() == null || record.key().isEmpty()) ? "Key" : record.key());
+                                            messages2.put("producer","Inconnu");
                                         }
 
                                         messages2.put("message", message);
                                         // Si des messages ont été trouvés pour ce topic, on les ajoute au résultat
-                                        Message.creerMessage(interet, messages2.get("theme"), messages2.get("message"), messages2.get("producer"));
+                                        //Message.creerMessage(interet, messages2.get("theme"), messages2.get("message"), messages2.get("producer"));
                                         result.put(result.size()+1, messages2);
 
                                         // Si le mot-clé est trouvé, on arrête la recherche pour ce message
@@ -260,7 +260,9 @@ public class Message {
 
         // Créer le ProducerRecord avec les en-têtes
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, "zaha", message);
-
+        if(article == null){
+            article = "ArticleInconnu";
+        }
 
         // Ajouter l'en-tête "theme"
         producerRecord.headers().add("theme",(article != null && article.isEmpty()) ? "ArticleInconnu".getBytes(StandardCharsets.UTF_8) : article.getBytes(StandardCharsets.UTF_8));
