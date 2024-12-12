@@ -63,20 +63,20 @@ public class SubscriptionService {
             if (connection != null) connection.close();
         }
     }
-    public static List<String> getSubscribersForTopic(String topicName) {
-        List<String> subscribers = new ArrayList<>();
-        String query = "SELECT email FROM subscription WHERE topics_id = (SELECT id FROM topics WHERE name = ?)";
+    public static List<String> getSubscribersEmailsForTopic(String topicName) {
+        List<String> emails = new ArrayList<>();
+        String query = "SELECT email FROM subscription WHERE topics_id = (SELECT topics_id FROM topics WHERE name = ?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, topicName);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                subscribers.add(resultSet.getString("email"));
+                emails.add(resultSet.getString("email"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return subscribers;
+        return emails;
     }
 
 

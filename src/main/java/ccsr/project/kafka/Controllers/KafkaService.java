@@ -133,6 +133,12 @@ public class KafkaService {
         producer.send(record);
         producer.close();
     }
+    public static void publishToTopic(String topicName, String message) throws Exception {
+        Producer<String, String> producer = KafkaService.getProducer();
+        ProducerRecord<String, String> record = new ProducerRecord<>(topicName, message);
+        producer.send(record);
+        producer.close();
+    }
 
     public static Producer<String, String> getProducer() {
         // Crée un objet Properties pour stocker les configurations nécessaires du producteur Kafka

@@ -34,7 +34,7 @@ public class KafkaPublisherController {
             KafkaService.publishMessage(topicName, message);
 
             // Récupérez les utilisateurs abonnés au topic
-            List<String> subscribers = SubscriptionService.getSubscribersForTopic(topicName);
+            List<String> subscribers = SubscriptionService.getSubscribersEmailsForTopic(topicName);
 
             // Envoyez un email à chaque abonné
             for (String subscriberEmail : subscribers) {
