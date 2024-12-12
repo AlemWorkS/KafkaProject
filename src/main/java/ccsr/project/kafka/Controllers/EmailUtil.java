@@ -1,58 +1,34 @@
-package ccsr.project.kafka.Controllers;
+package ccsr.project.kafka;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
-
-import java.util.Properties;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 public class EmailUtil {
 
-    private static final String SMTP_HOST = "smtp.gmail.com"; // Serveur SMTP
-    private static final String SMTP_PORT = "587"; // Port SMTP
-    private static final String USERNAME = "eoyotode@gmail.com"; // Remplacez par votre email
-    private static final String PASSWORD = "jojo225@"; // Mot de passe de votre email
-
     /**
-     * Envoie un email à un utilisateur
+     * Méthode pour envoyer un email.
      *
-     * @param recipientEmail Email du destinataire
-     * @param topicName Nom du topic
-     * @param messageContent Contenu du message
+     * @param recipient Adresse email du destinataire.
+     * @param subject Sujet de l'email.
+     * @param body Contenu de l'email.
+     * @throws EmailException Si une erreur survient lors de l'envoi.
      */
-    public static void sendEmail(String recipientEmail, String topicName, String messageContent) {
-        Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", SMTP_HOST);
-        properties.put("mail.smtp.port", SMTP_PORT);
+    public static void sendEmail(String recipient, String subject, String body) throws EmailException {
+        // Configurer l'email
+        Email email = new SimpleEmail();
+        email.setHostName("smtp.gmail.com"); // Utiliser le serveur SMTP de Gmail
+        email.setSmtpPort(587); // Port SMTP pour TLS
+        email.setAuthenticator(new DefaultAuthenticator("eoyotode@gmail.com", "qzor ajzm uopl bxua")); // Remplacez par vos identifiants
+        email.setStartTLSEnabled(true); // Activer TLS
 
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(USERNAME, PASSWORD);
-            }
-        });
+        email.setFrom("eoyotode@gmail.com", "Notification Kafka");
+        email.setSubject(subject);
+        email.setMsg(body);
+        email.addTo(recipient);
 
-        try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(USERNAME));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
-            message.setSubject("Nouvelle alerte pour le topic: " + topicName);
-            message.setText("Bonjour,\n\nVous avez une nouvelle alerte dans le topic '" + topicName + "'.\n\n"
-                    + "Contenu du message:\n" + messageContent + "\n\n"
-                    + "Merci d'utiliser Omega Alerts.");
-
-            Transport.send(message);
-            System.out.println("Email envoyé avec succès à " + recipientEmail);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            System.err.println("Erreur lors de l'envoi de l'email à " + recipientEmail);
-        }
+        // Envoyer l'email
+        email.send();
     }
 }

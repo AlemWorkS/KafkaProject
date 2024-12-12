@@ -1,5 +1,7 @@
 package ccsr.project.kafka.Controllers;
 
+import ccsr.project.kafka.EmailUtil;
+import ccsr.project.kafka.Models.Consumer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -139,6 +141,81 @@ public class KafkaService {
         producer.send(record);
         producer.close();
     }
+
+
+
+
+
+    public class KafkaListener {
+        public static void listenToTopic(String topicName) {
+            // Configurer les propriétés du consumer
+
+            Properties props = new Properties();
+            props.put("bootstrap.servers", "localhost:19092"); // Remplacez par votre serveur Kafka
+            props.put("group.id", "publisher-listener-group");
+            props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+            props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+            props.put("auto.offset.reset", "earliest"); // Pour consommer depuis le début si aucun offset n'existe
+
+            // Créer le consumer Kafka
+            KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+
+            // S'abonner au topic
+            consumer.subscribe(Collections.singletonList(topicName));
+
+            // Écouter les messages dans un thread séparé
+            new Thread(() -> {
+                try {
+                    System.out.println("Écoute des messages du topic : " + topicName);
+                    while (true) {
+                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+                        for (ConsumerRecord<String, String> record : records) {
+                            System.out.println("Message reçu : " + record.value());
+
+                            // Ajouter la logique pour envoyer un email
+                            notifySubscribers(topicName, record.value());
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    consumer.close();
+                }
+            }).start();
+        }
+
+        /**
+         * Méthode pour notifier les abonnés par email.
+         * @param topicName Nom du topic où le message a été publié.
+         * @param message Le contenu du message publié.
+         */
+        private static void notifySubscribers(String topicName, String message) {
+            // Récupérer les abonnés au topic
+            List<String> subscribers = SubscriptionService.getSubscribersEmailsForTopic(topicName);
+
+            // Vérifier s'il y a des abonnés
+            if (subscribers.isEmpty()) {
+                System.out.println("Aucun abonné pour le topic : " + topicName);
+                return;
+            }
+
+            // Envoyer un email à chaque abonné
+            for (String subscriberEmail : subscribers) {
+                String emailSubject = "Nouvelle alerte pour le topic : " + topicName;
+                String emailContent = "Bonjour,\n\nUn nouveau message a été publié dans le topic '" + topicName + "' :\n\n"
+                        + message
+                        + "\n\nCordialement,\nL'équipe de Notification Kafka";
+
+                try {
+                    EmailUtil.sendEmail(subscriberEmail, emailSubject, emailContent);
+                    System.out.println("Email envoyé avec succès à : " + subscriberEmail);
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de l'envoi de l'email à " + subscriberEmail + " : " + e.getMessage());
+                }
+            }
+        }
+    }
+
 
     public static Producer<String, String> getProducer() {
         // Crée un objet Properties pour stocker les configurations nécessaires du producteur Kafka
