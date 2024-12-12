@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ccsr.project.kafka.Controllers.DatabaseConnection;
 import org.springframework.stereotype.Service;
@@ -61,4 +63,24 @@ public class SubscriptionService {
             if (connection != null) connection.close();
         }
     }
+    public static List<String> getSubscribersEmailsForTopic(String topicName) {
+        List<String> subscribers = new ArrayList<>();
+        String query = "SELECT email FROM subscription WHERE topic_name = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, topicName);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                subscribers.add(resultSet.getString("email"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return subscribers;
+    }
+
+
+
+
+
 }

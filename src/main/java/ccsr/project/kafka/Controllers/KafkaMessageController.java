@@ -1,5 +1,6 @@
 package ccsr.project.kafka.Controllers;
 
+import ccsr.project.kafka.EmailUtil;
 import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -43,6 +44,25 @@ public class KafkaMessageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList("Erreur lors de l'enregistrement du message."));
         }
     }*/
+    @PostMapping("/publish")
+    public ResponseEntity<String> publishMessage(@RequestParam String topicName, @RequestParam String message) {
+        try {
+            KafkaService.publishToTopic(topicName, message);
+
+            // Récupérer les emails des abonnés au topic
+            List<String> subscribers = SubscriptionService.getSubscribersEmailsForTopic(topicName);
+
+            // Envoyer un email à chaque abonné
+            for (String email : subscribers) {
+                EmailUtil.sendEmail(email, topicName, message);
+            }
+
+            return ResponseEntity.ok("Message publié et notifications envoyées !");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors de la publication du message : " + e.getMessage());
+        }
+    }
 
 
 

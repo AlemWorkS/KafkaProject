@@ -50,6 +50,7 @@ public class Message {
         return messages;
     }
 
+
     /**
      * Cette fonction doit s'exécuter en 2 parties :
      *  - La recherche du ou des mots-clés parmi les topics
@@ -199,6 +200,18 @@ public class Message {
                                     String message = record.value();
                                     System.out.println(message+" "+topicName);
 
+                                if (message.contains(interet)) {
+                                    record.headers().headers("theme").forEach(header -> {
+                                            messages2.put("theme", new String(header.value()).isEmpty() ? "Inconnu" : new String(header.value()));
+                                            messages2.put("producer", record.key().isEmpty() ? "Key" : record.key());
+                                        });
+
+                                    messages.put("message", message);
+                                    // Si des messages ont été trouvés pour ce topic, on les ajoute au résultat
+                                    Message.creerMessage(interet, messages.get("theme"), messages.get("message"), messages.get("producer"));
+                                    result.put(result.size() + 1, messages);
+
+                                    // Si le mot-clé est trouvé, on arrête la recherche pour ce message
                                     if (message.contains(interet)) {
 
                                         // Vérifier si le header "theme" existe et s'il n'est pas vide
