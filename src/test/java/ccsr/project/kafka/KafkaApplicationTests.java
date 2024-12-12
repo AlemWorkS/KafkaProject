@@ -51,7 +51,7 @@ class KafkaApplicationTests {
 
         try {
 
-            Message.searchMessagesInAllTopics("flapacha").forEach((key,Message) -> {
+            Message.searchMessagesInAllTopics("chat").forEach((key,Message) -> {
 				System.out.println(key);
 				System.out.println(Message.get("producer"));
 				System.out.println(Message.get("theme"));
