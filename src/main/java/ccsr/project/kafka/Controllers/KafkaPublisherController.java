@@ -1,4 +1,5 @@
 package ccsr.project.kafka.Controllers;
+import ccsr.project.kafka.Controllers.KafkaService;
 
 import ccsr.project.kafka.Models.Publisher;
 import org.apache.kafka.clients.admin.AdminClient;
