@@ -194,26 +194,11 @@ public class Message {
                                 System.out.println(message + " " + topicName);
 
                                 if (message.contains(interet)) {
-
-                                    boolean b = false;
-
-                                    //Hashmap pour récupérer le theme et le producer du message
-                                    while (record.headers().iterator().hasNext() && !b) {
-
-                                        b = Objects.equals(record.headers().iterator().next().key(), "theme");
-
-                                    }
-
-                                    System.out.println(b);
-                                    if (b) {
-                                        record.headers().headers("theme").forEach(header -> {
+                                    record.headers().headers("theme").forEach(header -> {
                                             messages2.put("theme", new String(header.value()).isEmpty() ? "Inconnu" : new String(header.value()));
                                             messages2.put("producer", record.key().isEmpty() ? "Key" : record.key());
                                         });
-                                    } else {
-                                        messages2.put("theme", "Inconnu");
-                                        messages2.put("producer", "Key");
-                                    }
+
                                     messages.put("message", message);
                                     // Si des messages ont été trouvés pour ce topic, on les ajoute au résultat
                                     Message.creerMessage(interet, messages.get("theme"), messages.get("message"), messages.get("producer"));

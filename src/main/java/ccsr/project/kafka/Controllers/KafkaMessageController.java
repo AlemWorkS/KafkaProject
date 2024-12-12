@@ -1,5 +1,6 @@
 package ccsr.project.kafka.Controllers;
 
+import ccsr.project.kafka.EmailUtil;
 import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
