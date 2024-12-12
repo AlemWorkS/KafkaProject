@@ -53,7 +53,7 @@ public class Router {
 
     // Api des messages
     @GetMapping("/messages")
-    public Map<String, HashMap<String, String>> messages(Model model, @RequestParam String i) {
+    public Map<Integer, HashMap<String, String>> messages(Model model, @RequestParam String i) {
         try {
             return Message.searchMessagesInAllTopics(i);
         } catch (ExecutionException | InterruptedException e) {

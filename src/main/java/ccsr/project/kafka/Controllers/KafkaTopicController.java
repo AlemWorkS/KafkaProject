@@ -70,14 +70,14 @@ public class KafkaTopicController {
      * @return
      */
     @GetMapping("/search-topics")
-    public ResponseEntity<Map<String, HashMap<String, String>>> searchTopics(@RequestParam String interest) {
+    public ResponseEntity<Map<Integer, HashMap<String, String>>> searchTopics(@RequestParam String interest) {
         try {
             // Appel correct de la méthode du service Kafka
-            Map<String,HashMap<String,String>> topics = Message.searchMessagesInAllTopics(interest);
+            Map<Integer,HashMap<String,String>> topics = Message.searchMessagesInAllTopics(interest);
             return ResponseEntity.ok(topics);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((Map<String, HashMap<String,String>>) Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((Map<Integer, HashMap<String,String>>) Collections.emptyList());
         }
     }
 
