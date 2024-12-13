@@ -55,7 +55,7 @@ public class KafkaService {
     public List<String> getMessagesFromTopic(String topicName) {
         List<String> messages = new ArrayList<>();
         Properties properties = new Properties();
-        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:19092");
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, "web-consumer-group-" + UUID.randomUUID());
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -151,7 +151,7 @@ public class KafkaService {
             // Configurer les propriétés du consumer
 
             Properties props = new Properties();
-            props.put("bootstrap.servers", "localhost:19092"); // Remplacez par votre serveur Kafka
+            props.put("bootstrap.servers", "localhost:29092"); // Remplacez par votre serveur Kafka
             props.put("group.id", "publisher-listener-group");
             props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -168,13 +168,17 @@ public class KafkaService {
                 try {
                     System.out.println("Écoute des messages du topic : " + topicName);
                     while (true) {
-                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(5000));
+                        System.out.println("ecoute");
                         for (ConsumerRecord<String, String> record : records) {
+
+
                             System.out.println("Message reçu : " + record.value());
 
                             // Ajouter la logique pour envoyer un email
-                            notifySubscribers(topicName, record.value());
+                            //notifySubscribers(topicName, record.value());
                         }
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
