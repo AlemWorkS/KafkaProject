@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -18,25 +16,35 @@
 
 <div class="main">
 
+    <!-- Statut de connexion -->
+    <div class="connection-status">
+        <p id="status-message">Statut : Non connecté</p>
+    </div>
+
     <!-- Formulaire pour envoyer un message -->
     <h1>Envoyer un Message</h1>
     <form id="producer-form">
-
-        <div class="form-group">
-            <label for="newTopic">Thème de votre message:</label>
-            <input type="text" id="newTopic" name="theme" placeholder="Nom du nouveau topic">
-        </div>
-
-        <!-- Champs pour le message -->
         <div class="form-group">
             <label for="message">Message (ou lien vers un site web, mais pas les deux en même temps) :</label>
-            <textarea id="message" name="message" style="min-width:300px;min-height:300px" rows="4" placeholder="Entrez votre message ici"></textarea>
+            <textarea required id="message" name="message" rows="4" placeholder="Entrez votre message ici"></textarea>
             <input type="url" id="link" name="link" placeholder="Entrez un lien vers un site web">
+        </div>
+
+        <div class="form-group">
+            <label for="theme">Thème :</label>
+            <input required type="text" id="theme" name="theme" placeholder="Entrez le thème du message">
+        </div>
+
+        <div class="form-group">
+            <label  for="existingTopicSelect">Catégorie :</label>
+            <select required id="existingTopicSelect" name="category">
+
+            </select>
+            <input type="text" id="custom-category" name="customCategory" placeholder="Entrez une catégorie personnalisée">
         </div>
 
         <button type="submit">Envoyer</button>
     </form>
-
 </div>
 
 <script>
@@ -45,16 +53,13 @@
         const form = document.getElementById('producer-form');
         const messageInput = document.getElementById('message');
         const linkInput = document.getElementById('link');
-        const existingTopicSelect = document.getElementById('existingTopic');
-        const newTopicInput = document.getElementById('newTopic');
+        const existingTopicSelect = document.getElementById('existingTopicSelect');
+        const customCategory = document.getElementById('custom-category');
+        const statusMessage = document.getElementById('status-message');
+        var newTopic = false;
+        const theme = document.getElementById('theme');
 
         // Gestion de la connexion
-        /*connectButton.addEventListener('click', function () {
-            serverAddress = serverAddressInput.value.trim();
-            if (!serverAddress) {
-                alert('Veuillez entrer une adresse serveur valide.');
-                return;
-            }
 
             fetch('/connect-publisher', {
                 method: 'POST',
@@ -62,7 +67,7 @@
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams({
-                    serverAddress: serverAddress
+                    serverAddress: 'localhost:29092'
                 })
             })
                 .then(response => response.text())
@@ -80,7 +85,7 @@
                     console.error('Erreur de connexion :', error);
                     statusMessage.textContent = 'Statut : Non connecté';
                 });
-        });*/
+
 
         // Désactiver l'autre champ si l'un est rempli
         messageInput.addEventListener('input', function () {
@@ -101,22 +106,39 @@
             }
         });
 
-        // Charger les topics existants
-        function loadExistingTopics() {
-            fetch(`/list-topics?serverAddress=${serverAddress}`)
-                .then(response => response.json())
-                .then(topics => {
-                    existingTopicSelect.innerHTML = '<option value="">Sélectionnez un topic existant</option>';
-                    topics.forEach(topic => {
-                        const option = document.createElement('option');
-                        option.value = topic;
-                        option.textContent = topic;
-                        existingTopicSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Erreur lors de la récupération des topics :', error));
-        }
+        customCategory.addEventListener('input', function () {
+            if (customCategory.value.trim()) {
+                existingTopicSelect.disabled = true;
+                existingTopicSelect.value = '';
+                newTopic = true;
 
+            } else {
+                existingTopicSelect.disabled = false;
+                newTopic = false;
+
+            }
+        });
+
+
+        // Charger les topics existants
+            function loadExistingTopics() {
+    fetch('/list-topics')
+        .then(response => response.json())
+        .then(topics => {
+            //console.log(topics);
+            existingTopicSelect.innerHTML = '<option value="">Sélectionnez un topic existant</option>';
+            topics.forEach(topic => {
+                const option = document.createElement('option');
+                option.value = topic;
+                option.textContent = topic;
+                existingTopicSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des topics :', error);
+            alert('Erreur lors de la récupération des topics.');
+        });
+}
         // Validation du formulaire
         form.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -127,7 +149,12 @@
                 link = false;
             }
 
-            const theme = newTopicInput.value.trim();
+            if(newTopic){
+                categorie = customCategory.value.trim();
+            }else{
+                categorie = existingTopicSelect.value.trim();
+            }
+
             const message = document.getElementById('message').value.trim();
             const linki = document.getElementById('link').value.trim();
 
@@ -143,10 +170,13 @@
 
             // Préparation des données
             const data = new URLSearchParams({
-                theme: theme,
+                user: 'user',
+                theme: document.getElementById('theme').value.trim(),
                 message: message || '',
                 link: linki || '',
                 isLink: link,
+                isNewTopic: newTopic,
+                topic: categorie // TODO : prévoir la récup de plusrs catégories ( topics )
             });
 
             // Envoyer le message
