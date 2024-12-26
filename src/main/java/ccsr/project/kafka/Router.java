@@ -18,16 +18,18 @@ public class Router {
     public String hello(HttpSession session, Model model) {
         model.addAttribute("message", "Bienvenue");
 
-        // Vérifie si l'utilisateur est connecté
         String userEmail = (String) session.getAttribute("userEmail");
+        System.out.println("Session userEmail : " + userEmail); // Ajoutez ceci pour déboguer
 
         if (userEmail == null) {
-            // Si l'utilisateur n'est pas connecté, le rediriger vers la page de connexion
+            System.out.println("Utilisateur non connecté, redirection vers /");
             return "redirect:/";
         }
 
-        return "home";
+        System.out.println("Utilisateur connecté, affichage de la page home");
+        return "home"; // Retourne la vue "home.html"
     }
+
 
     // Endpoint pour afficher la page Publisher
     @GetMapping("/publisher")
@@ -37,7 +39,7 @@ public class Router {
 
     @GetMapping("/")
     public String redirectToLogin() {
-        return "connexion"; // Redirige vers la page de connexion
+        return "login"; // Redirige vers la page de connexion
     }
 
 

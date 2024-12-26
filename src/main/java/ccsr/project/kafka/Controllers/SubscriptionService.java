@@ -78,6 +78,46 @@ public class SubscriptionService {
         }
         return subscribers;
     }
+    // Service pour interagir avec la base de données concernant les abonnements
+    public static List<String> getTopicsForUser(String userEmail) {
+        List<String> topics = new ArrayList<>();
+        String query = "SELECT topic_name FROM subscription WHERE email = ?"; // Requête corrigée
+
+        System.out.println("Début de la récupération des topics pour l'utilisateur : " + userEmail);
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            // Remplace le paramètre ? par l'email de l'utilisateur
+            statement.setString(1, userEmail);
+
+            System.out.println("Exécution de la requête : " + query);
+
+            // Exécute la requête et récupère les résultats
+            ResultSet resultSet = statement.executeQuery();
+
+            // Vérifie si des résultats sont trouvés
+            if (!resultSet.isBeforeFirst()) {
+                System.out.println("Aucun topic trouvé pour l'utilisateur : " + userEmail);
+            }
+
+            while (resultSet.next()) {
+                String topicName = resultSet.getString("topic_name");
+                topics.add(topicName);
+                System.out.println("Topic récupéré : " + topicName);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des topics pour l'utilisateur : " + userEmail);
+            e.printStackTrace(); // Affiche la trace de l'erreur
+        }
+
+        System.out.println("Topics récupérés pour l'utilisateur : " + topics);
+
+        // Retourne la liste des topics
+        return topics;
+    }
+
+
 
 
 
