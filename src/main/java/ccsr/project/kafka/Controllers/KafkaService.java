@@ -146,7 +146,7 @@ public class KafkaService {
 
 
 
-    public class KafkaListener {
+    /*public class KafkaListener {
         public static void listenToTopic(String topicName) {
             // Configurer les propriétés du consumer
 
@@ -169,7 +169,8 @@ public class KafkaService {
                     System.out.println("Écoute des messages du topic : " + topicName);
                     while (true) {
                         ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(5000));
-                        System.out.println("ecoute");
+                        //System.out.println("ecoute");
+
                         for (ConsumerRecord<String, String> record : records) {
 
 
@@ -177,6 +178,7 @@ public class KafkaService {
 
                             // Ajouter la logique pour envoyer un email
                             //notifySubscribers(topicName, record.value());
+                            break;
                         }
 
                     }
@@ -192,7 +194,7 @@ public class KafkaService {
          * Méthode pour notifier les abonnés par email.
          * @param topicName Nom du topic où le message a été publié.
          * @param message Le contenu du message publié.
-         */
+
         private static void notifySubscribers(String topicName, String message) {
             // Récupérer les abonnés au topic
             List<String> subscribers = SubscriptionService.getSubscribersEmailsForTopic(topicName);
@@ -218,7 +220,7 @@ public class KafkaService {
                 }
             }
         }
-    }
+    }*/
 
 
     public static Producer<String, String> getProducer() {

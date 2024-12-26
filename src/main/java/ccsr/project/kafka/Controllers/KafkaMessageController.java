@@ -2,12 +2,6 @@ package ccsr.project.kafka.Controllers;
 
 import ccsr.project.kafka.EmailUtil;
 import ccsr.project.kafka.Models.Message;
-import ccsr.project.kafka.Models.Publisher;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Duration;
 import java.util.*;
 
 @RestController
@@ -23,14 +16,14 @@ public class KafkaMessageController {
 
 
     @GetMapping("/get-messages")
-    public ResponseEntity<Map<Integer, HashMap<String, String>>> getMessages(@RequestParam String topicName) {
+    public ResponseEntity<HashMap<Integer, HashMap<String, String>>> getMessages(@RequestParam String topicName,@RequestParam boolean fromBeginning) {
         try {
             // Nettoyer le nom du topic avant de le passer au modèle
             String sanitizedTopicName = Message.sanitizeTopicName(topicName);
-            Map<Integer, HashMap<String, String>> messages = Message.searchMessagesInAllTopics(sanitizedTopicName);
+            HashMap<Integer, HashMap<String, String>> messages = Message.getMessagesFromTopic(sanitizedTopicName,fromBeginning);
             return ResponseEntity.ok(messages);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((Map<Integer, HashMap<String, String>>) Collections.singletonList("Erreur lors de la récupération des messages."));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((HashMap<Integer, HashMap<String, String>>) Collections.singletonList("Erreur lors de la récupération des messages."));
         }
     }
 
@@ -47,6 +40,7 @@ public class KafkaMessageController {
     @PostMapping("/publish")
     public ResponseEntity<String> publishMessage(@RequestParam String topicName, @RequestParam String message) {
         try {
+
             KafkaService.publishToTopic(topicName, message);
 
             // Récupérer les emails des abonnés au topic
@@ -62,6 +56,7 @@ public class KafkaMessageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erreur lors de la publication du message : " + e.getMessage());
         }
+
     }
 
 
