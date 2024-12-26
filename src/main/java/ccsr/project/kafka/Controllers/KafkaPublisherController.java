@@ -1,4 +1,4 @@
-package ccsr.project.kafka.Controllers;
+/*package ccsr.project.kafka.Controllers;
 import ccsr.project.kafka.Controllers.KafkaService;
 
 import ccsr.project.kafka.EmailUtil;
@@ -73,3 +73,4 @@ public class KafkaPublisherController {
     }
 }
 
+*/
