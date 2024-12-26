@@ -176,7 +176,7 @@ public class KafkaService {
                             System.out.println("Message reçu : " + record.value());
 
                             // Ajouter la logique pour envoyer un email
-                            //notifySubscribers(topicName, record.value());
+                            notifySubscribers(topicName, record.value());
                         }
 
                     }
