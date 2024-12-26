@@ -1,4 +1,4 @@
-/*package ccsr.project.kafka.Controllers;
+package ccsr.project.kafka.Controllers;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -9,13 +9,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Future;
 
 @RestController
 @RequestMapping("/producer")
 public class ProducerController {
+
+
+    private AdminClient adminClient; // Client Kafka pour la gestion
+
+    @PostMapping("/connect-publisher")
+    public ResponseEntity<String> connectToKafka(@RequestParam String serverAddress) {
+        try {
+            Properties config = new Properties();
+            config.put("bootstrap.servers", serverAddress);
+            adminClient = AdminClient.create(config);
+
+            // Vérification de la connexion au serveur Kafka
+            adminClient.describeCluster().nodes().get();
+            return ResponseEntity.ok("Connecté au serveur Kafka : " + serverAddress);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors de la connexion au serveur Kafka : " + e.getMessage());
+        }
+    }
+
 
     @PostMapping("/send-message")
     public ResponseEntity<String> sendMessage(
@@ -85,4 +105,21 @@ public class ProducerController {
     private String sanitizeTopicName(String topicName) {
         return topicName.replaceAll("[^a-zA-Z0-9._-]", "").toLowerCase();
     }
-}*/
+    @GetMapping("/list-topics")
+    public ResponseEntity<List<String>> listTopics() {
+        try {
+            if (adminClient == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Collections.singletonList("Veuillez d'abord vous connecter au serveur Kafka."));
+            }
+
+            Set<String> topics = adminClient.listTopics().names().get();
+            return ResponseEntity.ok(new ArrayList<>(topics));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonList("Erreur lors de la récupération des topics : " + e.getMessage()));
+        }
+    }
+
+}

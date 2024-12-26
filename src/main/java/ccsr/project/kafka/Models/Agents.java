@@ -18,16 +18,19 @@ abstract class Agents {
     private final static Properties props = new Properties();
     private final static Properties propsProducer = new Properties();
     private static final AdminClient adminClient;
+
     private static final KafkaConsumer kafkaConsumer;
     private static final KafkaProducer kafkaProducer;
 
 
     static {
-        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092,localhost:39092,localhost:49092");
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "web-consumer-group-" + UUID.randomUUID());
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"localhost:29092,localhost:39092,localhost:49092");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "web-consumer-group-" + 1);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // Gestion manuelle des offsets
+
         adminClient = AdminClient.create(props);
         kafkaConsumer = new KafkaConsumer(props);
 

@@ -35,6 +35,7 @@ public class Publisher {
      * @return un ensemble de topic
      * @throws ExecutionException
      * @throws InterruptedException
+     *
      */
     public static Set<String> listTopic() throws ExecutionException, InterruptedException {
         return Agents.getAdminClient().listTopics().names().get();
