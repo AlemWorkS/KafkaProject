@@ -59,9 +59,8 @@ public class KafkaPublisherController {
 
 
     @PostMapping("producer/send-message")
-    public ResponseEntity<String> sendMessage(@RequestParam String theme,@RequestParam String message,@RequestParam String link,@RequestParam boolean isLink) {
+    public ResponseEntity<String> sendMessage(@RequestParam String user,@RequestParam String theme,@RequestParam String message,@RequestParam String topic,@RequestParam String link,@RequestParam boolean isLink,@RequestParam boolean isNewTopic) {
         try {
-            String topic = isLink ? "LienWeb" : "Articles";
             String valeur = isLink ? link : message;
 
             Message.creerMessage(topic,theme,valeur,"fred");

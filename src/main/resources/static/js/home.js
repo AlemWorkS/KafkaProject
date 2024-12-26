@@ -1,82 +1,128 @@
+
+document.addEventListener('DOMContentLoaded', function () {
+
+const topicList = document.getElementById('topicList');
+
+fetch('/list-topics')
+    .then(reponses => reponses.json())
+    .then(topics => {
+        topics.forEach(topic => {
+            console.log(topic);
+                const listItem = document.createElement("li");
+                listItem.textContent = topic;
+                listItem.addEventListener("click", function() {
+                    searchMessages(topic);
+                    document.getElementById("interestInput").value = topic;  // Corrected here
+
+                });
+                topicList.appendChild(listItem);
+
+            })
+
+        }).catch(error => {
+            console.error("Erreur lors de la recherche :", error);
+        });
+    });
+
+
+
 document.getElementById("searchButton").addEventListener("click", function () {
     const interest = document.getElementById("interestInput").value;
+    searchMessages(interest);
+
+});
+
+document.getElementById("checkBegining").addEventListener("change", function () {
+    const interest = document.getElementById("interestInput").value;
+    searchMessages(interest);
+
+});
+
+function searchMessages(interest){
+
+var url = `/search-topics?interest=${interest}&fromBeginning=false`;
+if (document.getElementById("checkBegining").checked) {
+    url = `/search-topics?interest=${interest}&fromBeginning=true`;
+}
 
     if (interest) {
-        fetch(`/search-topics?interest=${interest}`)
-            .then(response => response.json())
-            .then(topics => {
+    console.log(interest)
+            fetch(url)
+                .then(response => response.json())
+                .then(topics => {
 
-            // Vider les cartes existantes
-            const alertList = document.querySelector(".alert-list");
-                                                alertList.innerHTML = "";
-
-                Object.keys(topics).forEach(topic=>{
-                console.log(topic+"");
-                const data = topics[topic];
-
-                                        const card = document.createElement("div");
-                                        card.classList.add("alert-card");
-
-                                        // Ajouter la structure HTML de chaque topic
-                                        card.innerHTML = `
-                                            <div class="alert-card-header">
-                                                <h2>Theme : ${data.theme}</h2>
-
-                                            </div>
-                                            <p><span>Message : </span><br>${data.message}</p>
-                                                                    <button class="subscribe-button" data-topic="${data.topic}">S'abonner</button>
-
-                                        `;
-                                                            alertList.appendChild(card);
-                                                            attachSubscribeEventHandlers();
-
-
-                })
-            /*
+                // Vider les cartes existantes
                 const alertList = document.querySelector(".alert-list");
-                alertList.innerHTML = ""; // Vider les cartes existantes
+                                                    alertList.innerHTML = "";
 
-                topics.forEach(topic => {
-                    const card = document.createElement("div");
-                    card.classList.add("alert-card");
+                    Object.keys(topics).forEach(topic=>{
+                    console.log(topic+"");
+                    const data = topics[topic];
 
-                    // Ajouter la structure HTML de chaque topic
-                    card.innerHTML = `
-                        <div class="alert-card-header">
-                            <img class="user-icon" src="/images/user.png" alt="Icone utilisateur">
-                            <h3>${topic}</h3>
-                        </div>
-                        <p>Messages : <span id="messages-${topic}">Chargement...</span></p>
-                        <button class="subscribe-button" data-topic="${topic}">S'abonner</button>
-                    `;
+                                            const card = document.createElement("div");
+                                            card.classList.add("alert-card");
 
-                    alertList.appendChild(card);
+                                            // Ajouter la structure HTML de chaque topic
+                                            card.innerHTML = `
+                                                <div class="alert-card-header">
+                                                    <h2>Theme : ${data.theme}</h2>
 
-                    // Charger automatiquement les messages associés à ce topic
-                    fetch(`/get-messages?topicName=${topic}`)
-                        .then(res => res.json())
-                        .then(messages => {
-                            const messageSpan = document.getElementById(`messages-${topic}`);
-                            // Vérifier si des messages sont disponibles
-                            messageSpan.innerText = messages.length > 0 ? messages.join(", ") : "Aucun message disponible.";
-                        })
-                        .catch(err => {
-                            console.error(`Erreur lors de la récupération des messages pour le topic ${topic} :`, err);
-                            const messageSpan = document.getElementById(`messages-${topic}`);
-                            messageSpan.innerText = "2 Erreur lors du chargement des messages.";
-                        });
+                                                </div>
+                                                <p><span>Message : </span><br>${data.message}</p>
+                                                                        <button class="subscribe-button" data-topic="${data.topic}">S'abonner</button>
+
+                                            `;
+                                                                alertList.appendChild(card);
+                                                                attachSubscribeEventHandlers();
+
+
+                    })
+                /*
+                    const alertList = document.querySelector(".alert-list");
+                    alertList.innerHTML = ""; // Vider les cartes existantes
+
+                    topics.forEach(topic => {
+                        const card = document.createElement("div");
+                        card.classList.add("alert-card");
+
+                        // Ajouter la structure HTML de chaque topic
+                        card.innerHTML = `
+                            <div class="alert-card-header">
+                                <img class="user-icon" src="/images/user.png" alt="Icone utilisateur">
+                                <h3>${topic}</h3>
+                            </div>
+                            <p>Messages : <span id="messages-${topic}">Chargement...</span></p>
+                            <button class="subscribe-button" data-topic="${topic}">S'abonner</button>
+                        `;
+
+                        alertList.appendChild(card);
+
+                        // Charger automatiquement les messages associés à ce topic
+                        fetch(`/get-messages?topicName=${topic}`)
+                            .then(res => res.json())
+                            .then(messages => {
+                                const messageSpan = document.getElementById(`messages-${topic}`);
+                                // Vérifier si des messages sont disponibles
+                                messageSpan.innerText = messages.length > 0 ? messages.join(", ") : "Aucun message disponible.";
+                            })
+                            .catch(err => {
+                                console.error(`Erreur lors de la récupération des messages pour le topic ${topic} :`, err);
+                                const messageSpan = document.getElementById(`messages-${topic}`);
+                                messageSpan.innerText = "2 Erreur lors du chargement des messages.";
+                            });
+                    });
+
+                    // Attacher les gestionnaires d'événements après avoir ajouté les boutons
+                    */
+                })
+                .catch(error => {
+                    console.error("1 Erreur lors de la recherche :", error);
                 });
+        } else {
+            alert("Veuillez entrer un centre d'intérêt !");
+        }
 
-                // Attacher les gestionnaires d'événements après avoir ajouté les boutons
-                */
-            })
-            .catch(error => {
-                console.error("1 Erreur lors de la recherche :", error);
-            });
-    } else {
-        alert("Veuillez entrer un centre d'intérêt !");
-    }
-});
+}
 
 function attachSubscribeEventHandlers() {
     const subscribeButtons = document.querySelectorAll(".subscribe-button");
