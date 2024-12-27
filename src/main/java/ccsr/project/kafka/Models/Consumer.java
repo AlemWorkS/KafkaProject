@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class Consumer {
+public class Consumer extends Agents {
 
 
     public static List<String> searchTopicsByInterest(String interest) throws ExecutionException, InterruptedException {
@@ -24,6 +24,7 @@ public class Consumer {
         return allTopics.stream().filter(topic -> topic.toLowerCase().contains(interest.toLowerCase())).collect(Collectors.toList());
 
     }
+
 
 
 }

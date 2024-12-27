@@ -1,9 +1,6 @@
 package ccsr.project.kafka.Controllers;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +50,17 @@ public class SubscriptionService {
             preparedStatement.setString(3, "Abonné");
 
             preparedStatement.executeUpdate();
+            preparedStatement.close();
+
+            String insertMailPlanningQuery = "INSERT INTO mailplanning (topic,interval_de_jour,heure_env,user_mail,mail_lu) VALUES (?,?,?,?,?)";
+            preparedStatement = connection.prepareStatement(insertMailPlanningQuery);
+            preparedStatement.setString(1, topicName);
+            preparedStatement.setInt(2, 1);
+            preparedStatement.setInt(3, 12);
+            preparedStatement.setString(4, userEmail);
+            preparedStatement.setBoolean(5, false);
+            preparedStatement.executeUpdate();
+
 
         } catch (SQLException e) {
             messageContent = "Échoué";

@@ -1,7 +1,8 @@
 package ccsr.project.kafka.Controllers;
 
-import ccsr.project.kafka.EmailUtil;
+import ccsr.project.kafka.Controllers.EmailUtil;
 import ccsr.project.kafka.Models.Consumer;
+import jakarta.annotation.PostConstruct;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -146,21 +147,61 @@ public class KafkaService {
 
 
 
-    /*public class KafkaListener {
+    public class KafkaListener {
+
         public static void listenToTopic(String topicName) {
             // Configurer les propriétés du consumer
 
             Properties props = new Properties();
-            props.put("bootstrap.servers", "localhost:29092"); // Remplacez par votre serveur Kafka
-            props.put("group.id", "publisher-listener-group");
+            props.put("bootstrap.servers", "localhost:29092,localhost:39092,localhost:49092"); // Remplacez par votre serveur Kafka
+            props.put("group.id", "thread"+UUID.randomUUID());
             props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             props.put("auto.offset.reset", "earliest"); // Pour consommer depuis le début si aucun offset n'existe
 
             // Créer le consumer Kafka
-            KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+            KafkaConsumer<String, String> consumerTop = new KafkaConsumer<>(props);
 
-            // S'abonner au topic
+            //Pour chaque topic on va créer un daemon pour pouvoir écouter l'arrivée de nouveau mmessage
+            consumerTop.listTopics().forEach((topic,partitionInfos) ->{
+                if(!topic.equals("__consumer_offsets")) {
+                    // Créer le consumer Kafka
+                    KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+                    consumer.subscribe(Collections.singleton(topic));
+
+                    new Thread(() -> {
+                        try {
+                            System.out.println("Écoute des messages du topic : " + topic);
+                            while (true) {
+                                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+                                System.out.println("ecoute");
+
+                                for (ConsumerRecord<String, String> record : records) {
+
+
+                                    System.out.println("Message reçu : " + record.value());
+
+                                    // Ajouter la logique pour envoyer un email
+                                    new Thread(()->{
+                                        notifySubscribers(topic, record.value());
+                                    }).run();
+                                    break;
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            consumer.close();
+                        }
+
+                    }).start();
+                }
+            });
+
+
+
+
+            /*// S'abonner au topic
             consumer.subscribe(Collections.singletonList(topicName));
 
             // Écouter les messages dans un thread séparé
@@ -187,13 +228,15 @@ public class KafkaService {
                 } finally {
                     consumer.close();
                 }
-            }).start();
+            }).start();*/
         }
+
 
         /**
          * Méthode pour notifier les abonnés par email.
          * @param topicName Nom du topic où le message a été publié.
          * @param message Le contenu du message publié.
+         * */
 
         private static void notifySubscribers(String topicName, String message) {
             // Récupérer les abonnés au topic
@@ -207,20 +250,51 @@ public class KafkaService {
 
             // Envoyer un email à chaque abonné
             for (String subscriberEmail : subscribers) {
-                String emailSubject = "Nouvelle alerte pour le topic : " + topicName;
-                String emailContent = "Bonjour,\n\nUn nouveau message a été publié dans le topic '" + topicName + "' :\n\n"
-                        + message
-                        + "\n\nCordialement,\nL'équipe de Notification Kafka";
 
-                try {
-                    EmailUtil.sendEmail(subscriberEmail, emailSubject, emailContent);
-                    System.out.println("Email envoyé avec succès à : " + subscriberEmail);
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de l'envoi de l'email à " + subscriberEmail + " : " + e.getMessage());
+                System.out.println(subscriberEmail);
+
+                String query = "SELECT mail_lu,topic FROM mailplanning WHERE user_mail = ? ";
+                try (Connection connection = DatabaseConnection.getConnection();
+                     PreparedStatement statement = connection.prepareStatement(query)) {
+                    statement.setString(1, subscriberEmail);
+                    ResultSet resultSet = statement.executeQuery();
+
+
+                    //Si il a déjà lu les mail précédent la colonne mail_lu sera à true (1) donc on lui envera un nouveau mail en cas de nouveau message
+                    if(resultSet.next() && resultSet.getBoolean("mail_lu") && resultSet.getString("topic").equals(topicName)){
+                        //System.out.println(1);
+                            String emailSubject = "Nouvelle alerte pour le topic : " + topicName;
+                        //System.out.println(2);
+                            String emailContent = "Bonjour,\n\nUn nouveau message a été publié dans le topic '" + topicName + "' :\n\n"
+                                    + "\n\nCordialement,\nL'équipe de Notification Kafka";
+                        //System.out.println(3);
+                            try {
+                                EmailUtil.sendEmail(subscriberEmail, emailSubject, emailContent);
+                                //System.out.println(4);
+                                String insertMailPlanningQuery = "UPDATE mailplanning SET mail_lu = ? WHERE user_mail = ?";
+                                PreparedStatement preparedStatement = connection.prepareStatement(insertMailPlanningQuery);
+                                preparedStatement.setBoolean(1, false);
+                                //System.out.println(5);
+                                preparedStatement.setString(2, subscriberEmail);
+                                //System.out.println(6);
+                                preparedStatement.executeUpdate();
+
+                                System.out.println("Email envoyé avec succès à : " + subscriberEmail);
+                            } catch (Exception e) {
+                                System.err.println("Erreur lors de l'envoi de l'email à " + subscriberEmail + " : " + e.getMessage());
+                            }
+                    }
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
+
+
             }
         }
-    }*/
+
+
+    }
 
 
     public static Producer<String, String> getProducer() {

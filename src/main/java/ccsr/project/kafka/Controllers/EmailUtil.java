@@ -1,4 +1,4 @@
-package ccsr.project.kafka;
+package ccsr.project.kafka.Controllers;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
