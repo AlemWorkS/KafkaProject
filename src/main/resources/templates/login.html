@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="/css/login.css">
+  <title>OMEGA ALERT | Connexion et Inscription</title>
+</head>
+
+<body>
+
+<div class="container" id="container">
+  <div class="form-container sign-up">
+    <form id="inscriptionForm">
+      <h1>Créer un compte</h1>
+      <div class="social-icons">
+
+      </div>
+      <span>ou utilisez votre email pour vous inscrire</span>
+      <input type="text" id="firstName" placeholder="Prénom" required>
+      <input type="text" id="lastName" placeholder="Nom" required>
+      <input type="text" id="userName" placeholder="UserName" required>
+
+      <input type="email" id="email" placeholder="Adresse email" required>
+      <input type="password" id="password" placeholder="Mot de passe" required>
+      <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
+      <button type="submit" id="inscription">S'inscrire</button>
+    </form>
+  </div>
+  <div class="form-container sign-in">
+    <form class="connexionForm">
+      <h1>Connexion</h1>
+      <div class="social-icons">
+
+      </div>
+      <span>ou connectez-vous avec votre email</span>
+      <input type="email" id="loginEmail" name ="email" placeholder="Adresse email" required>
+      <input type="password" id="loginPassword" name="password" placeholder="Mot de passe" required>
+      <a href="#">Mot de passe oublié ?</a>
+      <button type="submit" id="connexion">Se connecter</button>
+
+    </form>
+  </div>
+  <div class="toggle-container">
+    <div class="toggle">
+      <div class="toggle-panel toggle-left">
+        <h1>Bienvenue à nouveau !</h1>
+        <p>Connectez-vous pour accéder à vos alertes personnalisées sur OMEGA ALERT</p>
+        <button class="hidden" id="login">Se connecter</button>
+      </div>
+      <div class="toggle-panel toggle-right">
+        <h1>Bienvenue !</h1>
+        <p>Inscrivez-vous pour profiter pleinement des fonctionnalités d'OMEGA ALERT</p>
+        <button class="hidden" id="register">Créer un compte</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/script.js"></script>
+</body>
+
+</html>

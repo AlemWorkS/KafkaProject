@@ -190,5 +190,50 @@ function updateSubscriptions() {
         .catch(error => {
             console.error("Erreur lors de la mise à jour des abonnements :", error);
         });
+
 }
 */
+// Fonction pour charger les topics auxquels un utilisateur est abonné
+document.addEventListener('DOMContentLoaded', () => {
+    const userEmail = document.getElementById('userEmail').value; // Récupère la valeur de l'email
+    if (userEmail) {
+        console.log(`Utilisateur connecté, email détecté : ${userEmail}`);
+        loadUserTopics(userEmail); // Appelle la fonction avec l'email récupéré
+    } else {
+        console.error("Aucun utilisateur connecté : l'email est manquant.");
+    }
+});
+
+function loadUserTopics() {
+    // Récupérer l'email de l'utilisateur depuis le champ caché
+    const userEmail = sessionStorage.getItem("userEmail");
+
+    console.log("Chargement des topics pour l'utilisateur :", userEmail);
+
+    if (userEmail) {
+        // Appel à l'API backend pour récupérer les topics
+        fetch(`subscriptions/topics?userEmail=${encodeURIComponent(userEmail)}`)
+            .then(response => {
+                console.log("Réponse du serveur reçue :", response);
+                return response.json();
+            })
+            .then(topics => {
+                console.log("Topics récupérés :", topics);
+
+                const topicList = document.getElementById('topic-list');
+                topicList.innerHTML = ''; // Vider la liste existante
+
+                // Ajouter chaque topic récupéré à la liste
+                topics.forEach(topic => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = topic;
+                    topicList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement des topics :", error);
+            });
+    } else {
+        console.error("Erreur : l'email de l'utilisateur n'a pas pu être récupéré.");
+    }
+}

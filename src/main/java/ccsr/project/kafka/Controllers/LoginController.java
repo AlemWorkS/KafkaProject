@@ -1,57 +1,86 @@
 package ccsr.project.kafka.Controllers;
 
+import ccsr.project.kafka.Controllers.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RestController
+@RequestMapping("/api/auth")
 public class LoginController {
 
-    private final KafkaService kafkaService;
+    private final UserService userService;
 
     @Autowired
-    public LoginController(KafkaService kafkaService) {
-        this.kafkaService = kafkaService;
+    public LoginController(UserService userService) {
+        this.userService = userService;
     }
+
+    /**
+     * Endpoint pour l'inscription
+     */
+
+
+
+
+
+
+        @PostMapping("/inscription")
+        public ResponseEntity<String> inscrireUtilisateur(
+                @RequestParam String firstName,
+                @RequestParam String lastName,
+                @RequestParam String email,
+                @RequestParam String password,
+                @RequestParam String userName) { // Ajout de userName
+            try {
+                boolean isRegistered = userService.registerUser(firstName, lastName, email, password, userName);
+                if (isRegistered) {
+                   return ResponseEntity.ok("/login");
+
+                } else {
+                    return ResponseEntity.badRequest().body("Erreur lors de l'inscription.");
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
+        }
+
+
 
 
     /**
-     * Traite la requête de connexion
-     * URL : /process-login
+     * Endpoint pour la connexion
      */
-    @PostMapping("/process-login")
-    public String processLogin(
-            @RequestParam(required = true) String email,
-            @RequestParam(required = true) String username,
+    @PostMapping("/loginUser")
+    public String login(
+            @RequestParam String email,
+            @RequestParam String password,
             HttpSession session,
             Model model
     ) {
-        // Validation côté serveur
-        if (!email.contains("@") || username.isEmpty()) {
-            model.addAttribute("error", "Email ou nom d'utilisateur invalide.");
-            return "redirect:/"; // Retourne à la page de connexion avec un message d'erreur
+        boolean isAuthenticated = userService.authenticateUser(email, password);
+        if (isAuthenticated) {
+            session.setAttribute("userEmail", email);
+            return "redirect:/home"; // Redirige vers la page d'accueil
+        } else {
+            model.addAttribute("error", "Email ou mot de passe incorrect.");
+            return "redirect:/login"; // Retourne au formulaire de connexion
         }
 
-        // Vérifie ou enregistre l'utilisateur
-        try {
-            boolean userExists = KafkaService.verifyOrRegisterUser(email, username);
-
-            if (userExists) {
-                // Enregistre les informations utilisateur dans la session
-                session.setAttribute("userEmail", email);
-                session.setAttribute("username", username);
-                return "redirect:/home"; // Redirige vers la page d'accueil
-            } else {
-                model.addAttribute("error", "Erreur lors de la connexion.");
-                return "redirect:/"; // Retourne à la page de connexion
-            }
-        } catch (Exception e) {
-            model.addAttribute("error", "Une erreur est survenue : " + e.getMessage());
-            return "redirect:/"; // Retourne à la page de connexion avec une erreur
-        }
     }
+
+    /**
+     * Endpoint pour la déconnexion
+     */
+    @GetMapping("/logout")
+    public String logoutUser(HttpSession session) {
+        session.invalidate(); // Invalide la session
+        return "redirect:/login"; // Retourne à la page de connexion
+    }
+
 }
