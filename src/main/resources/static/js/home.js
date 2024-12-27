@@ -13,12 +13,9 @@ fetch('/list-topics')
                 listItem.addEventListener("click", function() {
                     searchMessages(topic);
                     document.getElementById("interestInput").value = topic;  // Corrected here
-
                 });
                 topicList.appendChild(listItem);
-
             })
-
         }).catch(error => {
             console.error("Erreur lors de la recherche :", error);
         });
@@ -29,7 +26,6 @@ fetch('/list-topics')
 document.getElementById("searchButton").addEventListener("click", function () {
     const interest = document.getElementById("interestInput").value;
     searchMessages(interest);
-
 });
 
 document.getElementById("checkBegining").addEventListener("change", function () {
@@ -39,6 +35,8 @@ document.getElementById("checkBegining").addEventListener("change", function () 
 });
 
 function searchMessages(interest){
+
+
 
 var url = `/search-topics?interest=${interest}&fromBeginning=false`;
 if (document.getElementById("checkBegining").checked) {
@@ -194,7 +192,7 @@ function updateSubscriptions() {
 }
 */
 // Fonction pour charger les topics auxquels un utilisateur est abonné
-document.addEventListener('DOMContentLoaded', () => {
+/*document.addEventListener('DOMContentLoaded', () => {
     const userEmail = document.getElementById('userEmail').value; // Récupère la valeur de l'email
     if (userEmail) {
         console.log(`Utilisateur connecté, email détecté : ${userEmail}`);
@@ -235,5 +233,5 @@ function loadUserTopics() {
             });
     } else {
         console.error("Erreur : l'email de l'utilisateur n'a pas pu être récupéré.");
-    }
-}
+
+}*/

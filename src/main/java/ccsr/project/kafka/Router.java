@@ -16,10 +16,11 @@ public class Router {
 
     @GetMapping("/home")
     public String hello(HttpSession session, Model model) {
+
         model.addAttribute("message", "Bienvenue");
 
         String userEmail = (String) session.getAttribute("userEmail");
-        System.out.println("Session userEmail : " + userEmail); // Ajoutez ceci pour déboguer
+        System.out.println("Session userEmail home : " + userEmail); // Ajoutez ceci pour déboguer
 
         if (userEmail == null) {
             System.out.println("Utilisateur non connecté, redirection vers /");
@@ -44,10 +45,6 @@ public class Router {
 
 
     // Endpoint pour afficher la page Publisher
-    @GetMapping("/publisher-publish")
-    public String publisherPublish(Model model) {
-        return "PublisherPublish";
-    }
     @GetMapping("/producer")
     public String producer(Model model) {
         return "producer";

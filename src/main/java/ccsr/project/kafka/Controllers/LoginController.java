@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RestController
-@RequestMapping("/api/auth")
 public class LoginController {
 
     private final UserService userService;
@@ -24,11 +23,6 @@ public class LoginController {
     /**
      * Endpoint pour l'inscription
      */
-
-
-
-
-
 
         @PostMapping("/inscription")
         public ResponseEntity<String> inscrireUtilisateur(
@@ -56,7 +50,7 @@ public class LoginController {
     /**
      * Endpoint pour la connexion
      */
-    @PostMapping("/loginUser")
+    @PostMapping("/process-login")
     public String login(
             @RequestParam String email,
             @RequestParam String password,

@@ -53,7 +53,7 @@ public class KafkaService {
     }
 
     // Récupération des messages depuis un topic spécifique
-    public List<String> getMessagesFromTopic(String topicName) {
+    /*public List<String> getMessagesFromTopic(String topicName) {
         List<String> messages = new ArrayList<>();
         Properties properties = new Properties();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:19092");
@@ -80,9 +80,9 @@ public class KafkaService {
             messages.add("Erreur lors de la récupération des messages.");
         }
         return messages;
-    }
+    }*/
 
-    public static boolean verifyOrRegisterUser(String email, String username) {
+    /*public static boolean verifyOrRegisterUser(String email, String username) {
         // Vérifie si l'utilisateur existe déjà
         String query = "SELECT * FROM users WHERE email = ?";
         String insertQuery = "INSERT INTO users (email, username) VALUES (?, ?)";
@@ -113,7 +113,7 @@ public class KafkaService {
             return false;
         }
 
-    }
+    }*/
 
 
     // Abonnement d'un consumer à un topic
@@ -130,18 +130,19 @@ public class KafkaService {
             return false;
         }
     }
-    public static void publishMessage(String topicName, String message) throws Exception {
+    /*public static void publishMessage(String topicName, String message) throws Exception {
         Producer<String, String> producer = getProducer();
         ProducerRecord<String, String> record = new ProducerRecord<>(topicName, message);
         producer.send(record);
         producer.close();
-    }
-    public static void publishToTopic(String topicName, String message) throws Exception {
+    }*/
+
+    /*public static void publishToTopic(String topicName, String message) throws Exception {
         Producer<String, String> producer = KafkaService.getProducer();
         ProducerRecord<String, String> record = new ProducerRecord<>(topicName, message);
         producer.send(record);
         producer.close();
-    }
+    }*/
 
 
 
@@ -297,7 +298,7 @@ public class KafkaService {
     }
 
 
-    public static Producer<String, String> getProducer() {
+    /*public static Producer<String, String> getProducer() {
         // Crée un objet Properties pour stocker les configurations nécessaires du producteur Kafka
         Properties props = new Properties();
 
@@ -316,7 +317,7 @@ public class KafkaService {
         // Crée et retourne une instance de KafkaProducer en utilisant les propriétés configurées.
         // Ce producteur sera utilisé pour envoyer des messages à des topics Kafka.
         return new KafkaProducer<>(props);
-    }
+    }*/
 
 
 }
