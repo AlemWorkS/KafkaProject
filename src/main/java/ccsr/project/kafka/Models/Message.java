@@ -38,7 +38,19 @@ public class Message {
      * @return une Map de touts les messages d'un topic
      * @return
      */
-    public static HashMap<Integer, HashMap<String, String>> getMessagesFromTopic(String topicName, boolean fromBeginning) {
+    public static HashMap<Integer, HashMap<String, String>> getMessagesFromTopic(String topicName, boolean fromBeginning,KafkaConsumer consumer) {
+
+
+        KafkaConsumer onLineConsumer;
+        if(consumer == null) {
+            System.out.println("No consumer");
+            //onLineConsumer si on est sur le web correspond au consumer qui est en ligne
+            onLineConsumer = Agents.getConsummer();
+        }else{
+            System.out.println("Consumer provided");
+            //onLineConsumer si on est en local correspond à une instance de consumer
+            onLineConsumer = consumer;
+        }
 
         HashMap<Integer, HashMap<String, String>> recordMap = new HashMap<>();
         HashMap<String, String> messageNull = new HashMap<>();
@@ -48,8 +60,8 @@ public class Message {
 
                 String sanitizedTopicName = sanitizeTopicName(topicName);
 
-                Agents.getConsummer().subscribe(Collections.singletonList(sanitizedTopicName));
-                Agents.getConsummer().poll(Duration.ofSeconds(1));
+                onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+                onLineConsumer.poll(Duration.ofSeconds(1));
 
                 //System.out.println(Agents.getConsummer().committed(Agents.getConsummer().assignment()));
                 //System.out.println(Agents.getConsummer().partitionsFor(topicName));
@@ -57,18 +69,18 @@ public class Message {
                 if (fromBeginning) {
                     List<TopicPartition> tp = new ArrayList<>();
                     boolean b = false;
-                    while (Agents.getConsummer().assignment().iterator().hasNext() && !b) {
-                        tp.add((TopicPartition) Agents.getConsummer().assignment().iterator().next());
+                    while (onLineConsumer.assignment().iterator().hasNext() && !b) {
+                        tp.add((TopicPartition) onLineConsumer.assignment().iterator().next());
                         b = true;
                         //System.out.println("ff");
                     }
-                    Agents.getConsummer().seek(tp.getFirst(), 0);
+                    onLineConsumer.seek(tp.getFirst(), 0);
                 } else {
-                    Agents.getConsummer().unsubscribe();
+                    onLineConsumer.unsubscribe();
                 }
 
-                Agents.getConsummer().subscribe(Collections.singletonList(sanitizedTopicName));
-                ConsumerRecords<String, String> records = Agents.getConsummer().poll(Duration.ofSeconds(1));
+                onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+                ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofSeconds(1));
 
 
                 for (ConsumerRecord<String, String> record : records) {
@@ -120,9 +132,10 @@ public class Message {
 
                 recordMap.put(0, messageNull);
             }
-            Agents.getConsummer().commitSync();
-
-            Agents.getConsummer().unsubscribe();
+            //Confirmer qu'on à lu les derniers messages
+            onLineConsumer.commitSync();
+            //Désinscription du consumer de tous les topics
+            onLineConsumer.unsubscribe();
 
         } catch (Exception e) {
             System.out.println("Erreur lors de la récupération des messages : " + e.getMessage());

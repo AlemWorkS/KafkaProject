@@ -1,0 +1,171 @@
+/* Styles généraux */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #d6d6f0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+.header {
+    background-color: #1a1a55;
+    color: white;
+    padding: 5px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+}
+
+.header-logo img {
+    height: 100px;
+    margin-right: 10px;
+}
+
+.header-logo span {
+    font-size: 1.5em;
+}
+
+.header input {
+    padding: 5px;
+    border-radius: 20px;
+    border: none;
+}
+
+.header button {
+    padding: 5px 15px;
+    border-radius: 20px;
+    background-color: #4a6ed9;
+    border: none;
+    color: white;
+}
+
+/* Conteneur principal */
+.main {
+    padding: 20px;
+}
+
+.main-header {
+    background-color: #2c2c88;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.main-header h1 {
+    font-size: 2em;
+    margin: 0;
+}
+
+.main-header p {
+    font-size: 1.2em;
+    color: #b0b0d9;
+}
+
+.airplane-icon {
+    width: 10px;
+    height: 100px;
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.search-bar {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar input[type="text"] {
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    width: 300px;
+}
+
+.search-bar button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    background-color: #1a1a55;
+    color: white;
+    cursor: pointer;
+}
+
+/* Sections */
+.content {
+    display: flex;
+    gap: 20px;
+}
+
+.sidebar,
+.alert-list {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.sidebar {
+    width: 200px;
+}
+
+.alert-list {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+/* Cartes d'alerte */
+.alert-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alert-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-card img.user-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ddd;
+}
+
+.alert-card h3 {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.alert-card p {
+    font-size: 0.9em;
+}
+
+.alert-card button {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background-color: #8CCFB2;
+    color: #273E68;
+    cursor: pointer;
+    font-weight: bold;
+}

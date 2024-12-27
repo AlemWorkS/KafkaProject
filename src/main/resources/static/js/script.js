@@ -19,7 +19,7 @@ document.querySelector('#inscription').addEventListener('click', async (e) => {
     const password = document.querySelector('#password').value;
 
     try {
-        const response = await fetch('/api/auth/inscription', {
+        const response = await fetch('/inscription', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,12 +42,13 @@ document.querySelector('#inscription').addEventListener('click', async (e) => {
     }
 });
 document.getElementById("loginForm").addEventListener("submit", function (event) {
+  sessionStorage.setItem("userEmail",document.getElementById("email").value);
   event.preventDefault(); // Empêche l'envoi du formulaire par défaut
 
   const email = document.querySelector("input[name='email']").value;
   const password = document.querySelector("input[name='password']").value;
 
-  fetch("/connexion", {
+  fetch("/process-login", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
