@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -37,5 +40,24 @@ public class SubscriptionController {
                     .body("Erreur lors de l'abonnement : " + e.getMessage());
         }
     }
+
+    // Controller pour gérer les abonnements aux topics
+    @GetMapping("/subscriptions/topics")
+    public ResponseEntity<List<String>> getTopicsForUser(@RequestParam String userEmail) {
+        System.out.println("Requête reçue pour récupérer les topics pour l'utilisateur : " + userEmail);
+        try {
+            // Appel du service pour récupérer les topics
+            List<String> topics = SubscriptionService.getTopicsForUser(userEmail);
+
+            // Retourne la liste des topics sous forme de réponse JSON
+            return ResponseEntity.ok(topics);
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la récupération des topics : " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList()); // Retourne une liste vide en cas d'erreur
+        }
+    }
+
 
 }
