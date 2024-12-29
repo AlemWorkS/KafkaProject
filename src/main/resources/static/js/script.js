@@ -47,8 +47,8 @@ document.getElementById("inscriptionForm").addEventListener("submit", function (
 document.getElementById("loginForm").addEventListener("submit", function (event) {
     event.preventDefault(); // Empêche l'envoi du formulaire par défaut
 
-    const email = document.querySelector("input[name='email']").value;
-    const password = document.querySelector("input[name='password']").value;
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
 
     fetch("/process-login", {
         method: "POST",

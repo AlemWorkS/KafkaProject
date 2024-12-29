@@ -67,7 +67,7 @@ public class UserService {
                 System.out.println("Utilisateur trouvé avec le rôle : " + role);
                 return role; // Retourne le rôle
             } else {
-                System.out.println("Aucun utilisateur trouvé pour cet email et ce mot de passe.");
+                System.out.println("Aucun utilisateur trouvé pour "+email+" et ce mot de passe."+password);
                 return null; // Aucun utilisateur trouvé
             }
         } catch (SQLException e) {
