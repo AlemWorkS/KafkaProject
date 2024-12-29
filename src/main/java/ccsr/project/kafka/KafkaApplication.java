@@ -28,11 +28,11 @@ public class KafkaApplication {
 
 
 	// Endpoint pour afficher la page Publisher
-	@PostConstruct
+	/*@PostConstruct
 	public void startKafkaListener() {
 		KafkaService.KafkaListener.listenToTopic("sport"); // Remplacez par votre topic ou ajoutez plusieurs topics si nécessaire
 		System.out.println("L'écouteur Kafka pour le topic 'sport' a démarré.");
-	}
+	}*/
 
 
 }
