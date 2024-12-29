@@ -15,15 +15,18 @@
   <div class="form-container sign-up">
     <form id="inscriptionForm">
       <h1>Créer un compte</h1>
-      <div class="social-icons">
 
-      </div>
-      <span>ou utilisez votre email pour vous inscrire</span>
-      <input type="text" id="firstName" placeholder="Prénom" required>
-      <input type="text" id="lastName" placeholder="Nom" required>
-      <input type="text" id="userName" placeholder="UserName" required>
+      <span>utilisez votre email pour vous inscrire</span>
+      <input type="text" id="firstName" name="firstName" placeholder="Prénom" required>
+      <input type="text" id="lastName"  name="lastName"placeholder="Nom" required>
+      <input type="text" id="userName" name="userName"  placeholder="UserName" required>
 
-      <input type="email" id="email" placeholder="Adresse email" required>
+      <input type="email" id="email"  name="email" placeholder="Adresse email" required>
+      <select id="role" name="role">
+        <option value="Consumer">Consumer</option>
+        <option value="Producer">Producer</option>
+      </select>
+
       <input type="password" id="password" placeholder="Mot de passe" required>
       <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
       <button type="submit" id="inscription">S'inscrire</button>
@@ -35,7 +38,7 @@
       <div class="social-icons">
 
       </div>
-      <span>ou connectez-vous avec votre email</span>
+      <span> connectez-vous avec votre email</span>
       <input type="email" id="loginEmail" name ="email" placeholder="Adresse email" required>
       <input type="password" id="loginPassword" name="password" placeholder="Mot de passe" required>
       <a href="#">Mot de passe oublié ?</a>

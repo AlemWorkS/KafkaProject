@@ -24,29 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `mailplanning`
---
 
-DROP TABLE IF EXISTS `mailplanning`;
-CREATE TABLE IF NOT EXISTS `mailplanning` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `topic` varchar(15) NOT NULL,
-  `interval_de_jour` int NOT NULL,
-  `dernier_jour_env` varchar(15) NOT NULL,
-  `heure_env` int NOT NULL,
-  `user_mail` varchar(60) NOT NULL,
-  `mail_lu` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `mailplanning`
---
-
-INSERT INTO `mailplanning` (`id`, `topic`, `interval_de_jour`, `dernier_jour_env`, `heure_env`, `user_mail`, `mail_lu`) VALUES
-(1, 'smart', 0, 'JEUDI', 23, 'freddegny@gmail.com', 0);
-
--- --------------------------------------------------------
 
 --
 -- Structure de la table `subscription`
@@ -127,6 +105,29 @@ INSERT INTO `users` (`email`, `username`, `created_at`) VALUES
 ('freddegny@gmail.com', 'fred', '2024-12-26 22:22:05');
 
 --
+-- Structure de la table `mailplanning`
+--
+
+DROP TABLE IF EXISTS `mailplanning`;
+CREATE TABLE IF NOT EXISTS `mailplanning` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `topic` varchar(15) NOT NULL,
+  `interval_de_jour` int NOT NULL,
+  `dernier_jour_env` varchar(15) NOT NULL,
+  `heure_env` int NOT NULL,
+  `user_mail` varchar(60) NOT NULL,
+  `mail_lu` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `mailplanning`
+--
+
+INSERT INTO `mailplanning` (`id`, `topic`, `interval_de_jour`, `dernier_jour_env`, `heure_env`, `user_mail`, `mail_lu`) VALUES
+(1, 'smart', 0, 'JEUDI', 23, 'freddegny@gmail.com', 0);
+
+-- --------------------------------------------------------
 -- Contraintes pour les tables déchargées
 --
 

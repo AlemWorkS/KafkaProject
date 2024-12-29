@@ -30,17 +30,17 @@ public class LoginController {
                 @RequestParam String lastName,
                 @RequestParam String email,
                 @RequestParam String password,
-                @RequestParam String userName) { // Ajout de userName
+                @RequestParam String userName,
+                @RequestParam String role) { // Ajout de userName
             try {
-                boolean isRegistered = userService.registerUser(firstName, lastName, email, password, userName);
+                boolean isRegistered = userService.registerUser(firstName, lastName, email, password, userName,role);
                 if (isRegistered) {
-                   return ResponseEntity.ok("/login");
-
+                    return ResponseEntity.ok("Inscription réussie !");
                 } else {
-                    return ResponseEntity.badRequest().body("Erreur lors de l'inscription.");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'utilisateur existe déjà !");
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'inscription !");
             }
         }
 
@@ -51,22 +51,27 @@ public class LoginController {
      * Endpoint pour la connexion
      */
     @PostMapping("/process-login")
-    public String login(
-            @RequestParam String email,
-            @RequestParam String password,
-            HttpSession session,
-            Model model
-    ) {
-        boolean isAuthenticated = userService.authenticateUser(email, password);
-        if (isAuthenticated) {
-            session.setAttribute("userEmail", email);
-            return "redirect:/home"; // Redirige vers la page d'accueil
-        } else {
-            model.addAttribute("error", "Email ou mot de passe incorrect.");
-            return "redirect:/login"; // Retourne au formulaire de connexion
-        }
+    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+        System.out.println("Tentative de connexion : " + email);
 
+        String role = userService.authenticateUser(email, password);
+        if (role != null) {
+            System.out.println("Utilisateur authentifié avec le rôle : " + role);
+            session.setAttribute("userEmail", email);
+            session.setAttribute("userRole", role);
+
+            if ("Consumer".equals(role)) {
+                return ResponseEntity.ok("/home");
+            } else if ("Producer".equals(role)) {
+                return ResponseEntity.ok("/producer");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Rôle inconnu.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe invalide !");
+        }
     }
+
 
     /**
      * Endpoint pour la déconnexion
