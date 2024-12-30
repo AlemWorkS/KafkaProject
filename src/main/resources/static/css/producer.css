@@ -1,130 +1,144 @@
 /* Global Styles */
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f8fa;
-            color: #333;
-        }
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f8fa;
+    color: #333;
+}
 
-        /* Header Styles */
-        .header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
+/* Header Styles */
+.header {
+    background-color: #512da8;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
 
-        .header-logo img {
-            height: 40px;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
+.header-logo img {
+    height: 100px; /* Augmente la taille de l'image */
+    vertical-align: middle;
+    margin-right: 10px;
+}
 
-        .header span {
-            font-size: 1.5rem;
-            font-weight: bold;
-            vertical-align: middle;
-        }
+.header span {
+    font-size: 1.8rem; /* Augmente la taille du texte */
+    font-weight: bold;
+    vertical-align: middle;
+}
 
-        /* Main Container */
-        .main {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
+/* Main Container */
+.main {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-        h1 {
-            text-align: center;
-            color: #333;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+h1 {
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
 
-        .connection-status {
-            margin-bottom: 20px;
-            text-align: center;
-        }
+/* Connection Status Styles */
+.connection-status {
+    margin-bottom: 20px;
+    text-align: center;
+}
 
-        .connection-status input {
-            width: 60%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+.connection-status input {
+    width: 100%; /* Les champs s'étendent sur toute la largeur */
+    max-width: 600px; /* Limite la largeur */
+    margin: 10px auto; /* Centre l'élément */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 
-        .connection-status button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
+.connection-status button {
+    max-width: 150px; /* Taille fixe pour le bouton */
+    width: 100%; /* Assure la largeur sur petits écrans */
+    background-color: #512da8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
 
-        .connection-status button:hover {
-            background-color: #45a049;
-        }
+.connection-status button:hover {
+    background-color: #4524a0; /* Changement de couleur au survol */
+}
 
-        /* Form Styles */
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Augmente l'espace entre les champs */
+    align-items: center; /* Centre tous les champs horizontalement */
+}
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
+.form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Les champs prennent 100% de la largeur disponible */
+    max-width: 600px; /* Limite la largeur des champs */
+    margin: 0 auto; /* Centre les groupes de champs */
+}
 
-        label {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
+label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    text-align: left; /* Assure l'alignement à gauche des labels */
+}
 
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
+input, select, textarea {
+    width: 100%;
+    max-width: 100%; /* Évite de dépasser la largeur parent */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Assure que padding et bordures sont inclus dans la largeur */
+}
 
-        textarea {
-            resize: none;
-        }
+textarea {
+    resize: none;
+}
 
-        button[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
+button[type="submit"] {
+    background-color: #512da8;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    max-width: 300px; /* Limite la largeur du bouton */
+    width: 100%; /* S'aligne avec les champs */
+}
 
-        button[type="submit"]:hover {
-            background-color: #45a049;
-        }
+button[type="submit"]:hover {
+    background-color: #4524a0;
+}
 
-        /* Hover Effects */
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border: 1px solid #4CAF50;
-        }
+/* Hover Effects */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border: 1px solid #4CAF50;
+}
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .connection-status input {
-                width: 80%;
-            }
-        }
+/* Responsive Design */
+@media (max-width: 768px) {
+    .connection-status input {
+        width: 80%;
+    }
+}
