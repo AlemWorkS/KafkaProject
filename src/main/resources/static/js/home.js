@@ -1,4 +1,4 @@
-
+//Block afficahge list de topics sur le home
 document.addEventListener('DOMContentLoaded', function () {
 
 const topicList = document.getElementById('topicList');
@@ -21,7 +21,9 @@ fetch('/list-topics')
         });
     });
 
+//Fin block affichage des topics
 
+//Block button de recherches des messages topics
 
 document.getElementById("searchButton").addEventListener("click", function () {
     const interest = document.getElementById("interestInput").value;
@@ -34,9 +36,11 @@ document.getElementById("checkBegining").addEventListener("change", function () 
 
 });
 
+//Fin block des buttons de recherche des messages topics
+
+//Block fonction de recherche des messages topics
+
 function searchMessages(interest){
-
-
 
 var url = `/search-topics?interest=${interest}&fromBeginning=false`;
 if (document.getElementById("checkBegining").checked) {
@@ -75,43 +79,7 @@ if (document.getElementById("checkBegining").checked) {
 
 
                     })
-                /*
-                    const alertList = document.querySelector(".alert-list");
-                    alertList.innerHTML = ""; // Vider les cartes existantes
 
-                    topics.forEach(topic => {
-                        const card = document.createElement("div");
-                        card.classList.add("alert-card");
-
-                        // Ajouter la structure HTML de chaque topic
-                        card.innerHTML = `
-                            <div class="alert-card-header">
-                                <img class="user-icon" src="/images/user.png" alt="Icone utilisateur">
-                                <h3>${topic}</h3>
-                            </div>
-                            <p>Messages : <span id="messages-${topic}">Chargement...</span></p>
-                            <button class="subscribe-button" data-topic="${topic}">S'abonner</button>
-                        `;
-
-                        alertList.appendChild(card);
-
-                        // Charger automatiquement les messages associés à ce topic
-                        fetch(`/get-messages?topicName=${topic}`)
-                            .then(res => res.json())
-                            .then(messages => {
-                                const messageSpan = document.getElementById(`messages-${topic}`);
-                                // Vérifier si des messages sont disponibles
-                                messageSpan.innerText = messages.length > 0 ? messages.join(", ") : "Aucun message disponible.";
-                            })
-                            .catch(err => {
-                                console.error(`Erreur lors de la récupération des messages pour le topic ${topic} :`, err);
-                                const messageSpan = document.getElementById(`messages-${topic}`);
-                                messageSpan.innerText = "2 Erreur lors du chargement des messages.";
-                            });
-                    });
-
-                    // Attacher les gestionnaires d'événements après avoir ajouté les boutons
-                    */
                 })
                 .catch(error => {
                     console.error("1 Erreur lors de la recherche :", error);
@@ -122,6 +90,11 @@ if (document.getElementById("checkBegining").checked) {
 
 }
 
+//Fin block fonction de recherche des messages topics
+
+//Block gestion de souscription
+
+//Block attribution de la fonction au boutton de souscription
 function attachSubscribeEventHandlers() {
     const subscribeButtons = document.querySelectorAll(".subscribe-button");
 
@@ -132,6 +105,10 @@ function attachSubscribeEventHandlers() {
         });
     });
 }
+
+//Fin block d'attribution de la fonction au button de souscription
+
+//Fonction de souscription
 
 function subscribe(topicName) {
 
@@ -163,6 +140,9 @@ function subscribe(topicName) {
             alert("Erreur lors de l'abonnement : " + error);
         });
 }
+
+//Fin block fonction de souscription
+//Fin block gestion de la souscription
 
 /*// Fonction pour charger les abonnements d'un utilisateur
 function updateSubscriptions() {

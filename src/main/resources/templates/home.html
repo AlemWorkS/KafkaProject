@@ -28,6 +28,27 @@
             <h1>Consulter vos alertes</h1>
             <p>Soyez informés sur vos thèmes favoris</p>
         </div>
+        <!-- Block de planning -->
+        <div>
+            <p>Planning de reception des alertes</p>
+            <form id="planning_form" method="post" action="/make-planning">
+                <label for="planning_heur">Heure de reception quotidiennes de notifications</label>
+                <input id="planning_heur" type="number" name="planning_heure" value="16" min="00" max="23">
+
+                <br>
+
+
+                <label for="planning_interva">Interval de réception ( 1 pour recevoir chaque jour ) </label>
+                <input id="planning_interva" name="planning_interval" type="number" value="1" min="1" max="7">
+
+                <br>
+
+                <button type="submit" id="planning_btn">Confirmer</button>
+
+            </form>
+        </div>
+        <!-- Fin Block de planning -->
+
         <img name="airplane-icon" src="/images/avion-en-papier.png" alt="" height="100">
     </div>
 
@@ -61,6 +82,8 @@
         </section>
         <!-- Ajouter votre lien vers le fichier JS -->
         <script src="/js/home.js"></script>
+        <script src="/js/planning.js"></script>
+
     </div>
 </div>
 </body>

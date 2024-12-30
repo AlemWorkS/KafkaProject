@@ -3,6 +3,7 @@ package ccsr.project.kafka.Controllers;
 import ccsr.project.kafka.Controllers.EmailUtil;
 import ccsr.project.kafka.Models.Consumer;
 import jakarta.annotation.PostConstruct;
+import org.apache.commons.mail.EmailException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -23,6 +24,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +39,7 @@ public class KafkaService {
     public KafkaService(AdminClient adminClient) {
         this.adminClient = adminClient;
     }
+
     // Récupération des topics correspondant à un centre d'intérêt
     public List<String> searchTopicsByInterest(String interest) {
         try {
@@ -145,27 +150,72 @@ public class KafkaService {
     }*/
 
 
-
-
-
     public class KafkaListener {
+
+        public static void listenToPlanning() {
+
+            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Verification Planning.........................................................");
+                    //Requête de récupération des emails à envoyer
+                    String query = "SELECT topic,heure_env,user_mail FROM mailplanning where mail_a_env = 1";
+
+                    try (Connection connection = DatabaseConnection.getConnection();
+                         PreparedStatement statement = connection.prepareStatement(query)) {
+
+                        ResultSet resultSet = statement.executeQuery();
+
+                        //On récupère l'heure du système
+                        Calendar calendar = Calendar.getInstance();
+                        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+
+                        //on vérifie si il y'a un résultat dans resultSet et si l'heure système est égale heure_env dans resultSet
+                        while (resultSet.next() && resultSet.getInt("heure_env") == currentHour) {
+
+
+                            //On récupère les emails et les topics à qui il a été planifié d'envoyer un message
+                            String subscriberEmail = resultSet.getString("user_mail");
+                            String topicName = resultSet.getString("topic");
+
+                            String emailSubject = "Nouvelle alerte pour le topic : " + topicName;
+                            String emailContent = "Bonjour,\n\nUn nouveau message a été publié dans le topic '" + topicName + "' :\n\n"
+                                    + "\n\nCordialement,\nL'équipe de Notification Kafka";
+
+                            //On envoie l'email
+                            EmailUtil.sendEmail(subscriberEmail, emailSubject, emailContent);
+                            //On marque qu'il n'y a plus de message à envoyer dans la table mailplanning
+                            deplanifierMail(subscriberEmail);
+                        }
+                    } catch (SQLException | EmailException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            scheduler.scheduleAtFixedRate(runnable, 0, 60, TimeUnit.SECONDS);
+
+        }
 
         public static void listenToTopic(String topicName) {
             // Configurer les propriétés du consumer
 
             Properties props = new Properties();
             props.put("bootstrap.servers", "localhost:29092,localhost:39092,localhost:49092"); // Remplacez par votre serveur Kafka
-            props.put("group.id", "thread"+UUID.randomUUID());
+            props.put("group.id", "thread" + UUID.randomUUID());
             props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-            props.put("auto.offset.reset", "earliest"); // Pour consommer depuis le début si aucun offset n'existe
+            props.put("auto.offset.reset", "latest"); // Pour consommer depuis le début si aucun offset n'existe
 
             // Créer le consumer Kafka
             KafkaConsumer<String, String> consumerTop = new KafkaConsumer<>(props);
 
             //Pour chaque topic on va créer un daemon pour pouvoir écouter l'arrivée de nouveau mmessage
-            consumerTop.listTopics().forEach((topic,partitionInfos) ->{
-                if(!topic.equals("__consumer_offsets")) {
+            consumerTop.listTopics().forEach((topic, partitionInfos) -> {
+                if (!topic.equals("__consumer_offsets")) {
                     // Créer le consumer Kafka
                     KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
                     consumer.subscribe(Collections.singleton(topic));
@@ -174,7 +224,7 @@ public class KafkaService {
                         try {
                             System.out.println("Écoute des messages du topic : " + topic);
                             while (true) {
-                                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+                                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(60));
                                 System.out.println("ecoute");
 
                                 for (ConsumerRecord<String, String> record : records) {
@@ -183,8 +233,8 @@ public class KafkaService {
                                     System.out.println("Message reçu : " + record.value());
 
                                     // Ajouter la logique pour envoyer un email
-                                    new Thread(()->{
-                                        notifySubscribers(topic, record.value());
+                                    new Thread(() -> {
+                                        planifierMail(topic);
                                     }).run();
                                     break;
                                 }
@@ -235,11 +285,11 @@ public class KafkaService {
 
         /**
          * Méthode pour notifier les abonnés par email.
+         *
          * @param topicName Nom du topic où le message a été publié.
-         * @param message Le contenu du message publié.
-         * */
+         */
 
-        private static void notifySubscribers(String topicName, String message) {
+        private static void planifierMail(String topicName) {
             // Récupérer les abonnés au topic
             List<String> subscribers = SubscriptionService.getSubscribersEmailsForTopic(topicName);
 
@@ -249,53 +299,46 @@ public class KafkaService {
                 return;
             }
 
-            // Envoyer un email à chaque abonné
+            // Plannifier l'envoi d'un message pour chaque subscriber du topic
             for (String subscriberEmail : subscribers) {
 
-                System.out.println(subscriberEmail);
+                //requête pour planifier les envoies d'email
+                String query = "UPDATE mailplanning SET mail_a_env = ? WHERE user_mail = ?";
 
-                String query = "SELECT mail_lu,topic FROM mailplanning WHERE user_mail = ? ";
                 try (Connection connection = DatabaseConnection.getConnection();
-                     PreparedStatement statement = connection.prepareStatement(query)) {
-                    statement.setString(1, subscriberEmail);
-                    ResultSet resultSet = statement.executeQuery();
+                     PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    preparedStatement.setBoolean(1, true);
+                    preparedStatement.setString(2, subscriberEmail);
+                    //System.out.println(6);
+                    preparedStatement.executeUpdate();
 
-
-                    //Si il a déjà lu les mail précédent la colonne mail_lu sera à true (1) donc on lui envera un nouveau mail en cas de nouveau message
-                    if(resultSet.next() && resultSet.getBoolean("mail_lu") && resultSet.getString("topic").equals(topicName)){
-                        //System.out.println(1);
-                            String emailSubject = "Nouvelle alerte pour le topic : " + topicName;
-                        //System.out.println(2);
-                            String emailContent = "Bonjour,\n\nUn nouveau message a été publié dans le topic '" + topicName + "' :\n\n"
-                                    + "\n\nCordialement,\nL'équipe de Notification Kafka";
-                        //System.out.println(3);
-                            try {
-                                EmailUtil.sendEmail(subscriberEmail, emailSubject, emailContent);
-                                //System.out.println(4);
-                                String insertMailPlanningQuery = "UPDATE mailplanning SET mail_lu = ? WHERE user_mail = ?";
-                                PreparedStatement preparedStatement = connection.prepareStatement(insertMailPlanningQuery);
-                                preparedStatement.setBoolean(1, false);
-                                //System.out.println(5);
-                                preparedStatement.setString(2, subscriberEmail);
-                                //System.out.println(6);
-                                preparedStatement.executeUpdate();
-
-                                System.out.println("Email envoyé avec succès à : " + subscriberEmail);
-                            } catch (Exception e) {
-                                System.err.println("Erreur lors de l'envoi de l'email à " + subscriberEmail + " : " + e.getMessage());
-                            }
-                    }
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    System.out.println("Email planifié : " + subscriberEmail);
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de la planification de l'email à " + subscriberEmail + " : " + e.getMessage());
                 }
-
-
             }
         }
 
+        private static void deplanifierMail(String subscriberEmail) {
+            //requête pour planifier les envoies d'email
+            String query = "UPDATE mailplanning SET mail_a_env = ? WHERE user_mail = ?";
 
+            try (Connection connection = DatabaseConnection.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setBoolean(1, false);
+                preparedStatement.setString(2, subscriberEmail);
+                //System.out.println(6);
+                preparedStatement.executeUpdate();
+
+                System.out.println("Email envoyé : " + subscriberEmail);
+            } catch (Exception e) {
+                System.err.println("Erreur lors de l'envoi de l'email à " + subscriberEmail + " : " + e.getMessage());
+            }
+        }
     }
+
+
+}
 
 
     /*public static Producer<String, String> getProducer() {
@@ -320,4 +363,4 @@ public class KafkaService {
     }*/
 
 
-}
+

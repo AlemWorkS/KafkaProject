@@ -63,8 +63,8 @@ public class Message {
                 onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
                 onLineConsumer.poll(Duration.ofSeconds(1));
 
-                //System.out.println(Agents.getConsummer().committed(Agents.getConsummer().assignment()));
-                //System.out.println(Agents.getConsummer().partitionsFor(topicName));
+                System.out.println(onLineConsumer.committed(Agents.getConsummer().assignment()));
+                System.out.println(onLineConsumer.partitionsFor(topicName));
 
                 if (fromBeginning) {
                     List<TopicPartition> tp = new ArrayList<>();
@@ -74,7 +74,10 @@ public class Message {
                         b = true;
                         //System.out.println("ff");
                     }
-                    onLineConsumer.seek(tp.getFirst(), 0);
+                    System.out.println("emptyness "+tp.isEmpty());
+                    if(!tp.isEmpty()) {
+                        onLineConsumer.seek(tp.getFirst(), 0);
+                    }
                 } else {
                     onLineConsumer.unsubscribe();
                 }
@@ -126,9 +129,9 @@ public class Message {
             }
 
             if (recordMap.isEmpty()) {
-                messageNull.put("message", "Aucun Message sur le topic");
+                messageNull.put("message", "Aucun Nouveau Message sur le topic"+topicName);
                 messageNull.put("producer", "System");
-                messageNull.put("theme", "Ce topic est vide");
+                messageNull.put("theme", "Topic "+topicName+" Vide");
 
                 recordMap.put(0, messageNull);
             }
@@ -138,6 +141,7 @@ public class Message {
             onLineConsumer.unsubscribe();
 
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Erreur lors de la récupération des messages : " + e.getMessage());
             messageNull.put("message", "Erreur lors de la récupération des messages.");
             messageNull.put("producer", "System");
