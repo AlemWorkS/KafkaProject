@@ -24,25 +24,26 @@ public class LoginController {
      * Endpoint pour l'inscription
      */
 
-        @PostMapping("/inscription")
-        public ResponseEntity<String> inscrireUtilisateur(
-                @RequestParam String firstName,
-                @RequestParam String lastName,
-                @RequestParam String email,
-                @RequestParam String password,
-                @RequestParam String userName,
-                @RequestParam String role) { // Ajout de userName
-            try {
-                boolean isRegistered = userService.registerUser(firstName, lastName, email, password, userName,role);
-                if (isRegistered) {
-                    return ResponseEntity.ok("Inscription réussie !");
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'utilisateur existe déjà !");
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'inscription !");
+    @PostMapping("/inscription")
+    public ResponseEntity<String> inscrireUtilisateur(
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam String userName,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String role) {
+        try {
+            boolean isRegistered = userService.registerUser(email, userName, firstName, lastName, password, role); // Notez l'ordre
+            if (isRegistered) {
+                return ResponseEntity.ok("Inscription réussie !");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'utilisateur existe déjà !");
             }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'inscription !");
         }
+    }
+
 
 
 
