@@ -24,18 +24,18 @@ public class UserService {
      */
 
 
-    public boolean registerUser(String firstName, String lastName, String userName, String email, String password, String role) {
-        String query = "INSERT INTO users (first_name, last_name, username, email, password, role) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean registerUser(String email, String userName, String firstName, String lastName, String password, String role) {
+        String query = "INSERT INTO users (email, username, first_name, last_name, password, role) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
 
-            statement.setString(1, firstName);
-            statement.setString(2, lastName);
-            statement.setString(3, userName);
-            statement.setString(4, email);
-            statement.setString(5, password);
-            statement.setString(6, role);
+            statement.setString(1, email);       // Email
+            statement.setString(2, userName);   // Username
+            statement.setString(3, firstName);  // First Name
+            statement.setString(4, lastName);   // Last Name
+            statement.setString(5, password);   // Password
+            statement.setString(6, role);       // Role
 
             int rowsInserted = statement.executeUpdate();
             return rowsInserted > 0;
@@ -45,6 +45,7 @@ public class UserService {
             return false;
         }
     }
+
 
 
     /**
