@@ -303,11 +303,11 @@ public class KafkaService {
             for (String subscriberEmail : subscribers) {
 
                 //requête pour planifier les envoies d'email
-                String query = "UPDATE mailplanning SET mail_a_env = ? WHERE user_mail = ?";
+                String query = "UPDATE mailplanning SET mail_lu = ? WHERE user_mail = ?";
 
                 try (Connection connection = DatabaseConnection.getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setBoolean(1, true);
+                    preparedStatement.setBoolean(1, false);
                     preparedStatement.setString(2, subscriberEmail);
                     //System.out.println(6);
                     preparedStatement.executeUpdate();
@@ -321,11 +321,11 @@ public class KafkaService {
 
         private static void deplanifierMail(String subscriberEmail) {
             //requête pour planifier les envoies d'email
-            String query = "UPDATE mailplanning SET mail_a_env = ? WHERE user_mail = ?";
+            String query = "UPDATE mailplanning SET mail_lu = ? WHERE user_mail = ?";
 
             try (Connection connection = DatabaseConnection.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setBoolean(1, false);
+                preparedStatement.setBoolean(1, true);
                 preparedStatement.setString(2, subscriberEmail);
                 //System.out.println(6);
                 preparedStatement.executeUpdate();

@@ -7,47 +7,41 @@
         const form = document.getElementById('producer-form');
         const messageInput = document.getElementById('message');
         const linkInput = document.getElementById('link');
+        const titreInput = document.getElementById('titre');
+
 
         let serverAddress = '';
         let isConnected = false;
 
         // Gestion de la connexion
-        connectButton.addEventListener('click', function () {
-            serverAddress = serverAddressInput.value.trim();
-            if (!serverAddress) {
-                alert('Veuillez entrer une adresse serveur valide.');
-                return;
-            }
-
             fetch('/producer/connect-publisher', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: new URLSearchParams({
-                    serverAddress: serverAddress,
+                    serverAddress: "127.0.0.1:29092,127.0.0.1:39092,127.0.0.1:49092",
                 }),
             })
                 .then((response) => response.text())
                 .then((data) => {
                     if (data.includes('Connecté')) {
-                        statusMessage.textContent = `Connecté à ${serverAddress}`;
+                        statusMessage.textContent = `Connecté`;
                         isConnected = true;
                         loadExistingTopics(); // Charger les topics une fois connecté
                     } else {
-                        statusMessage.textContent = 'Statut : Non connecté';
+                        statusMessage.textContent = 'Non connecté';
                         isConnected = false;
                     }
                 })
                 .catch((error) => {
                     console.error('Erreur de connexion :', error);
-                    statusMessage.textContent = 'Statut : Non connecté';
+                    statusMessage.textContent = 'Non connecté';
                 });
-        });
 
         // Charger les topics existants
         function loadExistingTopics() {
-            if (!isConnected || !serverAddress) {
+            if (!isConnected /*|| !serverAddress*/) {
                 console.error('Serveur non connecté.');
                 return;
             }
@@ -104,6 +98,8 @@
             const newTopic = newTopicInput.value.trim();
             const message = messageInput.value.trim();
             const link = linkInput.value.trim();
+            const titre = titreInput.value.trim();
+
 
             if (!message && !link) {
                 alert('Veuillez entrer un message ou un lien.');
@@ -127,7 +123,7 @@
                 topicName: topicName,
                 message: message || '',
                 link: link || '',
-                serverAddress: serverAddress,
+                titre: titre || '',
             });
 
             fetch('/producer/send-message', {
@@ -153,7 +149,7 @@
                 })
                 .catch((error) => {
                     console.error('Erreur lors de l\'envoi du message :', error);
-                    alert('Échec de l\'envoi du message.');
+                    alert('Échec de l\'envoi du message.', error);
                 });
         });
     });

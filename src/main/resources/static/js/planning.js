@@ -1,5 +1,5 @@
 //Ajouter l'envoi du formulaire au click du button pour plannifier
-/*document.getElementById('planning_form').addEventListener('submit',function(event){
+document.getElementById('planning_form').addEventListener('submit',function(event){
 
     //Récupérer les informations du formulaire de planning
     const heure = document.getElementById('planning_heure').value.trim();
@@ -20,4 +20,3 @@
                 alert("Erreur lors de l'enregistrement :", error);
             });
         });
-*/
