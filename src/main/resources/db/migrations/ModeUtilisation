@@ -1,0 +1,3 @@
+1. Importer la nouvelle ou les nouvelles tables de la bd
+2. Les placer dans le dossier resources/db/migrations
+3. Lancer le main de la class Migrator

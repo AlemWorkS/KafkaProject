@@ -90,6 +90,10 @@ if (document.getElementById("checkBegining").checked) {
 
 }
 
+function linkCheck(message){
+
+}
+
 //Fin block fonction de recherche des messages topics
 
 //Block gestion de souscription

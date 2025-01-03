@@ -1,50 +1,85 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.5'
-	id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.flywaydb.flyway' version '8.4.4' // Plugin Flyway
+
 }
 
 group = 'ccsr.project'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(22)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(22)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.kafka:spring-kafka'
-	implementation 'org.apache.kafka:kafka-clients:3.7.0'
-	implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Validation des données formulaire
-	implementation 'com.fasterxml.jackson.core:jackson-databind'
+    // Dépendances pour Spring Boot et Kafka
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.apache.kafka:kafka-clients:3.7.0'
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Validation des données formulaire
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-	implementation 'org.flywaydb:flyway-core:9.2.0'
+    implementation 'org.apache.derby:derbyclient:10.16.1.1'
+    // Dépendances Flyway et MySQL
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
+    // Dépendance pour la lecture du fichier .env
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
+    // Dépendance pour l'envoi d'e-mails
+    implementation 'org.apache.commons:commons-email:1.5'
 
 
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.kafka:spring-kafka-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-
+    // Dépendances de test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
-dependencies {
-	implementation 'mysql:mysql-connector-java:8.0.33'
-
-}
-dependencies {
-	implementation 'org.apache.commons:commons-email:1.5'
-}
-
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
+
+// Fonction pour charger les variables depuis le fichier .env
+def loadEnvVars() {
+    def envVars = [:]
+    def envFile = file("${projectDir}/.env")
+    if (envFile.exists()) {
+        envFile.eachLine { line ->
+            if (!line.startsWith("#") && line.contains("=")) {
+                def (key, value) = line.split("=", 2)
+                envVars[key.trim()] = value.trim()
+                println "${key} = ${value}"
+
+            }
+        }
+    } else {
+        throw new GradleException("Fichier .env introuvable dans le répertoire du projet.")
+    }
+}
+
+
+
+// Charger les variables d'environnement depuis le fichier .env
+/*def dotenv = Dotenv.configure()
+        .directory(projectDir.toString()) // Assurez-vous que le fichier .env est à la racine du projet
+        .load()
+
+flyway {
+    url = dotenv.get('DB_URL') // Récupérer l'URL de la base de données
+    user = dotenv.get('DB_USER') // Récupérer le nom d'utilisateur
+    password = dotenv.get('DB_PASSWORD') // Récupérer le mot de passe
+    locations = ['filesystem:src/main/resources/db/migration'] // Exemple de chemin
+}
+*/
