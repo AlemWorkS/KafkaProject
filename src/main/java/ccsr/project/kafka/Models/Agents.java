@@ -29,7 +29,6 @@ abstract class Agents {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // Gestion manuelle des offsets
 
         adminClient = AdminClient.create(props);
         kafkaConsumer = new KafkaConsumer(props);

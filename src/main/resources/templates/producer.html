@@ -19,10 +19,10 @@
     <!-- Statut de connexion -->
     <div class="connection-status">
         <p id="status-message">Statut : Non connecté</p>
-        <div>
+        <!--<div>
             <input type="text" id="serverAddress" placeholder="Adresse du serveur Kafka">
             <button id="connectButton">Se connecter</button>
-        </div>
+        </div>-->
     </div>
 
     <!-- Formulaire pour envoyer un message -->
@@ -35,6 +35,12 @@
                 <option value="">Sélectionnez un topic existant</option>
                 <!-- Les topics seront chargés dynamiquement ici -->
             </select>
+        </div>
+
+        <!-- Champs pour le message -->
+        <div class="form-group">
+            <label for="titre">Le titre fr votre publication</label>
+            <input type="text" id="titre" name="link" placeholder="Entrez le titre">
         </div>
 
         <div class="form-group">

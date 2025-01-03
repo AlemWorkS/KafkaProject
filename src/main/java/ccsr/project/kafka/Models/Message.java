@@ -1,5 +1,6 @@
 package ccsr.project.kafka.Models;
 
+import ccsr.project.kafka.Controllers.DatabaseConnection;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -12,6 +13,9 @@ import org.apache.kafka.common.TopicPartitionInfo;
 import org.apache.kafka.common.internals.Topic;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,15 +42,15 @@ public class Message {
      * @return une Map de touts les messages d'un topic
      * @return
      */
-    public static HashMap<Integer, HashMap<String, String>> getMessagesFromTopic(String topicName, boolean fromBeginning,KafkaConsumer consumer) {
+    public static HashMap<Integer, HashMap<String, String>> getMessagesFromTopic(String topicName, boolean fromBeginning, KafkaConsumer consumer, String userEmail) {
 
 
         KafkaConsumer onLineConsumer;
-        if(consumer == null) {
+        if (consumer == null) {
             System.out.println("No consumer");
             //onLineConsumer si on est sur le web correspond au consumer qui est en ligne
             onLineConsumer = Agents.getConsummer();
-        }else{
+        } else {
             System.out.println("Consumer provided");
             //onLineConsumer si on est en local correspond à une instance de consumer
             onLineConsumer = consumer;
@@ -55,90 +59,116 @@ public class Message {
         HashMap<Integer, HashMap<String, String>> recordMap = new HashMap<>();
         HashMap<String, String> messageNull = new HashMap<>();
 
+        String sanitizedTopicName = sanitizeTopicName(topicName);
+
+        onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+        ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofSeconds(1));
+
         try {
             if (Topic.isValid(topicName) && Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
+                System.out.println(onLineConsumer.groupMetadata().groupId());
 
-                String sanitizedTopicName = sanitizeTopicName(topicName);
+/*
+                        onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+                        //onLineConsumer.poll(Duration.ofSeconds(1));
 
-                onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
-                onLineConsumer.poll(Duration.ofSeconds(1));
-
+                System.out.println(Agents.getConsummer().assignment());
                 System.out.println(onLineConsumer.committed(Agents.getConsummer().assignment()));
                 System.out.println(onLineConsumer.partitionsFor(topicName));
+                System.out.println(onLineConsumer.assignment()+"---------avant--avant");
 
-                if (fromBeginning) {
                     List<TopicPartition> tp = new ArrayList<>();
                     boolean b = false;
                     while (onLineConsumer.assignment().iterator().hasNext() && !b) {
                         tp.add((TopicPartition) onLineConsumer.assignment().iterator().next());
                         b = true;
-                        //System.out.println("ff");
+                        System.out.println("ff");
                     }
-                    System.out.println("emptyness "+tp.isEmpty());
-                    if(!tp.isEmpty()) {
-                        onLineConsumer.seek(tp.getFirst(), 0);
+                    if (!tp.isEmpty()){
+                        if (fromBeginning) {
+
+                            onLineConsumer.seek(tp.getFirst(), 0);
+                            onLineConsumer.seekToBeginning(tp);
+                        }else{
+                            onLineConsumer.seek(tp.getFirst(), onLineConsumer.position(tp.getFirst()));
                     }
+
                 } else {
                     onLineConsumer.unsubscribe();
-                }
-
-                onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
-                ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofSeconds(1));
-
-
-                for (ConsumerRecord<String, String> record : records) {
-
-                    HashMap<String, String> message = new HashMap<>();
-
-
-                    //Récupére le message du topic
-                    System.out.println(record.value() + " value offset " + record.offset());
-
-                    //Hashmap pour récupérer le theme et le producer du message
-                    // Vérifier si le header "theme" existe et s'il n'est pas vide
-                    // Si l'en-tête "theme" existe et n'est pas vide
-                    message.put("theme", "null");
-                    message.put("producer", "null");
-                    record.headers().headers("theme").forEach(header -> {
-                        String themeValue = new String(header.value());
-                        // Vérifier si la valeur de l'en-tête est vide ou null
-                        message.put("theme", themeValue);
-                        message.put("producer", record.key());
-                    });
-
-                    if (message.get("theme").equals("null")) {
-                        message.put("theme", "Theme Inconnu");
                     }
 
-                    if (message.get("producer").equals("null")) {
-                        message.put("producer", "Créateur Inconnu");
+
+                System.out.println(Agents.getConsummer().assignment());
+                System.out.println(onLineConsumer.committed(Agents.getConsummer().assignment()));
+                System.out.println(onLineConsumer.partitionsFor(topicName));
+                System.out.println(onLineConsumer.assignment()+"---------après");*/
+                System.out.println(records.count());
+
+                while (records.isEmpty()) {
+
+
+                    for (ConsumerRecord<String, String> record : records) {
+
+                        HashMap<String, String> message = new HashMap<>();
+
+
+                        //Récupére le message du topic
+                        System.out.println(record.value() + " value offset " + record.offset());
+
+                        //Hashmap pour récupérer le theme et le producer du message
+                        // Vérifier si le header "theme" existe et s'il n'est pas vide
+                        // Si l'en-tête "theme" existe et n'est pas vide
+                        message.put("theme", "null");
+                        message.put("producer", "null");
+                        record.headers().headers("theme").forEach(header -> {
+                            String themeValue = new String(header.value());
+                            // Vérifier si la valeur de l'en-tête est vide ou null
+                            message.put("theme", themeValue);
+                            message.put("producer", record.key());
+                        });
+
+                        if (message.get("theme").equals("null")) {
+                            message.put("theme", "Theme Inconnu");
+                        }
+
+                        if (message.get("producer").equals("null")) {
+                            message.put("producer", "Créateur Inconnu");
+                        }
+
+                        message.put("message", record.value());
+                        message.put("topic", topicName);
+                        recordMap.put(recordMap.size() + 1, message);
+                        System.out.println(recordMap.get(recordMap.size()));
+                        System.out.println("message");
                     }
 
-                    message.put("message", record.value());
-                    message.put("topic", topicName);
-                    recordMap.put(recordMap.size() + 1, message);
-                    System.out.println(recordMap.get(recordMap.size()));
-                    System.out.println("message");
+                    records = onLineConsumer.poll(Duration.ofSeconds(1));
+
+                }
+                } else{
+                    messageNull.put("message", "");
+                    messageNull.put("producer", "System");
+                    messageNull.put("theme", "Ce topic" + topicName + "n'existe pas");
+                    recordMap.put(0, messageNull);
                 }
 
-            } else {
-                messageNull.put("message", "");
-                messageNull.put("producer", "System");
-                messageNull.put("theme", "Ce topic" + topicName + "n'existe pas");
-                recordMap.put(0, messageNull);
-            }
+                if (recordMap.isEmpty()) {
+                    messageNull.put("message", "Aucun Nouveau Message sur le topic" + topicName);
+                    messageNull.put("producer", "System");
+                    messageNull.put("theme", "Topic " + topicName + " Vide");
 
-            if (recordMap.isEmpty()) {
-                messageNull.put("message", "Aucun Nouveau Message sur le topic"+topicName);
-                messageNull.put("producer", "System");
-                messageNull.put("theme", "Topic "+topicName+" Vide");
+                    recordMap.put(0, messageNull);
+                }
 
-                recordMap.put(0, messageNull);
-            }
+
+            /*new Thread(()->{
+                annulerEnv(userEmail);
+            }).start();*/
+
             //Confirmer qu'on à lu les derniers messages
-            onLineConsumer.commitSync();
+            //onLineConsumer.commitSync();
             //Désinscription du consumer de tous les topics
-            onLineConsumer.unsubscribe();
+            //onLineConsumer.unsubscribe();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,6 +178,44 @@ public class Message {
             recordMap.put(0, messageNull);
         }
         return recordMap;
+    }
+
+    private static void annulerEnv(String userEmail) {
+
+        //requête pour planifier les envoies d'email
+        String query = "SELECT mail_lu FROM mailplanning WHERE user_mail = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection()
+        ) {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, userEmail);
+            preparedStatement.executeQuery();
+
+            ResultSet resultSet = preparedStatement.getResultSet();
+
+            if (resultSet.next() && !resultSet.getBoolean("mail_lu")) {
+                //requête pour planifier les envoies d'email
+                query = "UPDATE mailplanning SET mail_lu = ? WHERE user_mail = ?";
+                try {
+                    preparedStatement = connection.prepareStatement(query);
+                    preparedStatement.setBoolean(1, true);
+                    preparedStatement.setString(2, userEmail);
+                    //System.out.println(6);
+                    preparedStatement.executeUpdate();
+
+                    System.out.println("Email déplannifié : " + userEmail);
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de l'update de l'envoi de l'email à " + userEmail + " : " + e.getMessage());
+                }
+            } else {
+                System.out.println("Rien à annuler");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la recherche du suscriber de l'email à " + userEmail + " : " + e.getMessage());
+        }
+
+
     }
 
 
@@ -522,7 +590,7 @@ public class Message {
     public static void creerMessage(String topic, String article, String message, String user) {
 
         // Créer le ProducerRecord avec les en-têtes
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, "zaha", message);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, user, message);
         if (article == null || article.isEmpty()) {
             article = "ArticleInconnu";
 

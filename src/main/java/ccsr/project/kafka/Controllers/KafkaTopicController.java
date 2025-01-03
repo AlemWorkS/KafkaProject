@@ -28,20 +28,27 @@ public class KafkaTopicController {
             if(session != null && !((String) session.getAttribute("userEmail")).isEmpty()) {
                 System.out.println((String) session.getAttribute("userEmail"));
                 Properties props = new Properties();
-                props.put("bootstrap.servers", "localhost:29092,localhost:39092,localhost:49092"); // Remplacez par votre serveur Kafka
-                props.put("group.id", "thread-"+session.getAttribute("userEmail")+1);
-                props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-                props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-                props.put("auto.offset.reset", "earliest");
-                props.put("enable.auto.commit", "false"); // Gestion manuelle des offsets
+                props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092,localhost:39092,localhost:49092"); // Remplacez par votre serveur Kafka
+                if(fromBeginning) {
+                    props.put(ConsumerConfig.GROUP_ID_CONFIG, "thread-" + session.getAttribute("userEmail") + 1+UUID.randomUUID());
+                    props.put(ConsumerConfig.CLIENT_ID_CONFIG, "thread-"+session.getAttribute("userEmail")+1+UUID.randomUUID());
+
+                }else{
+                    props.put(ConsumerConfig.GROUP_ID_CONFIG, "thread-" + session.getAttribute("userEmail") + 1);
+                    props.put(ConsumerConfig.CLIENT_ID_CONFIG, "thread-"+session.getAttribute("userEmail")+1);
+
+                }
+                props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+                props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,"org.apache.kafka.common.serialization.StringDeserializer");
+                props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
                 KafkaConsumer kafkaConsumer = new KafkaConsumer(props);
                 System.out.println("consummer ok");
 
 
                 // Appel correct de la méthode du service Kafka
-                topics = Message.getMessagesFromTopic(interest,fromBeginning,kafkaConsumer);
+                topics = Message.getMessagesFromTopic(interest,fromBeginning,kafkaConsumer,session.getAttribute("userEmail").toString());
             }else{
-                topics = Message.getMessagesFromTopic(interest,fromBeginning,null);
+                topics = Message.getMessagesFromTopic(interest,fromBeginning,null,"noMail");
             }
 
             return ResponseEntity.ok(topics);
