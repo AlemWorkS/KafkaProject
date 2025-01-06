@@ -1,21 +1,12 @@
 package ccsr.project.kafka.Controllers;
 
-import ccsr.project.kafka.Controllers.EmailUtil;
-import ccsr.project.kafka.Models.Consumer;
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.mail.EmailException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -30,13 +21,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-public class KafkaService {
+public class ConsumerController {
 
     private final AdminClient adminClient;
 
 
     @Autowired
-    public KafkaService(AdminClient adminClient) {
+    public ConsumerController(AdminClient adminClient) {
         this.adminClient = adminClient;
     }
 
@@ -186,7 +177,7 @@ public class KafkaService {
                                     + "\n\nCordialement,\nL'équipe de Notification Kafka";
 
                             //On envoie l'email
-                            EmailUtil.sendEmail(subscriberEmail, emailSubject, emailContent);
+                            EmailConfig.sendEmail(subscriberEmail, emailSubject, emailContent);
                             //On marque qu'il n'y a plus de message à envoyer dans la table mailplanning
                             deplanifierMail(subscriberEmail);
                         }

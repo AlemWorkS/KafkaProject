@@ -5,7 +5,7 @@ import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
-public class EmailUtil {
+public class EmailConfig {
 
     /**
      * Méthode pour envoyer un email.
