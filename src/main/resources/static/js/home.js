@@ -40,7 +40,6 @@ document.getElementById("checkBegining").addEventListener("change", function () 
 
 //Block fonction de recherche des messages topics
 
-// Fonction de recherche des messages topics
 function searchMessages(interest) {
     var url = `/search-topics?interest=${interest}&fromBeginning=false`;
     if (document.getElementById("checkBegining").checked) {
@@ -69,18 +68,9 @@ function searchMessages(interest) {
                         ? `<p>Message : Aucun Nouveau Message sur le topic ${data.theme}</p>`
                         : `<p><span>Message : </span>${data.message.substring(0, 50)}...</p>`;
 
-<<<<<<< Updated upstream
-                                                </div>
-                                                <p><span>Message : </span><br>${data.message}</p>
-<<<<<<< HEAD
-=======
-                                                                        <button class="subscribe-button" data-topic="${data.topic}">S'abonner</button>
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
-=======
                     const seeMoreButton = !isMessageReadOrEmpty
                         ? `<button class="btn-see-more" onclick="viewFullMessage('${data.message}')">Voir Plus</button>`
                         : "";
->>>>>>> Stashed changes
 
                     // Ajouter la structure HTML de chaque topic
                     card.innerHTML = `
@@ -109,6 +99,7 @@ function viewFullMessage(message) {
 
 
 
+
 //Fin block fonction de recherche des messages topics
 
 //Block gestion de souscription
@@ -129,7 +120,6 @@ function attachSubscribeEventHandlers() {
 
 //Fonction de souscription
 
-<<<<<<< HEAD
 
 //Fonction de souscription
 fetch("/current-user-email")
@@ -174,7 +164,6 @@ document.getElementById("subscribeButton").addEventListener("click", function ()
 
 
 
-=======
 function subscribe(topicName) {
 
 
@@ -205,7 +194,6 @@ function subscribe(topicName) {
             alert("Erreur lors de l'abonnement : " + error);
         });
 }
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
 
 //Fin block fonction de souscription
 //Fin block gestion de la souscription
