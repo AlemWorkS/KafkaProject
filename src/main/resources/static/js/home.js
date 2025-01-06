@@ -71,6 +71,10 @@ if (document.getElementById("checkBegining").checked) {
 
                                                 </div>
                                                 <p><span>Message : </span><br>${data.message}</p>
+<<<<<<< HEAD
+=======
+                                                                        <button class="subscribe-button" data-topic="${data.topic}">S'abonner</button>
+>>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
 
                                             `;
                                                                 alertList.appendChild(card);
@@ -113,6 +117,7 @@ function attachSubscribeEventHandlers() {
 
 //Fonction de souscription
 
+<<<<<<< HEAD
 
 //Fonction de souscription
 fetch("/current-user-email")
@@ -157,6 +162,38 @@ document.getElementById("subscribeButton").addEventListener("click", function ()
 
 
 
+=======
+function subscribe(topicName) {
+
+
+    const userEmail = sessionStorage.getItem("userEmail");
+    console.log(userEmail);
+
+    if (!userEmail) {
+        alert("Erreur : utilisateur non identifié !");
+        return;
+    }
+
+
+    fetch(`/subscriptions/subscribe`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            topicName: topicName,
+            userEmail: userEmail
+        })
+    })
+        .then(response => response.text())
+        .then(message => {
+            alert(message); // Affiche le message de succès ou d'erreur
+        })
+        .catch(error => {
+            alert("Erreur lors de l'abonnement : " + error);
+        });
+}
+>>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
 
 //Fin block fonction de souscription
 //Fin block gestion de la souscription
