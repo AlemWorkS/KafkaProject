@@ -9,10 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SubscriptionService {
-<<<<<<< HEAD
 
-=======
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
+
     public void addSubscription(String userEmail, String topicName) throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -129,7 +127,6 @@ public class SubscriptionService {
         return topics;
     }
 
-<<<<<<< HEAD
     public static boolean doesTopicExist(String topicName) {
         String query = "SELECT COUNT(*) FROM topics WHERE name = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -183,16 +180,6 @@ public class SubscriptionService {
             e.printStackTrace();
         }
     }
-=======
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
 
-
-
-
-
-
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
+
