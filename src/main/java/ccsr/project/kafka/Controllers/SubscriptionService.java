@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SubscriptionService {
+
     public void addSubscription(String userEmail, String topicName) throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -125,6 +126,59 @@ public class SubscriptionService {
         return topics;
     }
 
+    public static boolean doesTopicExist(String topicName) {
+        String query = "SELECT COUNT(*) FROM topics WHERE name = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, topicName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static void addTopic(String topicName) {
+        String query = "INSERT INTO topics (name) VALUES (?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, topicName);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean isUserSubscribed(String email, String topicName) {
+        String query = "SELECT COUNT(*) FROM subscription WHERE email = ? AND topic_name = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            statement.setString(2, topicName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static void subscribeUserToTopic(String email, String topicName) {
+        String query = "INSERT INTO subscription (email, topic_name) VALUES (?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            statement.setString(2, topicName);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 

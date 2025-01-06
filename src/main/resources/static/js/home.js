@@ -71,7 +71,6 @@ if (document.getElementById("checkBegining").checked) {
 
                                                 </div>
                                                 <p><span>Message : </span><br>${data.message}</p>
-                                                                        <button class="subscribe-button" data-topic="${data.topic}">S'abonner</button>
 
                                             `;
                                                                 alertList.appendChild(card);
@@ -114,36 +113,50 @@ function attachSubscribeEventHandlers() {
 
 //Fonction de souscription
 
-function subscribe(topicName) {
 
+//Fonction de souscription
+fetch("/current-user-email")
+    .then((response) => response.text())
+    .then((email) => {
+        sessionStorage.setItem("userEmail", email);
+        console.log("Email utilisateur récupéré :", email);
+    })
+    .catch((error) => console.error("Erreur lors de la récupération de l'email :", error));
 
-    const userEmail = sessionStorage.getItem("userEmail");
-    console.log(userEmail);
+document.getElementById("subscribeButton").addEventListener("click", function () {
+    const topicName = document.getElementById("interestInput").value.trim(); // Récupère et nettoie la valeur
+    const userEmail = sessionStorage.getItem("userEmail"); // Récupère l'email de la session
 
-    if (!userEmail) {
-        alert("Erreur : utilisateur non identifié !");
+    if (!topicName || !userEmail) {
+        alert("Veuillez entrer un centre d'intérêt et vérifier votre connexion.");
         return;
     }
 
-
-    fetch(`/subscriptions/subscribe`, {
-        method: 'POST',
+    fetch("/subscribe-to-topic", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
+            email: userEmail,
             topicName: topicName,
-            userEmail: userEmail
-        })
+        }),
     })
-        .then(response => response.text())
-        .then(message => {
-            alert(message); // Affiche le message de succès ou d'erreur
+        .then((response) => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                return response.text().then((text) => {
+                    throw new Error(text);
+                });
+            }
         })
-        .catch(error => {
-            alert("Erreur lors de l'abonnement : " + error);
-        });
-}
+        .then((message) => alert(message))
+        .catch((error) => console.error("Erreur lors de l'abonnement :", error));
+});
+
+
+
 
 //Fin block fonction de souscription
 //Fin block gestion de la souscription
