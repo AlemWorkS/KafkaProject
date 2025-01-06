@@ -40,62 +40,74 @@ document.getElementById("checkBegining").addEventListener("change", function () 
 
 //Block fonction de recherche des messages topics
 
-function searchMessages(interest){
-
-var url = `/search-topics?interest=${interest}&fromBeginning=false`;
-if (document.getElementById("checkBegining").checked) {
-    url = `/search-topics?interest=${interest}&fromBeginning=true`;
-}
+// Fonction de recherche des messages topics
+function searchMessages(interest) {
+    var url = `/search-topics?interest=${interest}&fromBeginning=false`;
+    if (document.getElementById("checkBegining").checked) {
+        url = `/search-topics?interest=${interest}&fromBeginning=true`;
+    }
 
     if (interest) {
-    console.log(interest)
-            fetch(url)
-                .then(response => response.json())
-                .then(topics => {
-
+        console.log(interest);
+        fetch(url)
+            .then((response) => response.json())
+            .then((topics) => {
                 // Vider les cartes existantes
                 const alertList = document.querySelector(".alert-list");
-                                                    alertList.innerHTML = "";
+                alertList.innerHTML = "";
 
-                    Object.keys(topics).forEach(topic=>{
-                    console.log(topic+"");
+                Object.keys(topics).forEach((topic) => {
+                    console.log(topic + "");
                     const data = topics[topic];
 
-                                            const card = document.createElement("div");
-                                            card.classList.add("alert-card");
+                    const card = document.createElement("div");
+                    card.classList.add("alert-card");
 
-                                            // Ajouter la structure HTML de chaque topic
-                                            card.innerHTML = `
-                                                <div class="alert-card-header" >
-                                                    <h2>Theme : ${data.theme}</h2>
+                    // Vérifier si un message est vide ou déjà lu
+                    const isMessageReadOrEmpty = data.message === "" || data.message.includes("Aucun Nouveau Message");
+                    const messageContent = isMessageReadOrEmpty
+                        ? `<p>Message : Aucun Nouveau Message sur le topic ${data.theme}</p>`
+                        : `<p><span>Message : </span>${data.message.substring(0, 50)}...</p>`;
 
+<<<<<<< Updated upstream
                                                 </div>
                                                 <p><span>Message : </span><br>${data.message}</p>
 <<<<<<< HEAD
 =======
                                                                         <button class="subscribe-button" data-topic="${data.topic}">S'abonner</button>
 >>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
+=======
+                    const seeMoreButton = !isMessageReadOrEmpty
+                        ? `<button class="btn-see-more" onclick="viewFullMessage('${data.message}')">Voir Plus</button>`
+                        : "";
+>>>>>>> Stashed changes
 
-                                            `;
-                                                                alertList.appendChild(card);
-                                                                attachSubscribeEventHandlers();
-
-
-                    })
-
-                })
-                .catch(error => {
-                    console.error("1 Erreur lors de la recherche :", error);
+                    // Ajouter la structure HTML de chaque topic
+                    card.innerHTML = `
+                        <div class="alert-card-header">
+                            <h2>Theme : ${data.theme}</h2>
+                        </div>
+                        ${messageContent}
+                        ${seeMoreButton}
+                    `;
+                    alertList.appendChild(card);
                 });
-        } else {
-            alert("Veuillez entrer un centre d'intérêt !");
-        }
-
+            })
+            .catch((error) => {
+                console.error("Erreur lors de la recherche :", error);
+            });
+    } else {
+        alert("Veuillez entrer un centre d'intérêt !");
+    }
 }
 
-function linkCheck(message){
-
+// Fonction pour afficher le message complet dans une alerte
+function viewFullMessage(message) {
+    alert(`Message complet : ${message}`);
 }
+
+
+
 
 //Fin block fonction de recherche des messages topics
 
