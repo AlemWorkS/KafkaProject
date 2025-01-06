@@ -69,19 +69,6 @@ function searchMessages(interest) {
                         ? `<p>Message : Aucun Nouveau Message sur le topic ${data.theme}</p>`
                         : `<p><span>Message : </span>${data.message.substring(0, 50)}...</p>`;
 
-<<<<<<< Updated upstream
-                                                </div>
-                                                <p><span>Message : </span><br>${data.message}</p>
-<<<<<<< HEAD
-=======
-                                                                        <button class="subscribe-button" data-topic="${data.topic}">S'abonner</button>
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
-=======
-                    const seeMoreButton = !isMessageReadOrEmpty
-                        ? `<button class="btn-see-more" onclick="viewFullMessage('${data.message}')">Voir Plus</button>`
-                        : "";
->>>>>>> Stashed changes
-
                     // Ajouter la structure HTML de chaque topic
                     card.innerHTML = `
                         <div class="alert-card-header">
@@ -128,10 +115,6 @@ function attachSubscribeEventHandlers() {
 //Fin block d'attribution de la fonction au button de souscription
 
 //Fonction de souscription
-
-<<<<<<< HEAD
-
-//Fonction de souscription
 fetch("/current-user-email")
     .then((response) => response.text())
     .then((email) => {
@@ -173,8 +156,6 @@ document.getElementById("subscribeButton").addEventListener("click", function ()
 });
 
 
-
-=======
 function subscribe(topicName) {
 
 
@@ -205,8 +186,6 @@ function subscribe(topicName) {
             alert("Erreur lors de l'abonnement : " + error);
         });
 }
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
-
 //Fin block fonction de souscription
 //Fin block gestion de la souscription
 
