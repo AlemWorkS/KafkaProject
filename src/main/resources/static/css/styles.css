@@ -141,13 +141,12 @@ body {
     width: 250px;
 }
 
+/* Alert Cards Section */
 .alert-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
     gap: 20px;
     flex: 1;
-    overflow: auto;
-    height: 400px;
 }
 
 .alert-card {
@@ -157,6 +156,8 @@ body {
     padding: 20px;
     text-align: center;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    height: 300px; /* Taille fixe */
+    width: 300px; /* Taille fixe */
 }
 
 .alert-card h2 {
