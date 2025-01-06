@@ -71,6 +71,7 @@ public class ProducerController {
         // Nettoyage du nom du topic
         String sanitizedTopicName = sanitizeTopicName(topicName);
         System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 1);
+
         // Configuration du Kafka Producer
         Properties props = new Properties();
         props.put("bootstrap.servers", Dotenv.load().get("KAFKA_SERVERS"));
@@ -78,8 +79,8 @@ public class ProducerController {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 2);
 
-
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
+
             // Préparation du message à envoyer
             String content = message != null ? message : "Lien : " + link;
 
@@ -87,12 +88,15 @@ public class ProducerController {
             if (!topicExists(sanitizedTopicName)) {
                 createTopicIfNotExists(sanitizedTopicName);
             }
+
             System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 3);
 
             ProducerRecord<String, String> record = new ProducerRecord<>(sanitizedTopicName, content);
             System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 4);
+
             Message.creerMessage(sanitizedTopicName,titre,content,session.getAttribute("userEmail").toString());
             System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 5);
+
             return ResponseEntity.ok("Message envoyé avec succès au topic \"" + sanitizedTopicName + "\".");
         } catch (Exception e) {
             e.printStackTrace();
