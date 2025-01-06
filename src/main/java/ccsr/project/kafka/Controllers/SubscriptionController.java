@@ -1,13 +1,10 @@
 package ccsr.project.kafka.Controllers;
 
-<<<<<<< HEAD
 import ccsr.project.kafka.Controllers.SubscriptionService;
 import ccsr.project.kafka.Models.Publisher;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-=======
 import ccsr.project.kafka.Models.Publisher;
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
-<<<<<<< HEAD
 import java.util.HashSet;
-=======
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +31,6 @@ public class SubscriptionController {
                     .body("Erreur lors de l'abonnement : " + e.getMessage());
         }
     }
-<<<<<<< HEAD
     @PostMapping("/subscribe-to-topic")
     public ResponseEntity<String> subscribeToTopic(
             @RequestParam String email,
@@ -59,9 +52,6 @@ public class SubscriptionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'abonnement : " + e.getMessage());
         }
     }
-
-=======
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
 
     @GetMapping("/subscriptions/user")
     public ResponseEntity<String> subscribe(@RequestParam String userEmail) {
@@ -91,7 +81,6 @@ public class SubscriptionController {
                     .body(Collections.emptyList()); // Retourne une liste vide en cas d'erreur
         }
     }
-<<<<<<< HEAD
     @GetMapping("/current-user-email")
     public ResponseEntity<String> getCurrentUserEmail(HttpSession session) {
         String userEmail = (String) session.getAttribute("userEmail");
@@ -105,8 +94,3 @@ public class SubscriptionController {
 
 
 }
-=======
-
-
-}
->>>>>>> b258839538cf3edd3b8b245a048447a09ca986e1
