@@ -66,7 +66,7 @@ if (document.getElementById("checkBegining").checked) {
 
                                             // Ajouter la structure HTML de chaque topic
                                             card.innerHTML = `
-                                                <div class="alert-card-header">
+                                                <div class="alert-card-header" >
                                                     <h2>Theme : ${data.theme}</h2>
 
                                                 </div>
