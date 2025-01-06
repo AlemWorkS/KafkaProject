@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Omega Alerts</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
 <input type="hidden" id="userEmail" value="${userEmail}">
@@ -16,7 +17,7 @@
     </div>
     <div>
         <form method="get" action="/">
-            <button type="submit">Déconnexion</button>
+            <button class="btn-logout" type="submit">Déconnexion</button>
         </form>
     </div>
 </header>
@@ -28,63 +29,50 @@
             <p>Soyez informés sur vos thèmes favoris</p>
         </div>
         <!-- Block de planning -->
-        <div>
-            <p>Planning de reception des alertes</p>
+        <div class="planning">
+            <p>Planning de réception des alertes</p>
             <form id="planning_form" method="post" action="/make-planning">
-                <label for="planning_heur">Heure de reception quotidiennes de notifications</label>
-                <input id="planning_heur" type="number" name="planning_heure" value="16" min="00" max="23">
-
-                <br>
-
-
-                <label for="planning_interva">Fréquence de réception (intervalle de jour(s)) </label>
-                <input id="planning_interva" name="planning_interval" type="number" value="1" min="1" max="7">
-
-                <br>
-
-                <button type="submit" id="planning_btn">Confirmer</button>
-
+                <label for="planning_heur">Heure de réception quotidienne :</label>
+                <input id="planning_heur" type="number" name="planning_heure" value="16" min="0" max="23" class="input-field">
+                <label for="planning_interva">Fréquence de réception (jour(s)) :</label>
+                <input id="planning_interva" name="planning_interval" type="number" value="1" min="1" max="7" class="input-field">
+                <button type="submit" id="planning_btn" class="btn-confirm">Confirmer</button>
             </form>
         </div>
         <!-- Fin Block de planning -->
-
-        <img name="airplane-icon" src="/images/avion-en-papier.png" alt="" height="100">
     </div>
 
     <div class="search-bar">
-
-        <input id="interestInput" type="text" placeholder="rechercher un thème">
-        <button id="searchButton" type="submit">🔍</button>
-        <label for="checkBegining">Lire les informations déjà vues </label>
+        <input id="interestInput" type="text" placeholder="Rechercher un thème" class="search-input">
+        <button id="searchButton" type="submit" class="btn-search"><i class="fas fa-search"></i></button>
+        <label for="checkBegining" class="checkbox-label">Lire les informations déjà vues :</label>
         <input type="checkbox" id="checkBegining">
+    </div>
+
+    <div class="topic-messages">
+        <h2>Messages du Topic</h2>
+        <div id="messageContainer">
+            <!-- Les messages du topic sélectionné seront affichés ici -->
+        </div>
     </div>
 
     <div class="content">
         <aside class="sidebar">
             <h2>Liste des Topics Abonnés</h2>
-            <!-- Section HTML où seront affichés les topics -->
-                         <!-- Liste des topics avec un ID pour les manipulations dynamiques -->
-
             <ul id="topicList">
-                    <!-- Les topics récupérés depuis le backend seront insérés ici -->
-                </ul>
-
-
+                <!-- Les topics récupérés depuis le backend seront insérés ici -->
+            </ul>
         </aside>
 
-
         <section class="alert-list">
-            <section class="alert-list">
+            <div class="alert-cards">
                 <!-- Les alert-cards seront générées dynamiquement ici -->
-            </section>
-
+            </div>
         </section>
-        <!-- Ajouter votre lien vers le fichier JS -->
-        <script src="/js/home.js"></script>
-        <script src="/js/planning.js"></script>
-
     </div>
 </div>
+
+<script src="/js/home.js"></script>
+<script src="/js/planning.js"></script>
 </body>
 </html>
-
