@@ -1,6 +1,9 @@
 package ccsr.project.kafka.Controllers;
 
+import ccsr.project.kafka.Controllers.SubscriptionService;
 import ccsr.project.kafka.Models.Publisher;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +30,28 @@ public class SubscriptionController {
                     .body("Erreur lors de l'abonnement : " + e.getMessage());
         }
     }
+    @PostMapping("/subscribe-to-topic")
+    public ResponseEntity<String> subscribeToTopic(
+            @RequestParam String email,
+            @RequestParam String topicName) {
+        try {
+            boolean topicExists = SubscriptionService.doesTopicExist(topicName);
+            if (!topicExists) {
+                SubscriptionService.addTopic(topicName);
+            }
+
+            boolean isSubscribed = SubscriptionService.isUserSubscribed(email, topicName);
+            if (isSubscribed) {
+                return ResponseEntity.badRequest().body("Vous êtes déjà abonné à ce topic.");
+            }
+
+            SubscriptionService.subscribeUserToTopic(email, topicName);
+            return ResponseEntity.ok("Abonnement réussi au topic : " + topicName);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'abonnement : " + e.getMessage());
+        }
+    }
+
 
     @GetMapping("/subscriptions/user")
     public ResponseEntity<String> subscribe(@RequestParam String userEmail) {
@@ -55,6 +81,16 @@ public class SubscriptionController {
                     .body(Collections.emptyList()); // Retourne une liste vide en cas d'erreur
         }
     }
+    @GetMapping("/current-user-email")
+    public ResponseEntity<String> getCurrentUserEmail(HttpSession session) {
+        String userEmail = (String) session.getAttribute("userEmail");
+        if (userEmail != null) {
+            return ResponseEntity.ok(userEmail);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Utilisateur non connecté");
+        }
+    }
+
 
 
 }
