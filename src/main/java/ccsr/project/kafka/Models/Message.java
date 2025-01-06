@@ -104,7 +104,7 @@ public class Message {
                 System.out.println(onLineConsumer.assignment()+"---------après");*/
                 System.out.println(records.count());
 
-                while (records.isEmpty()) {
+                while (!records.isEmpty()) {
 
 
                     for (ConsumerRecord<String, String> record : records) {
