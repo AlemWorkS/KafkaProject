@@ -1,7 +1,6 @@
 package ccsr.project.kafka.Controllers;
 
 
-import ccsr.project.kafka.Controllers.DatabaseConnection;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -10,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Service
-public class UserService {
+public class LoginService {
 
     /**
      * Enregistre un nouvel utilisateur dans la base de données.

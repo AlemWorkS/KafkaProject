@@ -16,7 +16,7 @@ import java.sql.ResultSet;
 
 
 @RestController
-public class NotificationsController {
+public class  NotificationsController {
 
     @PostMapping("/make-planning")
     public ResponseEntity<String> makePlanning(@RequestParam String planning_heure, @RequestParam String planning_interval, HttpSession session) {
