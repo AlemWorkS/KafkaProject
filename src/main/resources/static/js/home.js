@@ -68,6 +68,9 @@ function searchMessages(interest) {
                     const messageContent = isMessageReadOrEmpty
                         ? `<p>Message : Aucun Nouveau Message sur le topic ${data.theme}</p>`
                         : `<p><span>Message : </span>${data.message.substring(0, 50)}...</p>`;
+                    const seeMoreButton = !isMessageReadOrEmpty
+                                            ? `<button class="btn-see-more" onclick="viewFullMessage('${data.message}')">Voir Plus</button>`
+                                            : "";
 
                     // Ajouter la structure HTML de chaque topic
                     card.innerHTML = `
