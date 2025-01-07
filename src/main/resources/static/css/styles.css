@@ -7,6 +7,7 @@ body {
     color: #333;
 }
 
+
 /* Header */
 .header {
     background-color: #1a1a55;
@@ -47,38 +48,57 @@ body {
 .btn-logout:hover {
     background-color: #cc4a4a;
 }
+//* Main */
+ .main {
+     padding: 20px;
+ }
 
-/* Main */
-.main {
-    padding: 20px;
-}
+ /* Main Header */
+ .main-header {
+     background-color: #2c2c88;
+     color: white;
+     padding: 20px;
+     border-radius: 10px;
+     display: flex;
+     justify-content: space-between;
+     align-items: flex-start;
+     gap: 20px;
+     flex-wrap: wrap;
+ }
 
-/* Main Header */
-.main-header {
-    background-color: #2c2c88;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
+ .planning p {
+     margin: 0;
+     font-size: 1.2rem;
+     font-weight: bold;
+     margin-bottom: 10px;
+ }
+/* Checkbox Container */
+.checkbox-container {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
-.planning p {
+.checkbox-container input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
     margin: 0;
-    font-size: 1.2rem;
-    font-weight: bold;
+    cursor: pointer;
+}
+
+.checkbox-container label {
+    font-size: 1rem;
+    cursor: pointer;
 }
 
 .input-field {
-    margin: 10px 0;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
     width: 100%;
     font-size: 1rem;
+    margin-bottom: 15px;
 }
 
 .btn-confirm {
@@ -95,7 +115,6 @@ body {
 .btn-confirm:hover {
     background-color: #3b59a1;
 }
-
 /* Search Bar */
 .search-bar {
     margin: 20px 0;
@@ -141,14 +160,26 @@ body {
     width: 250px;
 }
 
-/* Alert Cards Section */
-.alert-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
-    gap: 20px;
-    flex: 1;
+/* Alert List Container */
+.alert-list-container {
+    display: flex;
+    justify-content: center; /* Centre horizontalement */
+    flex-wrap: wrap; /* Permet de passer sur plusieurs lignes */
+    gap: 20px; /* Espacement entre les cartes */
+    margin: 20px;
 }
 
+/* Alert List */
+.alert-list {
+    display: flex;
+    flex-direction: row-reverse; /* Inverser la direction (droite à gauche) */
+    flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
+    gap: 20px; /* Espacement entre les cartes */
+    width: 100%; /* Prendre toute la largeur */
+    justify-content: center; /* Centrer les éléments */
+}
+
+/* Alert Card */
 .alert-card {
     background-color: white;
     border: 1px solid #ddd;
@@ -156,33 +187,41 @@ body {
     padding: 20px;
     text-align: center;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    height: 300px; /* Taille fixe */
+    height: 250px; /* Taille fixe */
     width: 300px; /* Taille fixe */
-    margin: 10px
+    display: flex;
+    flex-direction: column; /* Organiser le contenu verticalement */
+    justify-content: space-between; /* Uniformiser l'espacement interne */
+    margin: 10px;
 }
 
+/* Alert Card Header */
 .alert-card h2 {
     font-size: 1.2rem;
     color: #1a1a55;
 }
 
+/* Alert Card Content */
 .alert-card p {
     font-size: 1rem;
     color: #555;
 }
 
-.alert-card button {
-    margin: 10px 5px;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    background-color: #4a6ed9;
+/* Bouton Voir Plus */
+.btn-see-more {
+    padding: 10px 15px;
+    background-color: #1a1a55;
     color: white;
-    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
     font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
 }
 
-.alert-card button:hover {
+.btn-see-more:hover {
     background-color: #3b59a1;
 }
 
@@ -217,67 +256,3 @@ body {
 .btn-subscribe:hover {
     background-color: #3E8E41;
 }
-
-/* Alert Cards */
-.alert-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
-    gap: 20px;
-}
-
-.alert-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    height: 250px;
-    width: 300px;
-    margin: 10px;
-}
-
-.alert-card h2 {
-    font-size: 1.2rem;
-    color: #1a1a55;
-}
-
-.alert-card p {
-    font-size: 1rem;
-    color: #555;
-}
-
-/* Bouton Voir Plus */
-.btn-see-more {
-    padding: 10px 15px;
-    background-color:  #1a1a55;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-see-more:hover {
-    background-color:  #1a1a55;
-}
-
-
-/* Alert Cards */
-.alert-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    height: 250px; /* Taille fixe */
-    width: 300px; /* Taille fixe */
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
