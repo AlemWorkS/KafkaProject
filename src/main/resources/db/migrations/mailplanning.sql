@@ -31,9 +31,9 @@ DROP TABLE IF EXISTS `mailplanning`;
 CREATE TABLE IF NOT EXISTS `mailplanning` (
   `id` int NOT NULL AUTO_INCREMENT,
   `topic` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `interval_de_jour` int NOT NULL,
+  `interval_de_jour` int NULL,
   `dernier_jour_env` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `heure_env` int NOT NULL,
+  `heure_env` int NULL,
   `user_mail` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `mail_lu` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)

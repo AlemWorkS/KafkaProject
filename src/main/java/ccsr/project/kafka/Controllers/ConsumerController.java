@@ -153,7 +153,7 @@ public class ConsumerController {
                 public void run() {
                     System.out.println("Verification Planning.........................................................");
                     //Requête de récupération des emails à envoyer
-                    String query = "SELECT topic,heure_env,user_mail FROM mailplanning where mail_a_env = 1";
+                    String query = "SELECT topic,heure_env,user_mail FROM mailplanning where mail_lu = 1";
 
                     try (Connection connection = DatabaseConnection.getConnection();
                          PreparedStatement statement = connection.prepareStatement(query)) {
@@ -165,7 +165,9 @@ public class ConsumerController {
                         int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
 
                         //on vérifie si il y'a un résultat dans resultSet et si l'heure système est égale heure_env dans resultSet
-                        while (resultSet.next() && resultSet.getInt("heure_env") == currentHour) {
+                        while (resultSet.next() && (resultSet.getInt("heure_env") == currentHour || resultSet.getInt("heure_env") == 0)) {
+
+                            System.out.println("Message envoyé");
 
 
                             //On récupère les emails et les topics à qui il a été planifié d'envoyer un message
@@ -179,7 +181,7 @@ public class ConsumerController {
                             //On envoie l'email
                             EmailConfig.sendEmail(subscriberEmail, emailSubject, emailContent);
                             //On marque qu'il n'y a plus de message à envoyer dans la table mailplanning
-                            deplanifierMail(subscriberEmail);
+                                deplanifierMail(subscriberEmail);
                         }
                     } catch (SQLException | EmailException e) {
                         e.printStackTrace();
@@ -290,6 +292,8 @@ public class ConsumerController {
                 return;
             }
 
+            System.out.println("Azertypically");
+
             // Plannifier l'envoi d'un message pour chaque subscriber du topic
             for (String subscriberEmail : subscribers) {
 
@@ -298,7 +302,7 @@ public class ConsumerController {
 
                 try (Connection connection = DatabaseConnection.getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setBoolean(1, false);
+                    preparedStatement.setBoolean(1, true);
                     preparedStatement.setString(2, subscriberEmail);
                     //System.out.println(6);
                     preparedStatement.executeUpdate();
@@ -316,7 +320,7 @@ public class ConsumerController {
 
             try (Connection connection = DatabaseConnection.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setBoolean(1, true);
+                preparedStatement.setBoolean(1, false);
                 preparedStatement.setString(2, subscriberEmail);
                 //System.out.println(6);
                 preparedStatement.executeUpdate();
@@ -330,28 +334,4 @@ public class ConsumerController {
 
 
 }
-
-
-    /*public static Producer<String, String> getProducer() {
-        // Crée un objet Properties pour stocker les configurations nécessaires du producteur Kafka
-        Properties props = new Properties();
-
-        // Définir l'adresse du broker Kafka auquel le producteur doit se connecter
-        // Ici, on utilise "localhost:9092", ce qui signifie que Kafka est exécuté localement sur le port 9092.
-        props.put("bootstrap.servers", "localhost:9092");
-
-        // Configurer le sérialiseur pour les clés des messages.
-        // Ce sérialiseur transforme les clés en chaînes de caractères pour qu'elles soient compréhensibles par Kafka.
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-        // Configurer le sérialiseur pour les valeurs des messages.
-        // De même, cela transforme les valeurs en chaînes de caractères compréhensibles par Kafka.
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-        // Crée et retourne une instance de KafkaProducer en utilisant les propriétés configurées.
-        // Ce producteur sera utilisé pour envoyer des messages à des topics Kafka.
-        return new KafkaProducer<>(props);
-    }*/
-
-
 
