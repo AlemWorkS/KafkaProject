@@ -31,10 +31,10 @@
         <div class="planning">
             <p>Planning de réception des alertes</p>
             <form id="planning_form" method="post" action="/make-planning">
-
-                <label for="alwaysBox"> Recevoir des notifications à chaque nouveau message ! </label>
-                <input id="alwaysBox" type="checkbox" name="always" class="input-field">
-
+                <div class="checkbox-container">
+                    <input id="alwaysBox" type="checkbox" name="always">
+                    <label for="alwaysBox">Recevoir des notifications à chaque nouveau message !</label>
+                </div>
                 <label for="planning_heure">Heure de réception quotidienne :</label>
                 <input id="planning_heure" type="number" name="planning_heure" value="16" min="0" max="23" class="input-field">
                 <label for="planning_interval">Fréquence de réception (jour(s)) :</label>
@@ -42,6 +42,7 @@
                 <button type="submit" id="planning_btn" class="btn-confirm">Confirmer</button>
             </form>
         </div>
+
     </div>
 
     <div class="search-bar">
@@ -67,13 +68,13 @@
             </ul>
         </aside>
 
-        <section class="alert-list" style="display: flex; flex-wrap: wrap; gap: 5%;">
-            <div class="alert-cards">
-                <!-- Exemple d'alert-card -->
+        <section class="alert-list-container">
+            <div class="alert-list">
                 <!-- Les cartes dynamiques avec bouton Voir Plus seront générées ici -->
             </div>
         </section>
     </div>
+
 </div>
 
 <script src="/js/home.js"></script>
