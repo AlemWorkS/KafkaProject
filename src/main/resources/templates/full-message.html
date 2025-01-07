@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Complet - Omega Alerts</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/full-message.css">
+</head>
+<body>
+<header class="header">
+    <div class="header-logo">
+        <img src="/images/a-clean-modern-logo-for-an-omega-alerts-service-th-teRc4vyUROqILbBJuSB7wQ-kxVs_jmHQy2iioc8rW7KHg-removebg-preview.png" alt="Logo Omega Alerts">
+        <span>OMEGA ALERTS</span>
+    </div>
+    <div>
+        <a href="/home" class="btn-back">Retour</a>
+    </div>
+</header>
+
+<div class="message-container">
+    <h1 id="message-title">Titre du Message</h1>
+    <p id="message-content">Le contenu du message sera affiché ici.</p>
+</div>
+
+<script>
+    // Récupérer le message depuis l'URL
+    const params = new URLSearchParams(window.location.search);
+    const messageTitle = params.get("title");
+    const messageContent = params.get("content");
+
+    // Injecter les données dans la page
+    document.getElementById("message-title").innerText = messageTitle;
+    document.getElementById("message-content").innerText = messageContent;
+</script>
+</body>
+</html>

@@ -47,31 +47,36 @@ function searchMessages(interest) {
     }
 
     if (interest) {
-        console.log(interest);
         fetch(url)
             .then((response) => response.json())
             .then((topics) => {
-                // Vider les cartes existantes
                 const alertList = document.querySelector(".alert-list");
-                alertList.innerHTML = "";
+                alertList.innerHTML = ""; // Vider les cartes existantes
 
                 Object.keys(topics).forEach((topic) => {
-                    console.log(topic + "");
                     const data = topics[topic];
 
+                    // Créer la carte pour chaque topic
                     const card = document.createElement("div");
                     card.classList.add("alert-card");
 
-                    // Vérifier si un message est vide ou déjà lu
-                    const isMessageReadOrEmpty = data.message === "" || data.message.includes("Aucun Nouveau Message");
+                    // Vérifier si le message est vide ou déjà lu
+                    const isMessageReadOrEmpty =
+                        data.message === "" || data.message.includes("Aucun Nouveau Message");
+
+                    // Générer le contenu de la carte
                     const messageContent = isMessageReadOrEmpty
                         ? `<p>Message : Aucun Nouveau Message sur le topic ${data.theme}</p>`
                         : `<p><span>Message : </span>${data.message.substring(0, 50)}...</p>`;
-                    const seeMoreButton = !isMessageReadOrEmpty
-                                            ? `<button class="btn-see-more" onclick="viewFullMessage('${data.message}')">Voir Plus</button>`
-                                            : "";
 
-                    // Ajouter la structure HTML de chaque topic
+                    // Générer le bouton Voir Plus uniquement si le message n'est pas vide
+                    const seeMoreButton = !isMessageReadOrEmpty
+                        ? `<a href="/full-message?title=${encodeURIComponent(
+                              data.theme
+                          )}&content=${encodeURIComponent(data.message)}" class="btn-see-more">Voir Plus</a>`
+                        : "";
+
+                    // Ajouter le contenu HTML à la carte
                     card.innerHTML = `
                         <div class="alert-card-header">
                             <h2>Theme : ${data.theme}</h2>
@@ -79,6 +84,8 @@ function searchMessages(interest) {
                         ${messageContent}
                         ${seeMoreButton}
                     `;
+
+                    // Ajouter la carte à la liste
                     alertList.appendChild(card);
                 });
             })
@@ -90,10 +97,6 @@ function searchMessages(interest) {
     }
 }
 
-// Fonction pour afficher le message complet dans une alerte
-function viewFullMessage(message) {
-    alert(`Message complet : ${message}`);
-}
 
 
 
