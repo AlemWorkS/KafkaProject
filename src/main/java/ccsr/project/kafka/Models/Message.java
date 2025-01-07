@@ -62,46 +62,12 @@ public class Message {
         String sanitizedTopicName = sanitizeTopicName(topicName);
 
         onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
-        ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofSeconds(1));
+        ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(100));
 
         try {
             if (Topic.isValid(topicName) && Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
                 System.out.println(onLineConsumer.groupMetadata().groupId());
 
-/*
-                        onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
-                        //onLineConsumer.poll(Duration.ofSeconds(1));
-
-                System.out.println(Agents.getConsummer().assignment());
-                System.out.println(onLineConsumer.committed(Agents.getConsummer().assignment()));
-                System.out.println(onLineConsumer.partitionsFor(topicName));
-                System.out.println(onLineConsumer.assignment()+"---------avant--avant");
-
-                    List<TopicPartition> tp = new ArrayList<>();
-                    boolean b = false;
-                    while (onLineConsumer.assignment().iterator().hasNext() && !b) {
-                        tp.add((TopicPartition) onLineConsumer.assignment().iterator().next());
-                        b = true;
-                        System.out.println("ff");
-                    }
-                    if (!tp.isEmpty()){
-                        if (fromBeginning) {
-
-                            onLineConsumer.seek(tp.getFirst(), 0);
-                            onLineConsumer.seekToBeginning(tp);
-                        }else{
-                            onLineConsumer.seek(tp.getFirst(), onLineConsumer.position(tp.getFirst()));
-                    }
-
-                } else {
-                    onLineConsumer.unsubscribe();
-                    }
-
-
-                System.out.println(Agents.getConsummer().assignment());
-                System.out.println(onLineConsumer.committed(Agents.getConsummer().assignment()));
-                System.out.println(onLineConsumer.partitionsFor(topicName));
-                System.out.println(onLineConsumer.assignment()+"---------après");*/
                 System.out.println(records.count());
 
                 while (!records.isEmpty()) {
@@ -142,9 +108,11 @@ public class Message {
                         System.out.println("message");
                     }
 
-                    records = onLineConsumer.poll(Duration.ofSeconds(1));
+                    records = onLineConsumer.poll(Duration.ofMillis(100));
 
                 }
+                onLineConsumer.unsubscribe();
+                onLineConsumer.close();
                 } else{
                     messageNull.put("message", "");
                     messageNull.put("producer", "System");
