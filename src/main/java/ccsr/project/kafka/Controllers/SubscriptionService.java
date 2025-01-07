@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SubscriptionService {
 
-    <<<<<<<HEAD
 
-    =======>>>>>>>6 a1431c3b36647f0328faf8d6b471cca473a65ed
     public void addSubscription(String userEmail, String topicName) throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
