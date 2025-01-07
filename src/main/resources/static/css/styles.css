@@ -250,7 +250,7 @@ body {
 /* Bouton Voir Plus */
 .btn-see-more {
     padding: 10px 15px;
-    background-color: #FFA500;
+    background-color:  #1a1a55;
     color: white;
     border: none;
     border-radius: 10px;
@@ -261,25 +261,9 @@ body {
 }
 
 .btn-see-more:hover {
-    background-color: #CC8400;
-}
-/* Bouton Voir Plus */
-.btn-see-more {
-    padding: 10px 15px;
-    background-color: #FFA500;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 10px;
+    background-color:  #1a1a55;
 }
 
-.btn-see-more:hover {
-    background-color: #CC8400;
-}
 
 /* Alert Cards */
 .alert-card {

@@ -65,6 +65,11 @@ public class Router {
         return "connexion";
     }
 
+    @GetMapping("/full-message")
+    public String fullMessage() {
+        // Retourne la vue "full-message.html"
+        return "full-message";
+    }
 
 
 }
