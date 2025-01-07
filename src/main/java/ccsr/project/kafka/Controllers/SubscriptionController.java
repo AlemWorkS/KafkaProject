@@ -20,17 +20,17 @@ import java.util.Set;
 @RestController
 public class SubscriptionController {
 
-
     @PostMapping("/subscriptions/subscribe")
     public ResponseEntity<String> subscribe(@RequestParam String topicName, @RequestParam String userEmail) {
         try {
-            ConsumerController.subscribeUserToTopic(userEmail,topicName);
+            ConsumerController.subscribeUserToTopic(userEmail, topicName);
             return ResponseEntity.ok("Abonnement enregistré avec succès !");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erreur lors de l'abonnement : " + e.getMessage());
         }
     }
+
     @PostMapping("/subscribe-to-topic")
     public ResponseEntity<String> subscribeToTopic(
             @RequestParam String email,
@@ -49,7 +49,8 @@ public class SubscriptionController {
             SubscriptionService.subscribeUserToTopic(email, topicName);
             return ResponseEntity.ok("Abonnement réussi au topic : " + topicName);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'abonnement : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors de l'abonnement : " + e.getMessage());
         }
     }
 
@@ -81,6 +82,7 @@ public class SubscriptionController {
                     .body(Collections.emptyList()); // Retourne une liste vide en cas d'erreur
         }
     }
+
     @GetMapping("/current-user-email")
     public ResponseEntity<String> getCurrentUserEmail(HttpSession session) {
         String userEmail = (String) session.getAttribute("userEmail");
@@ -90,7 +92,5 @@ public class SubscriptionController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Utilisateur non connecté");
         }
     }
-
-
 
 }

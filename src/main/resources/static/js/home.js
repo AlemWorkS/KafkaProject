@@ -40,7 +40,6 @@ document.getElementById("checkBegining").addEventListener("change", function () 
 
 //Block fonction de recherche des messages topics
 
-// Fonction de recherche des messages topics
 function searchMessages(interest) {
     var url = `/search-topics?interest=${interest}&fromBeginning=false`;
     if (document.getElementById("checkBegining").checked) {
@@ -95,6 +94,7 @@ function searchMessages(interest) {
 function viewFullMessage(message) {
     alert(`Message complet : ${message}`);
 }
+
 
 
 
