@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class SubscriptionService {
 
+    <<<<<<<HEAD
 
+    =======>>>>>>>6 a1431c3b36647f0328faf8d6b471cca473a65ed
     public void addSubscription(String userEmail, String topicName) throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -32,7 +34,8 @@ public class SubscriptionService {
             } else {
                 // Sinon, insérez le topic et récupérez son ID
                 String insertTopicQuery = "INSERT INTO topics (name) VALUES (?)";
-                preparedStatement = connection.prepareStatement(insertTopicQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+                preparedStatement = connection.prepareStatement(insertTopicQuery,
+                        PreparedStatement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, topicName);
                 preparedStatement.executeUpdate();
 
@@ -63,21 +66,24 @@ public class SubscriptionService {
             preparedStatement.setBoolean(5, false);
             preparedStatement.executeUpdate();
 
-
         } catch (SQLException e) {
             messageContent = "Échoué";
             throw new SQLException("Erreur lors de l'insertion dans la table subscription : " + e.getMessage(), e);
         } finally {
-            if (resultSet != null) resultSet.close();
-            if (preparedStatement != null) preparedStatement.close();
-            if (connection != null) connection.close();
+            if (resultSet != null)
+                resultSet.close();
+            if (preparedStatement != null)
+                preparedStatement.close();
+            if (connection != null)
+                connection.close();
         }
     }
+
     public static List<String> getSubscribersEmailsForTopic(String topicName) {
         List<String> subscribers = new ArrayList<>();
         String query = "SELECT email FROM subscription WHERE topic_name = ?";
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+                PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, topicName);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -88,6 +94,7 @@ public class SubscriptionService {
         }
         return subscribers;
     }
+
     // Service pour interagir avec la base de données concernant les abonnements
     public static List<String> getTopicsForUser(String userEmail) {
         List<String> topics = new ArrayList<>();
@@ -96,7 +103,7 @@ public class SubscriptionService {
         System.out.println("Début de la récupération des topics pour l'utilisateur : " + userEmail);
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+                PreparedStatement statement = connection.prepareStatement(query)) {
 
             // Remplace le paramètre ? par l'email de l'utilisateur
             statement.setString(1, userEmail);
@@ -130,7 +137,7 @@ public class SubscriptionService {
     public static boolean doesTopicExist(String topicName) {
         String query = "SELECT COUNT(*) FROM topics WHERE name = ?";
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+                PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, topicName);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -145,7 +152,7 @@ public class SubscriptionService {
     public static void addTopic(String topicName) {
         String query = "INSERT INTO topics (name) VALUES (?)";
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+                PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, topicName);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -156,7 +163,7 @@ public class SubscriptionService {
     public static boolean isUserSubscribed(String email, String topicName) {
         String query = "SELECT COUNT(*) FROM subscription WHERE email = ? AND topic_name = ?";
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+                PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
             statement.setString(2, topicName);
             ResultSet resultSet = statement.executeQuery();
@@ -181,5 +188,6 @@ public class SubscriptionService {
         }
     }
 
+    
 }
-
+ 
