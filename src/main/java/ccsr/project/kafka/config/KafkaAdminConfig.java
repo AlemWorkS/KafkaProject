@@ -1,5 +1,6 @@
 package ccsr.project.kafka.config;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,7 @@ public class KafkaAdminConfig {
 
     @Bean
     public AdminClient adminClient() {
-        String bootstrapServers = "localhost:29092,localhost:39092,localhost:49092";
+        String bootstrapServers = Config.KAFKA_SERVERS;
 
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers); // Adresse de votre cluster Kafka

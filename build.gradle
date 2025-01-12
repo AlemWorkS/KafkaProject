@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'org.flywaydb.flyway' version '8.4.4' // Plugin Flyway
+    id 'application'
 
 }
 
@@ -15,6 +15,11 @@ java {
     }
 }
 
+application {
+    mainClass = 'ccsr.project.kafka.KafkaApplication' // Remplacez par votre classe principale
+}
+
+
 repositories {
     mavenCentral()
 }
@@ -23,7 +28,7 @@ dependencies {
     // Dépendances pour Spring Boot et Kafka
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'org.apache.kafka:kafka-clients:3.7.0'
+    implementation 'org.apache.kafka:kafka-clients:3.7.1'
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Validation des données formulaire
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

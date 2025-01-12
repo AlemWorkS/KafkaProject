@@ -1,0 +1,6 @@
+servers_kafka: 127.0.0.1:29092,127.0.0.1:39092,127.0.0.1:49092
+db_host: 127.0.0.1
+db_port: 3306
+db_name: omegadb
+db_user: alem
+db_password:

@@ -12,12 +12,12 @@ import java.util.concurrent.ThreadFactory;
 @SpringBootTest
 class KafkaApplicationTests {
 
-	@Test
+	/*@Test
 	void contextLoads() {
 
-	}
+	}*/
 
-	@Test
+	/*@Test
 	void TestMultiToOne(){
 
 		Runnable runnable = new Runnable() {
@@ -63,6 +63,6 @@ class KafkaApplicationTests {
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
 }

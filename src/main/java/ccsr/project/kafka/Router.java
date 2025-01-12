@@ -1,7 +1,9 @@
 package ccsr.project.kafka;
 
+import ccsr.project.kafka.Controllers.KafkaTopicController;
 import ccsr.project.kafka.Models.Message;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,6 +72,14 @@ public class Router {
         // Retourne la vue "full-message.html"
         return "full-message";
     }
+
+    @GetMapping("/search-topics")
+     public ResponseEntity<HashMap<Integer, HashMap<String, String>>> functionSearchTopic (@RequestParam String interest, @RequestParam boolean fromBeginning, HttpSession session){
+        KafkaTopicController k = new KafkaTopicController();
+        return k.searchTopics(interest,fromBeginning,session);
+    }
+
+
 
 
 }

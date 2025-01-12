@@ -2,6 +2,7 @@ package ccsr.project.kafka.Controllers;
 
 import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
+import ccsr.project.kafka.config.Config;
 import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionEvent;
@@ -21,14 +22,14 @@ public class KafkaTopicController {
     /**
      * @return
      */
-    @GetMapping("/search-topics")
+    //@GetMapping("/search-topics")
     public ResponseEntity<HashMap<Integer, HashMap<String, String>>> searchTopics(@RequestParam String interest, @RequestParam boolean fromBeginning, HttpSession session) {
         HashMap<Integer, HashMap<String, String>> topics;
         try {
             if(session != null && !((String) session.getAttribute("userEmail")).isEmpty()) {
                 System.out.println((String) session.getAttribute("userEmail"));
                 Properties props = new Properties();
-                props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092,localhost:39092,localhost:49092"); // Remplacez par votre serveur Kafka
+                props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, Config.KAFKA_SERVERS); // Remplacez par votre serveur Kafka
                 if(fromBeginning) {
                     props.put(ConsumerConfig.GROUP_ID_CONFIG, "thread-" + session.getAttribute("userEmail") + 1+UUID.randomUUID());
                     props.put(ConsumerConfig.CLIENT_ID_CONFIG, "thread-"+session.getAttribute("userEmail")+1+UUID.randomUUID());

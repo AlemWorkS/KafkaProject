@@ -18,10 +18,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    serverAddress: "127.0.0.1:29092,127.0.0.1:39092,127.0.0.1:49092",
-                }),
+                }
             })
                 .then((response) => response.text())
                 .then((data) => {

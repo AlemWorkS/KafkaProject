@@ -62,7 +62,12 @@ public class Message {
         String sanitizedTopicName = sanitizeTopicName(topicName);
 
         onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
-        ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(100));
+        onLineConsumer.poll(Duration.ofMillis(100));
+        onLineConsumer.unsubscribe();
+
+
+        onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+        ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(500));
 
         try {
             if (Topic.isValid(topicName) && Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
@@ -108,10 +113,9 @@ public class Message {
                         System.out.println("message");
                     }
 
-                    records = onLineConsumer.poll(Duration.ofMillis(100));
+                    records = onLineConsumer.poll(Duration.ofMillis(500));
 
                 }
-                onLineConsumer.unsubscribe();
                 onLineConsumer.close();
                 } else{
                     messageNull.put("message", "");

@@ -1,6 +1,6 @@
 package ccsr.project.kafka; // Assurez-vous que ce package correspond à votre projet.
 
-import ccsr.project.kafka.Controllers.EmailConfig;
+/*import ccsr.project.kafka.Controllers.EmailConfig;
 
 public class EmailTest {
     public static void main(String[] args) {
@@ -12,3 +12,4 @@ public class EmailTest {
         }
     }
 }
+*/
