@@ -1,5 +1,6 @@
 package ccsr.project;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -16,8 +17,8 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
 // Configuration du consommateur Kafka
-        Properties props = new Properties();
-        props.setProperty("bootstrap.servers", "localhost:29092,localhost:49092"); // Adresse de votre broker Kafka
+        /*Properties props = new Properties();
+        props.setProperty("bootstrap.servers", Dotenv.load().get("KAFKA_SERVERS")); // Adresse de votre broker Kafka
         props.setProperty("group.id", "smart-consumer-groupist");
         props.setProperty(ConsumerConfig.CLIENT_ID_CONFIG,"smart-consumer-groupist");// ID du groupe de consommateurs
         props.setProperty("key.deserializer", StringDeserializer.class.getName());
@@ -54,7 +55,7 @@ public class Main {
         } finally {
             // Fermeture du consommateur
             consumer.close();
-        }
+        }*/
     }
 
 

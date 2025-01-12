@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const createTopicButton = document.getElementById('createTopicButton');
     let serverAddress = '';
 
+
+
     // Gérer la connexion au serveur Kafka
     connectButton.addEventListener('click', function () {
         serverAddress = 'localhost:29092,localhost:39092,localhost:49092';
@@ -13,10 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    serverAddress: serverAddress
-                })
+                }
             })
                 .then(response => response.text())
                 .then(data => {
@@ -42,9 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams({
-                    topicName: topicName,
-                    serverAddress: serverAddress
-                })
+                    topicName: topicName                })
             })
                 .then(response => response.text())
                 .then(data => {
@@ -63,8 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Charger les topics existants
     function loadTopics() {
-        if (serverAddress) {
-            fetch(`/list-topics?serverAddress=${serverAddress}`)
+            fetch(`/list-topics`)
                 .then(response => response.json())
                 .then(topics => {
                     let topicList = document.getElementById("topic-list");
@@ -77,5 +73,4 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => console.error('Erreur lors de la récupération des topics:', error));
         }
-    }
 });

@@ -1,6 +1,8 @@
 package ccsr.project.kafka.Controllers;
 
+import ccsr.project.kafka.Models.Agents;
 import ccsr.project.kafka.Models.Message;
+import ccsr.project.kafka.config.Config;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.servlet.http.HttpSession;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -18,31 +20,6 @@ import java.util.concurrent.Future;
 @RestController
 @RequestMapping("/producer")
 public class ProducerController {
-
-
-    private AdminClient adminClient; // Client Kafka pour la gestion
-
-    @PostMapping("/connect-publisher")
-    public ResponseEntity<String> connectToKafka(@RequestParam String serverAddress) {
-        try {
-            Properties config = new Properties();
-            config.put("bootstrap.servers", serverAddress);
-            adminClient = AdminClient.create(config);
-
-            // Vérification de la connexion au serveur Kafka
-            if(!adminClient.describeCluster().nodes().get().isEmpty()) {
-                return ResponseEntity.ok("Connecté au serveur Kafka");
-            }
-            else{
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Erreur lors de la connexion au serveur Kafka");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la connexion au serveur Kafka : " + e.getMessage());
-        }
-    }
 
 
     @PostMapping("/send-message")
@@ -74,7 +51,7 @@ public class ProducerController {
 
         // Configuration du Kafka Producer
         Properties props = new Properties();
-        props.put("bootstrap.servers", Dotenv.load().get("KAFKA_SERVERS"));
+        props.put("bootstrap.servers", Config.KAFKA_SERVERS);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 2);
@@ -105,24 +82,38 @@ public class ProducerController {
 
     }
 
+    @PostMapping("/connect-publisher")
+    public ResponseEntity<String> connectToKafka() {
+
+        try {
+            // Vérification de la connexion au serveur Kafka
+            if(!Agents.getAdminClient().describeCluster().nodes().get().isEmpty()) {
+                return ResponseEntity.ok("Connecté au serveur Kafka");
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Erreur lors de la connexion au serveur Kafka");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors de la connexion au serveur Kafka : " + e.getMessage());
+        }
+    }
+
     // Vérifie si un topic existe
     private boolean topicExists(String topicName) throws Exception {
-        Properties config = new Properties();
-        config.put("bootstrap.servers",Dotenv.load().get("KAFKA_SERVERS"));
-        try (AdminClient adminClient = AdminClient.create(config)) {
-            return adminClient.listTopics().names().get().contains(topicName);
-        }
+
+            return Agents.getAdminClient().listTopics().names().get().contains(topicName);
     }
 
     // Méthode pour créer un topic s'il n'existe pas
     private void createTopicIfNotExists(String topicName) throws Exception {
-        Properties config = new Properties();
-        config.put("bootstrap.servers", Dotenv.load().get("KAFKA_SERVERS"));
-        try (AdminClient adminClient = AdminClient.create(config)) {
-            if (!adminClient.listTopics().names().get().contains(topicName)) {
-                adminClient.createTopics(Collections.singletonList(new NewTopic(topicName, 1, (short) 1)));
+
+            if (!Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
+                Agents.getAdminClient().createTopics(Collections.singletonList(new NewTopic(topicName, 1, (short) 1)));
             }
-        }
+
     }
 
     // Nettoyage du nom du topic
@@ -132,12 +123,9 @@ public class ProducerController {
     @GetMapping("/list-topics")
     public ResponseEntity<List<String>> listTopics() {
         try {
-            if (adminClient == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Collections.singletonList("Veuillez d'abord vous connecter au serveur Kafka."));
-            }
 
-            Set<String> topics = adminClient.listTopics().names().get();
+
+            Set<String> topics = Agents.getAdminClient().listTopics().names().get();
             return ResponseEntity.ok(new ArrayList<>(topics));
         } catch (Exception e) {
             e.printStackTrace();
