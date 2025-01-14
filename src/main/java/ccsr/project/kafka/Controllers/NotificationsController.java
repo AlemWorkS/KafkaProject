@@ -57,28 +57,13 @@ public class  NotificationsController {
                     int rowsAffected = stat.executeUpdate();
                     System.out.println("c");
                 }
-            } else {
-             
-query = "INSERT INTO mailplanning (``,``,``)  VALUES (?,?) ;
+                return ResponseEntity.ok("Vous recevrez vos notifications chaque " + planning_interval + " jours à " + planning_heure);
 
-try (Connection connection = DatabaseConnection.getConnection();
-                     PreparedStatement stat = connection.prepareStatement(query)) {
-
-                    if (!always.equals("on")) {
-                        stat.setObject(1, planning_heure, Types.INTEGER);
-                        stat.setObject(2, planning_interval, Types.INTEGER);
-                    } else {
-                        stat.setNull(1, Types.INTEGER);
-                        stat.setNull(2, Types.INTEGER);
-                    }
-
-                    stat.setString(3, userEmail);
-                    int rowsAffected = stat.executeUpdate();
-                    System.out.println("c");
+            } else{
+                return ResponseEntity.ok("Vous devez souscrire à un topic");
 
             }
 
-            return ResponseEntity.ok("Vous recevrez vos notifications chaque " + planning_interval + " jours à " + planning_heure);
 
         } catch (SQLException e) {
             System.out.println("e");

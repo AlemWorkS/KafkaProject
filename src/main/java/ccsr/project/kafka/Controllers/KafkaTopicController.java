@@ -52,6 +52,8 @@ public class KafkaTopicController {
                 topics = Message.getMessagesFromTopic(interest,fromBeginning,null,"noMail");
             }
 
+
+
             return ResponseEntity.ok(topics);
         } catch (Exception e) {
             System.out.println(e.getMessage());
