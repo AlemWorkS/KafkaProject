@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -215,6 +212,8 @@ public class ConsumerController {
          */
 
         private static void planifierMail(String topicName) {
+
+            boolean insert = false;
             // Récupérer les abonnés au topic
             List<String> subscribers = SubscriptionService.getSubscribersEmailsForTopic(topicName);
 
@@ -229,19 +228,52 @@ public class ConsumerController {
             // Plannifier l'envoi d'un message pour chaque subscriber du topic
             for (String subscriberEmail : subscribers) {
 
-                //requête pour planifier les envoies d'email
-                String query = "UPDATE mailplanning SET mail_lu = ? WHERE user_mail = ?";
-
+                String querySelect = "SELECT * FROM mailplanning WHERE user_mail = ?";
                 try (Connection connection = DatabaseConnection.getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setBoolean(1, true);
-                    preparedStatement.setString(2, subscriberEmail);
-                    //System.out.println(6);
-                    preparedStatement.executeUpdate();
+                     PreparedStatement preparedStatement = connection.prepareStatement(querySelect)) {
+                    preparedStatement.setString(1, subscriberEmail);
 
-                    System.out.println("Email planifié : " + subscriberEmail);
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de la planification de l'email à " + subscriberEmail + " : " + e.getMessage());
+
+
+                        ResultSet resultSet = preparedStatement.executeQuery();
+                    if(resultSet != null && resultSet.next()){
+                        insert = true;
+                        String query = "INSERT INTO mailplanning(topic,interval_de_jour,heure_env,user_mail,mail_lu) VALUES (?,?,?,?,?)";
+
+                        try (PreparedStatement stat = connection.prepareStatement(query)) {
+
+
+                                stat.setString(1, topicName);
+                                stat.setNull(2,Types.INTEGER);
+                                stat.setNull(3,Types.INTEGER);
+                                stat.setString(4, subscriberEmail);
+                                stat.setBoolean(5, true);
+
+                            int rowsAffected = stat.executeUpdate();
+                            System.out.println("Planning rows affected");
+
+                        }
+                    }
+                    } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if(!insert) {
+
+                    //requête pour planifier les envoies d'email
+                    String query = "UPDATE mailplanning SET mail_lu = ? WHERE user_mail = ?";
+
+                    try (Connection connection = DatabaseConnection.getConnection();
+                         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                        preparedStatement.setBoolean(1, true);
+                        preparedStatement.setString(2, subscriberEmail);
+                        //System.out.println(6);
+                        preparedStatement.executeUpdate();
+
+                        System.out.println("Email planifié : " + subscriberEmail);
+                    } catch (Exception e) {
+                        System.err.println("Erreur lors de la planification de l'email à " + subscriberEmail + " : " + e.getMessage());
+                    }
                 }
             }
         }

@@ -3,10 +3,7 @@ package ccsr.project.kafka.Controllers;
 
 import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 @Service
 public class LoginService {
@@ -46,7 +43,6 @@ public class LoginService {
     }
 
 
-
     /**
      * Authentifie un utilisateur en vérifiant ses informations dans la base de données.
      *
@@ -63,16 +59,34 @@ public class LoginService {
 
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
+
                 String role = resultSet.getString("role");
                 System.out.println("Utilisateur trouvé avec le rôle : " + role);
+
+                //Treade de lecture de tout les messages quand on est connecté
+                new Thread(() -> {
+                    String threadQuery = "UPDATE mailplanning SET mail_lu = ? WHERE user_mail = ?";
+                    try (Connection connection2 = DatabaseConnection.getConnection();
+                         PreparedStatement stat = connection2.prepareStatement(threadQuery)) {
+
+                        stat.setBoolean(1, true);
+                        stat.setString(2, email);
+                        stat.executeUpdate();
+                        connection2.close();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }).start();
+
                 return role; // Retourne le rôle
             } else {
-                System.out.println("Aucun utilisateur trouvé pour "+email+" et ce mot de passe."+password);
+                System.out.println("Aucun utilisateur trouvé pour " + email + " et ce mot de passe." + password);
                 return null; // Aucun utilisateur trouvé
             }
         } catch (SQLException e) {
             e.printStackTrace();
             return null; // Une erreur s'est produite
         }
-}
+    }
 }

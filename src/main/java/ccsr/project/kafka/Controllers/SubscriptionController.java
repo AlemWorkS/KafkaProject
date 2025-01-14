@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -43,10 +46,26 @@ public class SubscriptionController {
 
             boolean isSubscribed = SubscriptionService.isUserSubscribed(email, topicName);
             if (isSubscribed) {
-                return ResponseEntity.badRequest().body("Vous êtes déjà abonné à ce topic.");
+                return ResponseEntity.ok("Vous êtes déjà abonné à ce topic.");
             }
 
             SubscriptionService.subscribeUserToTopic(email, topicName);
+            String query = "INSERT INTO mailplanning(topic,interval_de_jour,heure_env,user_mail,mail_lu) VALUES (?,?,?,?,?)";
+
+            try (Connection connection = DatabaseConnection.getConnection();
+                 PreparedStatement stat = connection.prepareStatement(query)) {
+
+
+                stat.setString(1, topicName);
+                stat.setNull(2, Types.INTEGER);
+                stat.setNull(3,Types.INTEGER);
+                stat.setString(4, email);
+                stat.setBoolean(5, true);
+
+                int rowsAffected = stat.executeUpdate();
+                System.out.println("Planning rows affected");
+
+            }
             return ResponseEntity.ok("Abonnement réussi au topic : " + topicName);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
