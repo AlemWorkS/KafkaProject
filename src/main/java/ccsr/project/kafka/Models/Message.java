@@ -143,8 +143,8 @@ public class Message {
             //Confirmer qu'on à lu les derniers messages
             //onLineConsumer.commitSync();
             //Désinscription du consumer de tous les topics
-            onLineConsumer.close();
             onLineConsumer.unsubscribe();
+            onLineConsumer.commitAsync();
 
         } catch (Exception e) {
             e.printStackTrace();
