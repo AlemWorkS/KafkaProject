@@ -59,19 +59,22 @@ public class Message {
         HashMap<Integer, HashMap<String, String>> recordMap = new HashMap<>();
         HashMap<String, String> messageNull = new HashMap<>();
 
+
         String sanitizedTopicName = sanitizeTopicName(topicName);
 
-        onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
-        onLineConsumer.poll(Duration.ofMillis(100));
-        onLineConsumer.unsubscribe();
 
-
-        onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
-        ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(500));
 
         try {
-            if (Topic.isValid(topicName) && Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
+            if (Agents.getAdminClient().listTopics().names().get().contains(topicName) && Topic.isValid(topicName) ) {
                 System.out.println(onLineConsumer.groupMetadata().groupId());
+
+                onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+                onLineConsumer.poll(Duration.ofMillis(100));
+                onLineConsumer.unsubscribe();
+
+
+                onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+                ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(500));
 
                 System.out.println(records.count());
 
@@ -140,7 +143,8 @@ public class Message {
             //Confirmer qu'on à lu les derniers messages
             //onLineConsumer.commitSync();
             //Désinscription du consumer de tous les topics
-            //onLineConsumer.unsubscribe();
+            onLineConsumer.close();
+            onLineConsumer.unsubscribe();
 
         } catch (Exception e) {
             e.printStackTrace();
