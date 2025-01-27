@@ -18,8 +18,7 @@ public class KafkaApplication {
 	public static void main(String[] args) {
 		try {
 			// Récupérer le chemin du fichier depuis la variable d'environnement
-			String configPath = System.getenv("CONFIG_PATH");
-
+			String configPath = System.getenv("CONFIG_PATH")+"/config.yaml";
 			if (configPath == null) {
 				throw new IllegalArgumentException("La variable d'environnement CONFIG_PATH n'est pas définie !");
 			}
