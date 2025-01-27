@@ -7,9 +7,11 @@ import java.sql.*;
 
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:mysql://localhost:3308/Omegabd";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "";
+    private static final String URL = "jdbc:mysql://"+ Config.BD_CONFIG.get("db_host")+":"+Config.BD_CONFIG.get("db_port")+"/"+Config.BD_CONFIG.get("db_name");
+    private static final String USERNAME = Config.BD_CONFIG.get("db_user");
+    private static final String PASSWORD = Config.BD_CONFIG.get("db_password");
+
+
     public static Connection getConnection() throws SQLException {
         Connection connection = null;
 
