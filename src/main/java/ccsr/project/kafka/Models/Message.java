@@ -117,20 +117,20 @@ public class Message {
 
                 }
                 onLineConsumer.close();
-                } else{
-                    messageNull.put("message", "");
-                    messageNull.put("producer", "System");
-                    messageNull.put("theme", "Ce topic" + topicName + "n'existe pas");
-                    recordMap.put(0, messageNull);
-                }
+            } else{
+                messageNull.put("message", "");
+                messageNull.put("producer", "System");
+                messageNull.put("theme", "Ce topic" + topicName + "n'existe pas");
+                recordMap.put(0, messageNull);
+            }
 
-                if (recordMap.isEmpty()) {
-                    messageNull.put("message", "Aucun Nouveau Message sur le topic" + topicName);
-                    messageNull.put("producer", "System");
-                    messageNull.put("theme", "Topic " + topicName + " Vide");
+            if (recordMap.isEmpty()) {
+                messageNull.put("message", "Aucun Nouveau Message sur le topic" + topicName);
+                messageNull.put("producer", "System");
+                messageNull.put("theme", "Topic " + topicName + " Vide");
 
-                    recordMap.put(0, messageNull);
-                }
+                recordMap.put(0, messageNull);
+            }
 
 
             /*new Thread(()->{
