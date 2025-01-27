@@ -42,71 +42,115 @@ public class Message {
      * @return une Map de touts les messages d'un topic
      * @return
      */
-    public static HashMap<Integer, HashMap<String, String>> getMessagesFromTopic(String topicName, boolean fromBeginning, KafkaConsumer<String, String> consumer, String userEmail) {
+    public static HashMap<Integer, HashMap<String, String>> getMessagesFromTopic(String topicName, boolean fromBeginning, KafkaConsumer consumer, String userEmail) {
+
+
+        KafkaConsumer onLineConsumer;
+        if (consumer == null) {
+            System.out.println("No consumer");
+            //onLineConsumer si on est sur le web correspond au consumer qui est en ligne
+            onLineConsumer = Agents.getConsummer();
+        } else {
+            System.out.println("Consumer provided");
+            //onLineConsumer si on est en local correspond à une instance de consumer
+            onLineConsumer = consumer;
+        }
+
         HashMap<Integer, HashMap<String, String>> recordMap = new HashMap<>();
         HashMap<String, String> messageNull = new HashMap<>();
 
         String sanitizedTopicName = sanitizeTopicName(topicName);
 
+        onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+        onLineConsumer.poll(Duration.ofMillis(100));
+        onLineConsumer.unsubscribe();
+
+
+        onLineConsumer.subscribe(Collections.singletonList(sanitizedTopicName));
+        ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(500));
+
         try {
-            // Vérification si le topic existe
-            if (Agents.getAdminClient().listTopics().names().get().contains(sanitizedTopicName)) {
-                // Configuration du consommateur
-                KafkaConsumer<String, String> onLineConsumer = (consumer != null) ? consumer : Agents.getConsummer();
+            if (Topic.isValid(topicName) && Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
+                System.out.println(onLineConsumer.groupMetadata().groupId());
 
-                // Assignation manuelle pour s'assurer que toutes les partitions sont couvertes
-                List<TopicPartition> partitions = onLineConsumer.partitionsFor(sanitizedTopicName)
-                        .stream()
-                        .map(info -> new TopicPartition(sanitizedTopicName, info.partition()))
-                        .collect(Collectors.toList());
-                onLineConsumer.assign(partitions);
+                System.out.println(records.count());
 
-                // Définir l'offset au début si nécessaire
-                if (fromBeginning) {
-                    onLineConsumer.seekToBeginning(partitions);
-                }
-
-                // Récupération des messages
-                ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(500));
                 while (!records.isEmpty()) {
+
+
                     for (ConsumerRecord<String, String> record : records) {
+
                         HashMap<String, String> message = new HashMap<>();
+
+
+                        //Récupére le message du topic
+                        System.out.println(record.value() + " value offset " + record.offset());
+
+                        //Hashmap pour récupérer le theme et le producer du message
+                        // Vérifier si le header "theme" existe et s'il n'est pas vide
+                        // Si l'en-tête "theme" existe et n'est pas vide
+                        message.put("theme", "null");
+                        message.put("producer", "null");
+                        record.headers().headers("theme").forEach(header -> {
+                            String themeValue = new String(header.value());
+                            // Vérifier si la valeur de l'en-tête est vide ou null
+                            message.put("theme", themeValue);
+                            message.put("producer", record.key());
+                        });
+
+                        if (message.get("theme").equals("null")) {
+                            message.put("theme", "Theme Inconnu");
+                        }
+
+                        if (message.get("producer").equals("null")) {
+                            message.put("producer", "Créateur Inconnu");
+                        }
+
                         message.put("message", record.value());
-                        message.put("theme", Optional.ofNullable(record.headers().lastHeader("theme"))
-                                .map(header -> new String(header.value(), StandardCharsets.UTF_8))
-                                .orElse("Thème inconnu"));
-                        message.put("producer", Optional.ofNullable(record.key()).orElse("Producteur inconnu"));
-                        message.put("topic", sanitizedTopicName);
+                        message.put("topic", topicName);
                         recordMap.put(recordMap.size() + 1, message);
+                        System.out.println(recordMap.get(recordMap.size()));
+                        System.out.println("message");
                     }
+
                     records = onLineConsumer.poll(Duration.ofMillis(500));
+
+                }
+                onLineConsumer.close();
+                } else{
+                    messageNull.put("message", "");
+                    messageNull.put("producer", "System");
+                    messageNull.put("theme", "Ce topic" + topicName + "n'existe pas");
+                    recordMap.put(0, messageNull);
                 }
 
-                onLineConsumer.close();
-            } else {
-                // Topic inexistant
-                messageNull.put("message", "");
-                messageNull.put("producer", "Système");
-                messageNull.put("theme", "Ce topic \"" + sanitizedTopicName + "\" n'existe pas.");
-                recordMap.put(0, messageNull);
-            }
+                if (recordMap.isEmpty()) {
+                    messageNull.put("message", "Aucun Nouveau Message sur le topic" + topicName);
+                    messageNull.put("producer", "System");
+                    messageNull.put("theme", "Topic " + topicName + " Vide");
 
-            // Si aucun message n'est trouvé
-            if (recordMap.isEmpty()) {
-                messageNull.put("message", "Aucun message trouvé sur le topic \"" + sanitizedTopicName + "\".");
-                messageNull.put("producer", "Système");
-                messageNull.put("theme", "Topic vide");
-                recordMap.put(0, messageNull);
-            }
+                    recordMap.put(0, messageNull);
+                }
+
+
+            /*new Thread(()->{
+                annulerEnv(userEmail);
+            }).start();*/
+
+            //Confirmer qu'on à lu les derniers messages
+            //onLineConsumer.commitSync();
+            //Désinscription du consumer de tous les topics
+            //onLineConsumer.unsubscribe();
+
         } catch (Exception e) {
             e.printStackTrace();
-            messageNull.put("message", "Erreur lors de la récupération des messages : " + e.getMessage());
-            messageNull.put("producer", "Système");
+            System.out.println("Erreur lors de la récupération des messages : " + e.getMessage());
+            messageNull.put("message", "Erreur lors de la récupération des messages.");
+            messageNull.put("producer", "System");
             recordMap.put(0, messageNull);
         }
         return recordMap;
     }
-
 
     private static void annulerEnv(String userEmail) {
 
