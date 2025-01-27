@@ -60,37 +60,30 @@ function searchMessages(interest) {
                     const card = document.createElement("div");
                     card.classList.add("alert-card");
 
-                    // Vérifier si le message est vide ou indique "Aucun message"
-                    const isMessageEmpty =
+                    // Vérifier si le message est vide ou déjà lu
+                    const isMessageReadOrEmpty =
                         data.message === "" || data.message.includes("Aucun Nouveau Message");
 
-                    // Ajouter le contenu du message
-                    const messageContent = document.createElement("p");
-                    messageContent.innerHTML = isMessageEmpty
-                        ? `Message : Aucun Nouveau Message sur le topic "${data.topic}".`
-                        : `<span>Message :</span> ${data.message.substring(0, 50)}...`;
+                    // Générer le contenu de la carte
+                    const messageContent = isMessageReadOrEmpty
+                        ? `<p>Message : Aucun Nouveau Message sur le topic ${data.theme}</p>`
+                        : `<p><span>Message : </span>${data.message.substring(0, 50)}...</p>`;
+
+                    // Générer le bouton Voir Plus uniquement si le message n'est pas vide
+                    const seeMoreButton = !isMessageReadOrEmpty
+                        ? `<a href="/full-message?title=${encodeURIComponent(
+                              data.theme
+                          )}&content=${encodeURIComponent(data.message)}" class="btn-see-more">Voir Plus</a>`
+                        : "";
 
                     // Ajouter le contenu HTML à la carte
-                    const cardHeader = document.createElement("div");
-                    cardHeader.classList.add("alert-card-header");
-                    cardHeader.innerHTML = `<h2>Theme : ${data.theme}</h2>`;
-
-                    // Ajouter le header et le message à la carte
-                    card.appendChild(cardHeader);
-                    card.appendChild(messageContent);
-
-                    // Ajouter un bouton "Voir Plus" uniquement si le message n'est pas vide
-                    if (!isMessageEmpty) {
-                        const seeMoreButton = document.createElement("a");
-                        seeMoreButton.href = `/full-message?title=${encodeURIComponent(
-                            data.theme
-                        )}&content=${encodeURIComponent(data.message)}`;
-                        seeMoreButton.classList.add("btn-see-more");
-                        seeMoreButton.innerText = "Voir Plus";
-
-                        // Ajouter le bouton à la carte
-                        card.appendChild(seeMoreButton);
-                    }
+                    card.innerHTML = `
+                        <div class="alert-card-header">
+                            <h2>Theme : ${data.theme}</h2>
+                        </div>
+                        ${messageContent}
+                        ${seeMoreButton}
+                    `;
 
                     // Ajouter la carte à la liste
                     alertList.appendChild(card);
@@ -103,6 +96,11 @@ function searchMessages(interest) {
         alert("Veuillez entrer un centre d'intérêt !");
     }
 }
+
+
+
+
+
 
 //Fin block fonction de recherche des messages topics
 
