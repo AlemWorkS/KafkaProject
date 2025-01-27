@@ -101,20 +101,20 @@ public class ProducerController {
         }
     }
 
-    // Vérifie si un topic existe
+   //verifie si un topic existe
     private boolean topicExists(String topicName) throws Exception {
-
-            return Agents.getAdminClient().listTopics().names().get().contains(topicName);
+        return Agents.getAdminClient().listTopics().names().get().contains(topicName);
     }
 
-    // Méthode pour créer un topic s'il n'existe pas
+    //Méthode pour créer un topiv s'il n'existe pas
     private void createTopicIfNotExists(String topicName) throws Exception {
-
-            if (!Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
-                Agents.getAdminClient().createTopics(Collections.singletonList(new NewTopic(topicName, 1, (short) 1)));
-            }
-
+        if(!Agents.getAdminClient().listTopics().names().get().contains(topicName)){
+            Agents.getAdminClient().createTopics(Collections.singletonList(new NewTopic(topicName,1,(short)1)));
+        }
     }
+
+
+
 
     // Nettoyage du nom du topic
     private String sanitizeTopicName(String topicName) {
