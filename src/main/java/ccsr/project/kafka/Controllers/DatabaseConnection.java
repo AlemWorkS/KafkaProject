@@ -11,7 +11,6 @@ public class DatabaseConnection {
     private static final String USERNAME = Config.BD_CONFIG.get("db_user");
     private static final String PASSWORD = Config.BD_CONFIG.get("db_password");
 
-
     public static Connection getConnection() throws SQLException {
         Connection connection = null;
 
