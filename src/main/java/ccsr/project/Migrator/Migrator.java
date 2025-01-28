@@ -1,19 +1,15 @@
 package ccsr.project.Migrator;
 
-import java.io.BufferedReader;
+import ccsr.project.kafka.Controllers.DatabaseConnection;
+
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import ccsr.project.kafka.Controllers.DatabaseConnection;
-import io.github.cdimascio.dotenv.Dotenv;
 
 
 public class Migrator {
