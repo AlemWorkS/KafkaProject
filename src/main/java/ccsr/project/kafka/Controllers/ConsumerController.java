@@ -1,7 +1,6 @@
 package ccsr.project.kafka.Controllers;
 
 import ccsr.project.kafka.config.Config;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.commons.mail.EmailException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
@@ -9,11 +8,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.*;
 import java.time.Duration;
@@ -28,27 +23,30 @@ public class ConsumerController {
 
     private final AdminClient adminClient;
 
-
     @Autowired
     public ConsumerController(AdminClient adminClient) {
         this.adminClient = adminClient;
     }
 
-
-    // Récupération des topics correspondant à un centre d'intérêt
+    /**
+     * Recherche les topics dans le cluster Kafka correspondant à un centre d'intérêt donné.
+     *
+     * @param interest Le mot-clé correspondant au centre d'intérêt.
+     * @return Une liste de noms de topics contenant le mot-clé.
+     */
     public List<String> searchTopicsByInterest(String interest) {
         try {
-            // Liste tous les topics du cluster
+            // Liste tous les topics disponibles dans le cluster Kafka
             ListTopicsResult topicsResult = adminClient.listTopics();
             Set<String> allTopics = topicsResult.names().get();
 
-            // Filtre les topics par mot-clé (intérêt)
+            // Filtrer les topics en fonction du mot-clé (insensible à la casse)
             return allTopics.stream()
                     .filter(topic -> topic.toLowerCase().contains(interest.toLowerCase()))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
-            return Collections.emptyList();
+            return Collections.emptyList(); // Retourne une liste vide en cas d'erreur
         }
     }
 
@@ -245,7 +243,7 @@ public class ConsumerController {
 
                                 stat.setString(1, topicName);
                                 stat.setNull(2,Types.INTEGER);
-                                stat.setNull(3,Types.INTEGER);
+                                stat.setNull(3, Types.INTEGER);
                                 stat.setString(4, subscriberEmail);
                                 stat.setBoolean(5, true);
 
