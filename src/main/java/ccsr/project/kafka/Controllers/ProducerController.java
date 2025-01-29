@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 @RestController
@@ -84,37 +85,48 @@ public class ProducerController {
 
     @PostMapping("/connect-publisher")
     public ResponseEntity<String> connectToKafka() {
-
         try {
             // Vérification de la connexion au serveur Kafka
-            if(!Agents.getAdminClient().describeCluster().nodes().get().isEmpty()) {
+            boolean isConnected = !Agents.getAdminClient()
+                    .describeCluster()
+                    .nodes()
+                    .get()
+                    .isEmpty();
+
+            if (isConnected) {
                 return ResponseEntity.ok("Connecté au serveur Kafka");
-            }
-            else{
+            } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Erreur lors de la connexion au serveur Kafka");
+                        .body("Erreur : Aucun nœud Kafka trouvé");
             }
-        } catch (Exception e) {
+        } catch (ExecutionException | InterruptedException e) {
+            // Log l'exception avec un message clair pour faciliter le débogage
+            Thread.currentThread().interrupt(); // Rétablir l'état d'interruption si l'interruption est levée
+            String errorMessage = "Erreur lors de la connexion au serveur Kafka : " + e.getCause().getMessage();
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la connexion au serveur Kafka : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+        } catch (Exception e) {
+            // Gestion d'autres exceptions inattendues
+            String errorMessage = "Erreur inattendue : " + e.getMessage();
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
 
-    // Vérifie si un topic existe
+   //verifie si un topic existe
     private boolean topicExists(String topicName) throws Exception {
-
-            return Agents.getAdminClient().listTopics().names().get().contains(topicName);
+        return Agents.getAdminClient().listTopics().names().get().contains(topicName);
     }
 
-    // Méthode pour créer un topic s'il n'existe pas
+    //Méthode pour créer un topiv s'il n'existe pas
     private void createTopicIfNotExists(String topicName) throws Exception {
-
-            if (!Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
-                Agents.getAdminClient().createTopics(Collections.singletonList(new NewTopic(topicName, 1, (short) 1)));
-            }
-
+        if(!Agents.getAdminClient().listTopics().names().get().contains(topicName)){
+            Agents.getAdminClient().createTopics(Collections.singletonList(new NewTopic(topicName,1,(short)1)));
+        }
     }
+
+
+
 
     // Nettoyage du nom du topic
     private String sanitizeTopicName(String topicName) {

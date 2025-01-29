@@ -60,37 +60,30 @@ function searchMessages(interest) {
                     const card = document.createElement("div");
                     card.classList.add("alert-card");
 
-                    // Vérifier si le message est vide ou indique "Aucun message"
-                    const isMessageEmpty =
+                    // Vérifier si le message est vide ou déjà lu
+                    const isMessageReadOrEmpty =
                         data.message === "" || data.message.includes("Aucun Nouveau Message");
 
-                    // Ajouter le contenu du message
-                    const messageContent = document.createElement("p");
-                    messageContent.innerHTML = isMessageEmpty
-                        ? `Message : Aucun Nouveau Message sur le topic "${data.topic}".`
-                        : `<span>Message :</span> ${data.message.substring(0, 50)}...`;
+                    // Générer le contenu de la carte
+                    const messageContent = isMessageReadOrEmpty
+                        ? `<p>Message : Aucun Nouveau Message sur le topic ${data.theme}</p>`
+                        : `<p><span>Message : </span>${data.message.substring(0, 50)}...</p>`;
+
+                    // Générer le bouton Voir Plus uniquement si le message n'est pas vide
+                    const seeMoreButton = !isMessageReadOrEmpty
+                        ? `<a href="/full-message?title=${encodeURIComponent(
+                              data.theme
+                          )}&content=${encodeURIComponent(data.message)}" class="btn-see-more">Voir Plus</a>`
+                        : "";
 
                     // Ajouter le contenu HTML à la carte
-                    const cardHeader = document.createElement("div");
-                    cardHeader.classList.add("alert-card-header");
-                    cardHeader.innerHTML = `<h2>Theme : ${data.theme}</h2>`;
-
-                    // Ajouter le header et le message à la carte
-                    card.appendChild(cardHeader);
-                    card.appendChild(messageContent);
-
-                    // Ajouter un bouton "Voir Plus" uniquement si le message n'est pas vide
-                    if (!isMessageEmpty) {
-                        const seeMoreButton = document.createElement("a");
-                        seeMoreButton.href = `/full-message?title=${encodeURIComponent(
-                            data.theme
-                        )}&content=${encodeURIComponent(data.message)}`;
-                        seeMoreButton.classList.add("btn-see-more");
-                        seeMoreButton.innerText = "Voir Plus";
-
-                        // Ajouter le bouton à la carte
-                        card.appendChild(seeMoreButton);
-                    }
+                    card.innerHTML = `
+                        <div class="alert-card-header">
+                            <h2>Theme : ${data.theme}</h2>
+                        </div>
+                        ${messageContent}
+                        ${seeMoreButton}
+                    `;
 
                     // Ajouter la carte à la liste
                     alertList.appendChild(card);
@@ -103,6 +96,11 @@ function searchMessages(interest) {
         alert("Veuillez entrer un centre d'intérêt !");
     }
 }
+
+
+
+
+
 
 //Fin block fonction de recherche des messages topics
 
@@ -197,74 +195,3 @@ function subscribe(topicName) {
 //Fin block fonction de souscription
 //Fin block gestion de la souscription
 
-/*// Fonction pour charger les abonnements d'un utilisateur
-function updateSubscriptions() {
-    const userEmail = document.getElementById("userEmail").value;
-
-    if (!userEmail) {
-        console.error("Utilisateur non connecté");
-        return;
-    }
-
-    fetch(`/subscriptions/user?userEmail=${userEmail}`)
-        .then(response => response.json())
-        .then(subscriptions => {
-            const publishersList = document.querySelector(".sidebar ul");
-            publishersList.innerHTML = ""; // Vider la liste actuelle
-
-            subscriptions.forEach(subscription => {
-                const li = document.createElement("li");
-                li.textContent = subscription;
-                publishersList.appendChild(li);
-            });
-        })
-        .catch(error => {
-            console.error("Erreur lors de la mise à jour des abonnements :", error);
-        });
-
-}
-*/
-// Fonction pour charger les topics auxquels un utilisateur est abonné
-/*document.addEventListener('DOMContentLoaded', () => {
-    const userEmail = document.getElementById('userEmail').value; // Récupère la valeur de l'email
-    if (userEmail) {
-        console.log(`Utilisateur connecté, email détecté : ${userEmail}`);
-        loadUserTopics(userEmail); // Appelle la fonction avec l'email récupéré
-    } else {
-        console.error("Aucun utilisateur connecté : l'email est manquant.");
-    }
-});
-
-function loadUserTopics() {
-    // Récupérer l'email de l'utilisateur depuis le champ caché
-    const userEmail = sessionStorage.getItem("userEmail");
-
-    console.log("Chargement des topics pour l'utilisateur :", userEmail);
-
-    if (userEmail) {
-        // Appel à l'API backend pour récupérer les topics
-        fetch(`subscriptions/topics?userEmail=${encodeURIComponent(userEmail)}`)
-            .then(response => {
-                console.log("Réponse du serveur reçue :", response);
-                return response.json();
-            })
-            .then(topics => {
-                console.log("Topics récupérés :", topics);
-
-                const topicList = document.getElementById('topic-list');
-                topicList.innerHTML = ''; // Vider la liste existante
-
-                // Ajouter chaque topic récupéré à la liste
-                topics.forEach(topic => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = topic;
-                    topicList.appendChild(listItem);
-                });
-            })
-            .catch(error => {
-                console.error("Erreur lors du chargement des topics :", error);
-            });
-    } else {
-        console.error("Erreur : l'email de l'utilisateur n'a pas pu être récupéré.");
-
-}*/

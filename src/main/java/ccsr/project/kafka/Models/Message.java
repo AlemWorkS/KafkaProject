@@ -4,13 +4,8 @@ import ccsr.project.kafka.Controllers.DatabaseConnection;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.PartitionInfo;
-import org.apache.kafka.common.TopicCollection;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.TopicPartitionInfo;
-import org.apache.kafka.common.internals.Topic;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
