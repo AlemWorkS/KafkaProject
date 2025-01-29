@@ -111,7 +111,7 @@ public class ConsumerController {
                             //On envoie l'email
                             EmailConfig.sendEmail(subscriberEmail, emailSubject, emailContent);
                             //On marque qu'il n'y a plus de message à envoyer dans la table mailplanning
-                                deplanifierMail(subscriberEmail);
+                            deplanifierMail(subscriberEmail);
                         }
                     } catch (SQLException | EmailException e) {
                         e.printStackTrace();
