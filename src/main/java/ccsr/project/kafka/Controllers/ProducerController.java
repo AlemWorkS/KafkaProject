@@ -30,11 +30,10 @@ public class ProducerController {
             @RequestParam(required = false) String link,
             @RequestParam(required = false) String titre,
             HttpSession session
-            ) {
+    ) {
 
-        if(session.getAttribute("userEmail") == null){
+        if (session.getAttribute("userEmail") == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Veuillez vous connecter avant");
-
         }
 
         // Validation : Message ou lien, mais pas les deux
@@ -50,38 +49,47 @@ public class ProducerController {
         String sanitizedTopicName = sanitizeTopicName(topicName);
         System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 1);
 
-        // Configuration du Kafka Producer
-        Properties props = new Properties();
-        props.put("bootstrap.servers", Config.KAFKA_SERVERS);
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 2);
+        // **🔒 Verrouillage pour éviter la concurrence**
+        synchronized (this) {
+            try {
+                // Vérifier si le topic existe avant d'envoyer le message
+                if (!topicExists(sanitizedTopicName)) {
+                    createTopicIfNotExists(sanitizedTopicName);
+                }
 
-        try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
+                // Configuration optimisée du Kafka Producer pour éviter la perte de messages
+                Properties props = new Properties();
+                props.put("bootstrap.servers", Config.KAFKA_SERVERS);
+                props.put("acks", "all");  // 🔥 Garantit qu'un message est bien stocké avant confirmation
+                props.put("retries", 5);   // 🔥 Réessaye en cas d’échec
+                props.put("batch.size", 16384);  // 🔥 Envoie en batch pour optimiser la charge
+                props.put("linger.ms", 5);  // 🔥 Attente minimale avant d’envoyer
+                props.put("buffer.memory", 33554432);  // 🔥 Ajuste la mémoire tampon
+                props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+                props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-            // Préparation du message à envoyer
-            String content = message != null ? message : "Lien : " + link;
+                KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
-            // Vérifier si le topic existe
-            if (!topicExists(sanitizedTopicName)) {
-                createTopicIfNotExists(sanitizedTopicName);
+                // **📤 Envoi du message**
+                String content = message != null ? message : "Lien : " + link;
+                ProducerRecord<String, String> record = new ProducerRecord<>(sanitizedTopicName, content);
+
+                Future<RecordMetadata> future = producer.send(record);
+                future.get(); // 🔥 Attendre la confirmation de Kafka avant de continuer
+
+                System.out.println("Message envoyé avec succès au topic : " + sanitizedTopicName);
+
+                // Enregistrer le message dans la base de données
+                Message.creerMessage(sanitizedTopicName, titre, content, session.getAttribute("userEmail").toString());
+
+                return ResponseEntity.ok("Message envoyé avec succès au topic \"" + sanitizedTopicName + "\".");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Échec de l'envoi du message.");
             }
-
-            System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 3);
-
-            ProducerRecord<String, String> record = new ProducerRecord<>(sanitizedTopicName, content);
-            System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 4);
-
-            Message.creerMessage(sanitizedTopicName,titre,content,session.getAttribute("userEmail").toString());
-            System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 5);
-
-            return ResponseEntity.ok("Message envoyé avec succès au topic \"" + sanitizedTopicName + "\".");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Échec de l'envoi du message.");
         }
-
     }
+
 
     @PostMapping("/connect-publisher")
     public ResponseEntity<String> connectToKafka() {
@@ -120,10 +128,18 @@ public class ProducerController {
 
     //Méthode pour créer un topiv s'il n'existe pas
     private void createTopicIfNotExists(String topicName) throws Exception {
-        if(!Agents.getAdminClient().listTopics().names().get().contains(topicName)){
-            Agents.getAdminClient().createTopics(Collections.singletonList(new NewTopic(topicName,1,(short)1)));
+        if (!Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
+            int partitions = 3;
+            short replicationFactor = 1;
+
+            NewTopic newTopic = new NewTopic(topicName, partitions, replicationFactor);
+            Agents.getAdminClient().createTopics(Collections.singletonList(newTopic));
+
+            // Attendre un peu pour que le topic soit bien disponible
+            Thread.sleep(3000);
         }
     }
+
 
 
 

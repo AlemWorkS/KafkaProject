@@ -132,15 +132,15 @@ public class ConsumerController {
             System.out.println(Config.KAFKA_SERVERS +"azerty--------------------------------------------");
             // Créer le consumer Kafka
             KafkaConsumer<String, String> consumerTop = new KafkaConsumer<>(props);
-
+            new Thread(() -> {
             //Pour chaque topic on va créer un daemon pour pouvoir écouter l'arrivée de nouveau mmessage
             consumerTop.listTopics().forEach((topic, partitionInfos) -> {
                 if (!topic.equals("__consumer_offsets")) {
                     // Créer le consumer Kafka
-                    KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+                    KafkaConsumer<String, String> consumer = new KafkaConsumer<String,String>(props);
                     consumer.subscribe(Collections.singleton(topic));
 
-                    new Thread(() -> {
+
                         try {
                             System.out.println("Écoute des messages du topic : " + topic);
                             while (true) {
@@ -165,9 +165,10 @@ public class ConsumerController {
                             consumer.close();
                         }
 
-                    }).start();
+
                 }
             });
+            }).start();
 
 
 

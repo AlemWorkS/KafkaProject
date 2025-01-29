@@ -52,16 +52,6 @@ public class Router {
         return "producer";
     }
 
-    // Api des messages
-    @GetMapping("/messages")
-    public Map<Integer, HashMap<String, String>> messages(Model model, @RequestParam String i) {
-        try {
-            return Message.searchMessagesInAllTopics(i);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @GetMapping("/connexion")
     public String connexion(Model model) {
         return "connexion";

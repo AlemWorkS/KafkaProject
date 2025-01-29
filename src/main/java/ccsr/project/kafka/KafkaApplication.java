@@ -5,10 +5,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
-import org.yaml.snakeyaml.Yaml;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Map;
+
 
 
 @SpringBootApplication
@@ -16,28 +13,9 @@ import java.util.Map;
 public class KafkaApplication {
 
 	public static void main(String[] args) {
-		try {
-			// Récupérer le chemin du fichier depuis la variable d'environnement
-			String configPath = System.getenv("CONFIG_PATH");
 
-			if (configPath == null) {
-				throw new IllegalArgumentException("La variable d'environnement CONFIG_PATH n'est pas définie !");
-			}
+		Config.loadConfigFile();
 
-			// Charger le fichier YAML
-			Yaml yaml = new Yaml();
-			try (InputStream inputStream = new FileInputStream(configPath)) {
-				Map<String, Object> config = yaml.load(inputStream);
-				config.forEach((conf,value)->{
-					System.out.println(value);
-
-				});
-				Config.setServers(config);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		SpringApplication.run(KafkaApplication.class, args);
 
 	}
