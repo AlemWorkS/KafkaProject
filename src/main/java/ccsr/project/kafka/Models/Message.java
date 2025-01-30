@@ -104,7 +104,6 @@ public class Message {
         return recordMap;
     }
 
-
     private static void annulerEnv(String userEmail) {
 
         //requête pour planifier les envoies d'email

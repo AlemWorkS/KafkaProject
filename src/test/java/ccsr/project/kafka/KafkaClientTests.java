@@ -1,7 +1,9 @@
 package ccsr.project.kafka;
 
 import ccsr.project.kafka.Controllers.KafkaTopicController;
+import ccsr.project.kafka.Controllers.LoginController;
 import ccsr.project.kafka.Models.Agents;
+import ccsr.project.kafka.Models.Consumer;
 import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.Models.Publisher;
 import ccsr.project.kafka.config.Config;
@@ -11,6 +13,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.util.Assert;
@@ -32,6 +35,16 @@ public class KafkaClientTests {
 
     @Test
     void authentificationTest(){
+
+        HttpSession httpSession = Mockito.mock(HttpSession.class);
+
+        LoginController loginController = Mockito.mock(LoginController.class);
+
+        loginController.inscrireUtilisateur(VariableTest.TestUserfirstName,VariableTest.TestUserLastName,VariableTest.user,VariableTest.userMail,VariableTest.password,VariableTest.consumerRole);
+
+        //Mockito.verify(httpSession, Mockito.times(1)).setAttribute("userEmail", VariableTest.userMail);
+
+
 
     }
 
