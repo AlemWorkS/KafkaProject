@@ -18,9 +18,7 @@ public class DatabaseConnection {
             return DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
             // Se connecter à la base de données
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
-            System.out.println("Connexion réussie à la base de données !");
 
         } catch (ClassNotFoundException e) {
             throw new SQLException("JDBC Driver not found", e);
