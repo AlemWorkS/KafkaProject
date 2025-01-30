@@ -16,20 +16,12 @@ public class DatabaseConnection {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(URL, USERNAME, PASSWORD);
-
-            // Se connecter à la base de données
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-
-            System.out.println("Connexion réussie à la base de données !");
-
         } catch (ClassNotFoundException e) {
             throw new SQLException("JDBC Driver not found", e);
         } catch (SQLException e) {
-            throw new SQLException("Failed to connect to the database", e);
-            System.out.println("Erreur : Impossible de se connecter à la base de données !");
             e.printStackTrace();
+            throw new SQLException("Failed to connect to the database", e);
         }
-        return DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
     }
 

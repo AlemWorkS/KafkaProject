@@ -11,11 +11,14 @@ public class SubscriptionService {
 
 
     public void addSubscription(String userEmail, String topicName) throws SQLException {
+
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         String messageContent = "Abonné"; // Valeur par défaut
+
         try {
+
             connection = DatabaseConnection.getConnection();
 
             // Vérifiez si le topic existe déjà
@@ -28,6 +31,7 @@ public class SubscriptionService {
             if (resultSet.next()) {
                 // Si le topic existe, récupérez son ID
                 topicId = resultSet.getInt("topics_id");
+
             } else {
                 // Sinon, insérez le topic et récupérez son ID
                 String insertTopicQuery = "INSERT INTO topics (name) VALUES (?)";
@@ -37,11 +41,15 @@ public class SubscriptionService {
                 preparedStatement.executeUpdate();
 
                 resultSet = preparedStatement.getGeneratedKeys();
+
                 if (resultSet.next()) {
+
                     topicId = resultSet.getInt(1);
+
                 } else {
                     throw new SQLException("Erreur lors de la création du topic.");
                 }
+
             }
 
             // Enregistrez la souscription
