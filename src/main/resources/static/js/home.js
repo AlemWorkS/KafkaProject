@@ -137,6 +137,7 @@ document.getElementById("subscribeButton").addEventListener("click", function ()
         alert("Veuillez entrer un centre d'intérêt et vérifier votre connexion.");
         return;
     }
+    
 
     fetch("/subscribe-to-topic", {
         method: "POST",
