@@ -6,7 +6,6 @@
         const newTopicInput = document.getElementById('newTopic');
         const form = document.getElementById('producer-form');
         const messageInput = document.getElementById('message');
-        const linkInput = document.getElementById('link');
         const titreInput = document.getElementById('titre');
 
 
@@ -94,19 +93,10 @@
             const selectedTopic = existingTopicSelect.value;
             const newTopic = newTopicInput.value.trim();
             const message = messageInput.value.trim();
-            const link = linkInput.value.trim();
             const titre = titreInput.value.trim();
 
 
-            if (!message && !link) {
-                alert('Veuillez entrer un message ou un lien.');
-                return;
-            }
 
-            if (message && link) {
-                alert('Vous ne pouvez pas entrer un message et un lien en même temps.');
-                return;
-            }
 
             if (!selectedTopic && !newTopic) {
                 alert('Veuillez sélectionner un topic existant ou en créer un nouveau.');
@@ -119,7 +109,6 @@
             const data = new URLSearchParams({
                 topicName: topicName,
                 message: message || '',
-                link: link || '',
                 titre: titre || '',
             });
 

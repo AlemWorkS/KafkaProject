@@ -27,7 +27,6 @@ public class ProducerController {
     public ResponseEntity<String> sendMessage(
             @RequestParam String topicName,
             @RequestParam(required = false) String message,
-            @RequestParam(required = false) String link,
             @RequestParam(required = false) String titre,
             HttpSession session
     ) {
@@ -36,14 +35,6 @@ public class ProducerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Veuillez vous connecter avant");
         }
 
-        // Validation : Message ou lien, mais pas les deux
-        if ((message == null || message.isBlank()) && (link == null || link.isBlank())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vous devez fournir soit un message, soit un lien.");
-        }
-
-        if (message != null && !message.isBlank() && link != null && !link.isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vous ne pouvez pas envoyer un message et un lien en même temps.");
-        }
 
         // Nettoyage du nom du topic
         String sanitizedTopicName = sanitizeTopicName(topicName);
@@ -71,7 +62,7 @@ public class ProducerController {
                 KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
                 // Envoi du message
-                String content = message != null ? message : "Lien : " + link;
+                String content = message;
                 ProducerRecord<String, String> record = new ProducerRecord<>(sanitizedTopicName, content);
 
                 Future<RecordMetadata> future = producer.send(record);

@@ -36,26 +36,43 @@ public class LoginController {
 
     @PostMapping("/process-login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
-        String role = userService.authenticateUser(email, password);
-        if (role != null) {
-            session.setAttribute("userRole", role);
+        String userDetails = userService.authenticateUser(email, password);
 
-             switch (role) {
-                case "Consumer" -> {
-                    session.setAttribute("userConsumerEmail", email);
-                    return ResponseEntity.ok("/home");
+        if (userDetails != null) {
+            String[] details = userDetails.split(",");
 
-                }
-                case "Producer" -> {
-                    session.setAttribute("userProducerEmail", email);
-                    return ResponseEntity.ok("/producer");
-
-
-                }
-                default -> ResponseEntity.status(HttpStatus.FORBIDDEN).body("Rôle inconnu.");
+            if (details.length < 2) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur : Données utilisateur incomplètes.");
             }
+
+            String username = details[0];
+            String role = details[1];
+
+            session.setAttribute("username", username);
+
+            System.out.println("Utilisateur connecté : " + username);
+
+            if (role != null) {
+                session.setAttribute("userRole", role);
+
+                switch (role) {
+                    case "Consumer" -> {
+                        session.setAttribute("userConsumerEmail", email);
+                        return ResponseEntity.ok("/home");
+
+                    }
+                    case "Producer" -> {
+                        session.setAttribute("userProducerEmail", email);
+                        return ResponseEntity.ok("/producer");
+
+
+                    }
+                    default -> ResponseEntity.status(HttpStatus.FORBIDDEN).body("Rôle inconnu.");
+                }
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe invalide !");
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe invalide !");
+        return null;
     }
 
     @GetMapping("/logout")
