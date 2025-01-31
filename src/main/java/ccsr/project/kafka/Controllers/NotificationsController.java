@@ -15,7 +15,6 @@ import java.sql.*;
 
 
 
-
 @RestController
 public class  NotificationsController {
 
@@ -24,24 +23,31 @@ public class  NotificationsController {
             @RequestParam(required = false) Integer planning_heure,
             @RequestParam(required = false) Integer planning_interval,
             @RequestParam(defaultValue = "0") String always,
+            @RequestParam(required = false) String topicName,
             HttpSession session
     ) {
         String userEmail = (String) session.getAttribute("userConsumerEmail");
 
-        System.out.println("a");
-        System.out.println(always);
+        if (userEmail == null || topicName == null || topicName.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Erreur : Email utilisateur ou nom du topic non fourni.");
+        }
 
-        String query = "select * from mailplanning where user_mail = ?";
+        System.out.println("a");
+        System.out.println("Always: " + always);
+        System.out.println("Topic: " + topicName);
+
+        String query = "SELECT * FROM mailplanning WHERE user_mail = ? AND topic = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement statement = conn.prepareStatement(query)) {
 
             statement.setString(1, userEmail);
+            statement.setString(2, topicName);
             ResultSet resultSet = statement.executeQuery();
             System.out.println("b");
 
             if (resultSet.next()) {
-                query = "UPDATE mailplanning SET heure_env = ?, interval_de_jour = ? WHERE user_mail = ?";
+                query = "UPDATE mailplanning SET heure_env = ?, interval_de_jour = ? WHERE user_mail = ? AND topic = ?";
                 try (Connection connection = DatabaseConnection.getConnection();
                      PreparedStatement stat = connection.prepareStatement(query)) {
 
@@ -54,13 +60,14 @@ public class  NotificationsController {
                     }
 
                     stat.setString(3, userEmail);
+                    stat.setString(4, topicName);
                     int rowsAffected = stat.executeUpdate();
                     System.out.println("c");
                 }
                 if ("on".equals(always)) {
-                    return ResponseEntity.ok("Vous allez recevoir des notifications à chaque nouveau message !");
+                    return ResponseEntity.ok("Vous allez recevoir des notifications à chaque nouveau message sur le topic : " + topicName);
                 } else {
-                    return ResponseEntity.ok("Vous recevrez vos notifications chaque " + planning_interval + " jours à " + planning_heure);
+                    return ResponseEntity.ok("Vous recevrez vos notifications pour le topic '" + topicName + "' chaque " + planning_interval + " jours à " + planning_heure);
                 }
             } else {
                 return ResponseEntity.ok("Vous devez souscrire à un topic");

@@ -26,6 +26,15 @@ fetch('/list-topics')
         planningForm.addEventListener("submit", function (event) {
             event.preventDefault(); // Empêche le rechargement de la page
 
+            // Récupérer le nom du topic à partir de la barre de recherche
+            const selectedTopic = document.getElementById("interestInput").value.trim();
+            document.getElementById("topicName").value = selectedTopic; // Stocker la valeur dans le champ caché
+
+            if (!selectedTopic) {
+                alert("Veuillez sélectionner un topic avant de confirmer.");
+            return;
+            }
+
             // Récupération des valeurs du formulaire
             let formData = new FormData(planningForm);
 
