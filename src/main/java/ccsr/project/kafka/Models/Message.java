@@ -36,6 +36,11 @@ public class Message {
      * @return une Map de touts les messages d'un topic
      * @return
      */
+    /**
+     * @param topicName
+     * @return une Map de touts les messages d'un topic
+     * @return
+     */
     public static HashMap<Integer, HashMap<String, String>> getMessagesFromTopic(String topicName, boolean fromBeginning, KafkaConsumer<String, String> consumer, String userEmail) {
         HashMap<Integer, HashMap<String, String>> recordMap = new HashMap<>();
         HashMap<String, String> messageNull = new HashMap<>();
@@ -43,7 +48,6 @@ public class Message {
         String sanitizedTopicName = sanitizeTopicName(topicName);
 
         try {
-            System.out.println(Agents.getAdminClient().listTopics().names().get());
             // Vérification si le topic existe
             if (Agents.getAdminClient().listTopics().names().get().contains(sanitizedTopicName)) {
                 // Configuration du consommateur
@@ -72,12 +76,12 @@ public class Message {
                                 .orElse("Thème inconnu"));
                         message.put("producer", Optional.ofNullable(record.key()).orElse("Producteur inconnu"));
                         message.put("topic", sanitizedTopicName);
-                        recordMap.put(recordMap.size(), message);
+                        recordMap.put(recordMap.size() + 1, message);
                     }
                     records = onLineConsumer.poll(Duration.ofMillis(500));
                 }
 
-                //onLineConsumer.close();
+                onLineConsumer.close();
             } else {
                 // Topic inexistant
                 messageNull.put("message", "");
@@ -101,7 +105,6 @@ public class Message {
         }
         return recordMap;
     }
-
     private static void annulerEnv(String userEmail) {
 
         //requête pour planifier les envoies d'email

@@ -26,7 +26,7 @@ public class  NotificationsController {
             @RequestParam(defaultValue = "0") String always,
             HttpSession session
     ) {
-        String userEmail = (String) session.getAttribute("userEmail");
+        String userEmail = (String) session.getAttribute("userConsumerEmail");
 
         System.out.println("a");
         System.out.println(always);

@@ -26,17 +26,17 @@ public class KafkaTopicController {
     public ResponseEntity<HashMap<Integer, HashMap<String, String>>> searchTopics(@RequestParam String interest, @RequestParam boolean fromBeginning, HttpSession session) {
         HashMap<Integer, HashMap<String, String>> topics;
         try {
-            if(session != null && !((String) session.getAttribute("userEmail")).isEmpty()) {
-                System.out.println((String) session.getAttribute("userEmail"));
+            if(session != null && !((String) session.getAttribute("userConsumerEmail")).isEmpty()) {
+                System.out.println((String) session.getAttribute("userConsumerEmail"));
                 Properties props = new Properties();
                 props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, Config.KAFKA_SERVERS); // Remplacez par votre serveur Kafka
                 if(fromBeginning) {
-                    props.put(ConsumerConfig.GROUP_ID_CONFIG, "thread-" + session.getAttribute("userEmail") + 1+UUID.randomUUID());
-                    props.put(ConsumerConfig.CLIENT_ID_CONFIG, "thread-"+session.getAttribute("userEmail")+1+UUID.randomUUID());
+                    props.put(ConsumerConfig.GROUP_ID_CONFIG, "thread-" + session.getAttribute("userConsumerEmail") + 1+UUID.randomUUID());
+                    props.put(ConsumerConfig.CLIENT_ID_CONFIG, "thread-"+session.getAttribute("userConsumerEmail")+1+UUID.randomUUID());
 
                 }else{
-                    props.put(ConsumerConfig.GROUP_ID_CONFIG, "thread-" + session.getAttribute("userEmail") + 1);
-                    props.put(ConsumerConfig.CLIENT_ID_CONFIG, "thread-"+session.getAttribute("userEmail")+1);
+                    props.put(ConsumerConfig.GROUP_ID_CONFIG, "thread-" + session.getAttribute("userConsumerEmail") + 1);
+                    props.put(ConsumerConfig.CLIENT_ID_CONFIG, "thread-"+session.getAttribute("userConsumerEmail")+1);
 
                 }
                 props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
@@ -47,7 +47,7 @@ public class KafkaTopicController {
 
 
                 // Appel correct de la méthode du service Kafka
-                topics = Message.getMessagesFromTopic(interest,fromBeginning,kafkaConsumer,session.getAttribute("userEmail").toString());
+                topics = Message.getMessagesFromTopic(interest,fromBeginning,kafkaConsumer,session.getAttribute("userConsumerEmail").toString());
             }else{
                 topics = Message.getMessagesFromTopic(interest,fromBeginning,null,"noMail");
             }
@@ -73,5 +73,3 @@ public class KafkaTopicController {
         }
     }
 }
-
-
