@@ -104,7 +104,7 @@ public class SubscriptionController {
 
     @GetMapping("/current-user-email")
     public ResponseEntity<String> getCurrentUserEmail(HttpSession session) {
-        String userEmail = (String) session.getAttribute("userEmail");
+        String userEmail = (String) session.getAttribute("userConsumerEmail");
         if (userEmail != null) {
             return ResponseEntity.ok(userEmail);
         } else {

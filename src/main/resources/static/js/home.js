@@ -149,14 +149,14 @@ function attachSubscribeEventHandlers() {
 fetch("/current-user-email")
     .then((response) => response.text())
     .then((email) => {
-        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userConsumerEmail", email);
         console.log("Email utilisateur récupéré :", email);
     })
     .catch((error) => console.error("Erreur lors de la récupération de l'email :", error));
 
 document.getElementById("subscribeButton").addEventListener("click", function () {
     const topicName = document.getElementById("interestInput").value.trim(); // Récupère et nettoie la valeur
-    const userEmail = sessionStorage.getItem("userEmail"); // Récupère l'email de la session
+    const userEmail = sessionStorage.getItem("userConsumerEmail"); // Récupère l'email de la session
 
     if (!topicName || !userEmail) {
         alert("Veuillez entrer un centre d'intérêt et vérifier votre connexion.");
@@ -191,7 +191,7 @@ document.getElementById("subscribeButton").addEventListener("click", function ()
 function subscribe(topicName) {
 
 
-    const userEmail = sessionStorage.getItem("userEmail");
+    const userEmail = sessionStorage.getItem("userConsumerEmail");
     console.log(userEmail);
 
     if (!userEmail) {

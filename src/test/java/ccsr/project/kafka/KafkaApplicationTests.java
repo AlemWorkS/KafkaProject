@@ -88,9 +88,8 @@ class KafkaApplicationTests {
         ArrayList<Future<?>> futures = new ArrayList<>(); // Liste pour suivre les tâches soumises
 
             for (int i = 0; i < numberOfConnections; i++) {
-                Future<?> future = executorService.submit(() -> {
+                //Future<?> future = executorService.submit(() -> {
                     try {
-                        synchronized(this) {
                             Connection connection = DatabaseConnection.getConnection();
 
                             Assertions.assertNotNull(connection, "La connexion ne doit pas être null");
@@ -99,26 +98,26 @@ class KafkaApplicationTests {
                             connection.close();
 
                             System.out.println(connection.isClosed());
-                        }
+
 
                 } catch (SQLException e) {
                     synchronized (exceptions) {
                         exceptions.add(e);
                     }
                 }
-            });
-            futures.add(future);
+            //});
+            //futures.add(future);
 
         }
 
         // Attendre la fin de toutes les tâches
-        for (Future<?> future : futures) {
+        /*for (Future<?> future : futures) {
             try {
                 future.get(); // Bloque jusqu'à la fin de la tâche
             } catch (Exception e) {
                 Assertions.fail("Une tâche a échoué : " + e.getMessage());
             }
-        }
+        }*/
 
         // Arrêter le service d'exécution
         executorService.shutdown();

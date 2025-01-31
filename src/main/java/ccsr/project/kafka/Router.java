@@ -21,7 +21,7 @@ public class Router {
 
         model.addAttribute("message", "Bienvenue");
 
-        String userEmail = (String) session.getAttribute("userEmail");
+        String userEmail = (String) session.getAttribute("userConsumerEmail");
         System.out.println("Session userEmail home : " + userEmail); // Ajoutez ceci pour déboguer
 
         if (userEmail == null) {

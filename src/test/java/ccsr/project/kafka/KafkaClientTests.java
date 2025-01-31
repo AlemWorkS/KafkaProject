@@ -2,6 +2,7 @@ package ccsr.project.kafka;
 
 import ccsr.project.kafka.Controllers.KafkaTopicController;
 import ccsr.project.kafka.Controllers.LoginController;
+import ccsr.project.kafka.Controllers.LoginService;
 import ccsr.project.kafka.Models.Agents;
 import ccsr.project.kafka.Models.Consumer;
 import ccsr.project.kafka.Models.Message;
@@ -13,9 +14,18 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Executable;
@@ -26,8 +36,14 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 public class KafkaClientTests {
 
     KafkaApplicationTests kafkaApplicationTests = new KafkaApplicationTests();
@@ -35,17 +51,6 @@ public class KafkaClientTests {
 
     @Test
     void authentificationTest(){
-
-        HttpSession httpSession = Mockito.mock(HttpSession.class);
-
-        LoginController loginController = Mockito.mock(LoginController.class);
-
-        loginController.inscrireUtilisateur(VariableTest.TestUserfirstName,VariableTest.TestUserLastName,VariableTest.user,VariableTest.userMail,VariableTest.password,VariableTest.consumerRole);
-
-        //Mockito.verify(httpSession, Mockito.times(1)).setAttribute("userEmail", VariableTest.userMail);
-
-
-
     }
 
     @Test

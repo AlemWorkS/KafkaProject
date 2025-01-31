@@ -32,7 +32,7 @@ public class ProducerController {
             HttpSession session
     ) {
 
-        if (session.getAttribute("userEmail") == null) {
+        if (session.getAttribute("userProducerEmail") == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Veuillez vous connecter avant");
         }
 
@@ -49,7 +49,7 @@ public class ProducerController {
         String sanitizedTopicName = sanitizeTopicName(topicName);
         System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 1);
 
-        // **🔒 Verrouillage pour éviter la concurrence**
+        // ** Verrouillage pour éviter la concurrence**
         synchronized (this) {
             try {
                 // Vérifier si le topic existe avant d'envoyer le message
@@ -60,27 +60,25 @@ public class ProducerController {
                 // Configuration optimisée du Kafka Producer pour éviter la perte de messages
                 Properties props = new Properties();
                 props.put("bootstrap.servers", Config.KAFKA_SERVERS);
-                props.put("acks", "all");  // 🔥 Garantit qu'un message est bien stocké avant confirmation
-                props.put("retries", 5);   // 🔥 Réessaye en cas d’échec
-                props.put("batch.size", 16384);  // 🔥 Envoie en batch pour optimiser la charge
-                props.put("linger.ms", 5);  // 🔥 Attente minimale avant d’envoyer
-                props.put("buffer.memory", 33554432);  // 🔥 Ajuste la mémoire tampon
+                props.put("acks", "all");  // Garantit qu'un message est bien stocké avant confirmation
+                props.put("retries", 5);   // Réessaye en cas d’échec
+                props.put("batch.size", 16384);  // Envoie en batch pour optimiser la charge
+                props.put("linger.ms", 5);  // Attente minimale avant d’envoyer
+                props.put("buffer.memory", 33554432);  // Ajuste la mémoire tampon
                 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
                 props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
                 KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
-                // **📤 Envoi du message**
+                // Envoi du message
                 String content = message != null ? message : "Lien : " + link;
                 ProducerRecord<String, String> record = new ProducerRecord<>(sanitizedTopicName, content);
 
                 Future<RecordMetadata> future = producer.send(record);
-                future.get(); // 🔥 Attendre la confirmation de Kafka avant de continuer
-
-                System.out.println("Message envoyé avec succès au topic : " + sanitizedTopicName);
+                future.get(); // Attendre la confirmation de Kafka avant de continuer
 
                 // Enregistrer le message dans la base de données
-                Message.creerMessage(sanitizedTopicName, titre, content, session.getAttribute("userEmail").toString());
+                Message.creerMessage(sanitizedTopicName, titre, content, session.getAttribute("userProducerEmail").toString());
 
                 return ResponseEntity.ok("Message envoyé avec succès au topic \"" + sanitizedTopicName + "\".");
             } catch (Exception e) {
