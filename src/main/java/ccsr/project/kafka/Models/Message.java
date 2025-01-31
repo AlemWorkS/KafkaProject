@@ -71,6 +71,8 @@ public class Message {
                     for (ConsumerRecord<String, String> record : records) {
                         HashMap<String, String> message = new HashMap<>();
                         message.put("message", record.value());
+                        // Ajout de l'offset pour permettre l'identification unique
+                        message.put("offset", String.valueOf(record.offset()));
                         message.put("theme", Optional.ofNullable(record.headers().lastHeader("theme"))
                                 .map(header -> new String(header.value(), StandardCharsets.UTF_8))
                                 .orElse("Thème inconnu"));
@@ -78,6 +80,7 @@ public class Message {
                         message.put("topic", sanitizedTopicName);
                         recordMap.put(recordMap.size() + 1, message);
                     }
+
                     records = onLineConsumer.poll(Duration.ofMillis(500));
                 }
 

@@ -66,63 +66,104 @@ document.getElementById("checkBegining").addEventListener("change", function () 
 //Block fonction de recherche des messages topics
 
 function searchMessages(interest) {
-    var url = `/search-topics?interest=${interest}&fromBeginning=false`;
-    if (document.getElementById("checkBegining").checked) {
-        url = `/search-topics?interest=${interest}&fromBeginning=true`;
-    }
+    const checkBox = document.getElementById("checkBegining");
+    // Ici, nous interprétons la checkbox comme "Afficher les messages lus".
+    // Si cochée, on ne doit afficher que les messages lus.
+    const showReadMessages = checkBox.checked;
+
+    // On lit toujours tous les messages depuis le début pour ne pas perdre les messages non encore lus.
+    let url = `/search-topics?interest=${interest}&fromBeginning=true`;
 
     if (interest) {
         fetch(url)
-            .then((response) => response.json())
-            .then((topics) => {
+            .then(response => response.json())
+            .then(topics => {
                 const alertList = document.querySelector(".alert-list");
-                alertList.innerHTML = ""; // Vider les cartes existantes
+                alertList.innerHTML = ""; // Vider la liste actuelle
 
-                Object.keys(topics).forEach((topic) => {
-                    const data = topics[topic];
+                // Récupérer la liste des messages lus depuis le localStorage
+                // Ce tableau contient des identifiants de messages au format "topic-offset"
+                let readMessages = JSON.parse(localStorage.getItem('readMessages')) || [];
 
-                    // Créer la carte pour chaque topic
+                Object.keys(topics).forEach(key => {
+                    const data = topics[key];
+                    // Construction de l'identifiant unique du message (exemple: "mytopic-123")
+                    const messageId = data.topic + '-' + data.offset;
+
+                    // Filtrage en fonction de l'état de la checkbox
+                    if (showReadMessages) {
+                        // Si la checkbox est cochée, on n'affiche que les messages lus.
+                        if (!readMessages.includes(messageId)) {
+                            return; // Le message n'est pas marqué comme lu : on le saute
+                        }
+                    } else {
+                        // Si la checkbox n'est pas cochée, on n'affiche que les messages non lus.
+                        if (readMessages.includes(messageId)) {
+                            return; // Le message est déjà lu : on le saute
+                        }
+                    }
+
+                    // Créer la carte pour afficher le message
                     const card = document.createElement("div");
                     card.classList.add("alert-card");
 
-                    // Vérifier si le message est vide ou déjà lu
-                    const isMessageReadOrEmpty =
-                        data.message === "" || data.message.includes("Aucun Nouveau Message");
-
-                    // Générer le contenu de la carte
-                    const messageContent = isMessageReadOrEmpty
+                    // Vérifier si le message est vide ou indique "Aucun Nouveau Message"
+                    const isMessageEmpty = data.message === "" || data.message.includes("Aucun Nouveau Message");
+                    const messageContent = isMessageEmpty
                         ? `<p>Message : Aucun Nouveau Message sur le topic ${data.theme}</p>`
                         : `<p><span>Message : </span>${data.message.substring(0, 50)}...</p>`;
 
-                    // Générer le bouton Voir Plus uniquement si le message n'est pas vide
-                    const seeMoreButton = !isMessageReadOrEmpty
-                        ? `<a href="/full-message?title=${encodeURIComponent(
-                              data.theme
-                          )}&content=${encodeURIComponent(data.message)}" class="btn-see-more">Voir Plus</a>`
+                    // Générer le bouton "Voir Plus" uniquement si le message n'est pas vide
+                    // On y ajoute les attributs data pour stocker le topic et l'offset
+                    const seeMoreButton = !isMessageEmpty
+                        ? `<a href="/full-message?title=${encodeURIComponent(data.theme)}&content=${encodeURIComponent(data.message)}"
+                                class="btn-see-more"
+                                data-topic="${data.topic}"
+                                data-offset="${data.offset}">
+                                Voir Plus
+                           </a>`
                         : "";
 
-                    // Ajouter le contenu HTML à la carte
                     card.innerHTML = `
                         <div class="alert-card-header">
-                            <h2>Theme : ${data.theme}</h2>
+                            <h2>Thème : ${data.theme}</h2>
                         </div>
                         ${messageContent}
                         ${seeMoreButton}
                     `;
 
-                    // Ajouter la carte à la liste
                     alertList.appendChild(card);
                 });
+
+                // Attacher l'événement sur les boutons "Voir Plus"
+                document.querySelectorAll('.btn-see-more').forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.preventDefault(); // Empêche la redirection immédiate
+
+                        // Récupérer les informations du message via les attributs data
+                        const topic = this.getAttribute('data-topic');
+                        const offset = this.getAttribute('data-offset');
+                        const messageId = topic + '-' + offset;
+
+                        // Récupérer ou initialiser la liste des messages lus dans le localStorage
+                        let readMessages = JSON.parse(localStorage.getItem('readMessages')) || [];
+                        if (!readMessages.includes(messageId)) {
+                            readMessages.push(messageId);
+                        }
+                        localStorage.setItem('readMessages', JSON.stringify(readMessages));
+
+                        // Rediriger vers la page de détail du message
+                        window.location.href = this.href;
+                    });
+                });
             })
-            .catch((error) => {
+            .catch(error => {
                 console.error("Erreur lors de la recherche :", error);
             });
     } else {
         alert("Veuillez entrer un centre d'intérêt !");
     }
 }
-
-
 
 
 
