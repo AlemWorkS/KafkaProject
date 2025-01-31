@@ -39,10 +39,6 @@ public class LoginController {
         String role = userService.authenticateUser(email, password);
         if (role != null) {
             session.setAttribute("userRole", role);
-            session.setAttribute("username", username);
-
-            // 🔍 Vérifier si le username est bien stocké en session
-            System.out.println("Utilisateur connecté : " + username);
 
              switch (role) {
                 case "Consumer" -> {
