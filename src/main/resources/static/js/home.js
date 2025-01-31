@@ -19,6 +19,31 @@ fetch('/list-topics')
         }).catch(error => {
             console.error("Erreur lors de la recherche :", error);
         });
+
+ const planningForm = document.getElementById("planning_form");
+
+    if (planningForm) {
+        planningForm.addEventListener("submit", function (event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+
+            // Récupération des valeurs du formulaire
+            let formData = new FormData(planningForm);
+
+            // Envoi des données via Fetch API
+            fetch("/make-planning", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text()) // Convertir la réponse en texte
+            .then(data => {
+                alert(data); // Affiche la réponse du serveur dans une popup
+            })
+            .catch(error => {
+                console.error("Erreur lors de la soumission :", error);
+                alert("Une erreur est survenue. Veuillez réessayer.");
+            });
+        });
+    }
     });
 
 //Fin block affichage des topics
@@ -137,7 +162,7 @@ document.getElementById("subscribeButton").addEventListener("click", function ()
         alert("Veuillez entrer un centre d'intérêt et vérifier votre connexion.");
         return;
     }
-    
+
 
     fetch("/subscribe-to-topic", {
         method: "POST",

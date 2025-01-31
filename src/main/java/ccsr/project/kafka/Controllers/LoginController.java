@@ -14,7 +14,6 @@ public class LoginController {
 
     @Autowired
     public LoginController(LoginService userService) {
-
         this.userService = userService;
     }
 
@@ -34,10 +33,24 @@ public class LoginController {
 
     @PostMapping("/process-login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
-        String role = userService.authenticateUser(email, password);
-        if (role != null) {
+        String userDetails = userService.authenticateUser(email, password);
+
+        if (userDetails != null) {
+            String[] details = userDetails.split(",");
+
+            if (details.length < 2) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur : Données utilisateur incomplètes.");
+            }
+
+            String username = details[0];
+            String role = details[1];
+
             session.setAttribute("userEmail", email);
             session.setAttribute("userRole", role);
+            session.setAttribute("username", username);
+
+            // 🔍 Vérifier si le username est bien stocké en session
+            System.out.println("Utilisateur connecté : " + username);
 
             return switch (role) {
                 case "Consumer" -> ResponseEntity.ok("/home");

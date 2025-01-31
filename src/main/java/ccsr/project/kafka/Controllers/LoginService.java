@@ -17,6 +17,8 @@ public class LoginService {
      * @param role      Rôle de l'utilisateur.
      * @return true si l'enregistrement a réussi, false sinon.
      */
+
+
     public boolean registerUser(String email, String userName, String firstName, String lastName, String password, String role) {
         String query = "INSERT INTO users (email, username, first_name, last_name, password, role) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -46,7 +48,7 @@ public class LoginService {
      * @return Le rôle de l'utilisateur si authentifié, sinon null.
      */
     public String authenticateUser(String email, String password) {
-        String query = "SELECT role FROM users WHERE email = ? AND password = ?";
+        String query = "SELECT username, role FROM users WHERE email = ? AND password = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -56,24 +58,24 @@ public class LoginService {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
+                    String username = resultSet.getString("username");
                     String role = resultSet.getString("role");
-                    System.out.println("Utilisateur trouvé avec le rôle : " + role);
 
-                    // Marquer les mails comme lus dans un thread séparé
-                    new Thread(() -> markEmailsAsRead(email)).start();
+                    // Vérification des valeurs nulles
+                    if (username == null || role == null) {
+                        return null;  // Empêche le découpage de chaîne incorrect
+                    }
 
-                    return role;
-                } else {
-                    System.out.println("Aucun utilisateur trouvé pour l'email " + email);
-                    return null;
+                    return username + "," + role;
                 }
             }
 
         } catch (SQLException e) {
             System.err.println("Erreur lors de l'authentification : " + e.getMessage());
-            return null;
         }
+        return null;
     }
+
 
     /**
      * Marque tous les mails comme lus pour un utilisateur donné.

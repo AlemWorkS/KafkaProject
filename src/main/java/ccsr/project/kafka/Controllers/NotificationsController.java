@@ -57,11 +57,13 @@ public class  NotificationsController {
                     int rowsAffected = stat.executeUpdate();
                     System.out.println("c");
                 }
-                return ResponseEntity.ok("Vous recevrez vos notifications chaque " + planning_interval + " jours à " + planning_heure);
-
-            } else{
+                if ("on".equals(always)) {
+                    return ResponseEntity.ok("Vous allez recevoir des notifications à chaque nouveau message !");
+                } else {
+                    return ResponseEntity.ok("Vous recevrez vos notifications chaque " + planning_interval + " jours à " + planning_heure);
+                }
+            } else {
                 return ResponseEntity.ok("Vous devez souscrire à un topic");
-
             }
 
 
