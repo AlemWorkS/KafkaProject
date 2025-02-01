@@ -70,7 +70,7 @@ public class  NotificationsController {
                     return ResponseEntity.ok("Vous recevrez vos notifications pour le topic '" + topicName + "' chaque " + planning_interval + " jours à " + planning_heure);
                 }
             } else {
-                return ResponseEntity.ok("Vous devez souscrire à un topic");
+                return ResponseEntity.ok("Vous devez souscrire à ce topic "+topicName+" avant");
             }
 
 

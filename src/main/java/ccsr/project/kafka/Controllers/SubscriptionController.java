@@ -60,7 +60,7 @@ public class SubscriptionController {
                 stat.setNull(2, Types.INTEGER);
                 stat.setNull(3,Types.INTEGER);
                 stat.setString(4, email);
-                stat.setBoolean(5, true);
+                stat.setBoolean(5, false);
 
                 int rowsAffected = stat.executeUpdate();
                 System.out.println("Planning rows affected");

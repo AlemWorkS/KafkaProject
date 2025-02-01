@@ -80,15 +80,15 @@ class KafkaApplicationTests {
     void testMultipleConnections() {
 
         testFileLoads();
+        testSuccessfulConnection();
 
-
-        int numberOfConnections = 1000; // Nombre de connexions simultanées à tester
+        int numberOfConnections = 10000; // Nombre de connexions simultanées à tester
         ExecutorService executorService = Executors.newFixedThreadPool(50); // Pool de 50 threads
         List<SQLException> exceptions = Collections.synchronizedList(new ArrayList<>()); // Liste thread-safe pour les exceptions
         ArrayList<Future<?>> futures = new ArrayList<>(); // Liste pour suivre les tâches soumises
 
             for (int i = 0; i < numberOfConnections; i++) {
-                //Future<?> future = executorService.submit(() -> {
+                executorService.submit(() -> {
                     try {
                             Connection connection = DatabaseConnection.getConnection();
 
@@ -105,8 +105,7 @@ class KafkaApplicationTests {
                         exceptions.add(e);
                     }
                 }
-            //});
-            //futures.add(future);
+            });
 
         }
 

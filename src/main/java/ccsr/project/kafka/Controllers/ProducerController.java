@@ -5,6 +5,7 @@ import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.config.Config;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.servlet.http.HttpSession;
+import org.apache.kafka.clients.KafkaClient;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -83,6 +84,7 @@ public class ProducerController {
     @PostMapping("/connect-publisher")
     public ResponseEntity<String> connectToKafka() {
         try {
+
             // Vérification de la connexion au serveur Kafka
             boolean isConnected = !Agents.getAdminClient()
                     .describeCluster()
@@ -117,6 +119,7 @@ public class ProducerController {
 
     //Méthode pour créer un topiv s'il n'existe pas
     private void createTopicIfNotExists(String topicName) throws Exception {
+
         if (!Agents.getAdminClient().listTopics().names().get().contains(topicName)) {
             int partitions = 3;
             short replicationFactor = 1;
@@ -127,6 +130,7 @@ public class ProducerController {
             // Attendre un peu pour que le topic soit bien disponible
             Thread.sleep(3000);
         }
+
     }
 
 
