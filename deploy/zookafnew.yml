@@ -129,17 +129,17 @@ services:
     networks:
       - kafka_network
     
-    app:
-      image: kafka_app:v1
-      container_name: ccsr_app
-      volumes:
-        - ./config.yaml:/app/config/config.yaml # Monte le fichier dans le conteneur
-      environment:
-        CONFIG_PATH: /app/config # Définit le chemin vers le fichier
-      ports:
-        - 8080:8080 # Mapper les ports
-      networks:
-        - kafka_network
+  app:
+    image: kafka_app:v1
+    container_name: ccsr_app
+    volumes:
+      - ./config.yaml:/app/config/config.yaml # Monte le fichier dans le conteneur
+    environment:
+      CONFIG_PATH: /app/config/config.yaml # Définit le chemin vers le fichier
+    ports:
+      - 8080:8080 # Mapper les ports
+    networks:
+      - kafka_network
       
 networks:
   kafka_network:
