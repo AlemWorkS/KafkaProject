@@ -6,24 +6,28 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 @SpringBootApplication
 @Controller
 public class KafkaApplication {
+	private static final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
 	public static void main(String[] args) {
 
-		Config.loadConfigFile();
 
-		SpringApplication.run(KafkaApplication.class, args);
+		executorService.submit(()->{
+			Config.loadConfigFile();
+			SpringApplication.run(KafkaApplication.class, args);});
 
 	}
 	// Endpoint pour afficher la page Publisher
 	@PostConstruct
 	public void startKafkaListener() {
-		ConsumerController.KafkaListener.listenToTopic("sport"); // Remplacez par votre topic ou ajoutez plusieurs topics si nécessaire
-		ConsumerController.KafkaListener.listenToPlanning();
+		executorService.submit(()-> ConsumerController.KafkaListener.listenToTopic("sport")); // Remplacez par votre topic ou ajoutez plusieurs topics si nécessaire
+		executorService.submit(ConsumerController.KafkaListener::listenToPlanning);
 	}
 
 

@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 public class Publisher {
 
+
     /**
      * @param topicName
      * Permet de creer un topic

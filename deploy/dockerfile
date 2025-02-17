@@ -1,0 +1,15 @@
+# Utiliser une image de base compatible avec Java 22
+FROM openjdk:22
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier le fichier .jar dans l'image
+COPY kafka-0.0.1-SNAPSHOT.jar kafka-0.0.1-SNAPSHOT.jar
+COPY kafka-0.0.1-SNAPSHOT-plain.jar kafka-0.0.1-SNAPSHOT-plain.jarr
+
+# Exposer le port sur lequel l'application Spring Boot fonctionne
+EXPOSE 8080
+
+# Définir la commande pour exécuter l'application
+CMD ["java", "-jar", "kafka-0.0.1-SNAPSHOT.jar"]

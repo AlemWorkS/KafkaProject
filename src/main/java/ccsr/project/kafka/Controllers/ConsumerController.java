@@ -1,9 +1,7 @@
 package ccsr.project.kafka.Controllers;
 
 import ccsr.project.kafka.config.Config;
-import org.apache.commons.mail.EmailException;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -13,11 +11,7 @@ import org.springframework.stereotype.Service;
 import java.sql.*;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.concurrent.*;
 
 @Service
 public class ConsumerController {
@@ -31,22 +25,22 @@ public class ConsumerController {
 
 
     // Abonnement d'un consumer à un topic
-    public static boolean subscribeUserToTopic(String email, String topicName) {
+    public static void subscribeUserToTopic(String email, String topicName) {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "INSERT INTO subscription (email,topic_name) VALUES (?,?);";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             statement.setString(2, topicName);
-            int rowsInserted = statement.executeUpdate();
-            return rowsInserted > 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
 
     public class KafkaListener {
+
+        private static final ExecutorService executorService = Executors.newFixedThreadPool(25);
 
         public static void listenToPlanning() {
 
@@ -81,10 +75,14 @@ public class ConsumerController {
                         String emailContent = "Bonjour,\n\nUn nouveau message a été publié dans le topic '" + topicName + "' :\n\n"
                                 + "\n\nCordialement,\nL'équipe de Notification Kafka";
 
-                        //On envoie l'email
-                        EmailConfig.sendEmail(subscriberEmail, emailSubject, emailContent);
-                        //On marque qu'il n'y a plus de message à envoyer dans la table mailplanning
-                        deplanifierMail(subscriberEmail);
+                        executorService.execute(()-> {
+
+                                //On envoie l'email
+                                EmailConfig.sendEmail(subscriberEmail, emailSubject, emailContent);
+                                //On marque qu'il n'y a plus de message à envoyer dans la table mailplanning
+                                deplanifierMail(subscriberEmail);
+
+                        });
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -109,7 +107,6 @@ public class ConsumerController {
 
             // Créer le consumer Kafka
             KafkaConsumer<String, String> consumerTop = new KafkaConsumer<>(props);
-            ExecutorService executorService = Executors.newFixedThreadPool(2);
             ExecutorService executorServiceForTopics = Executors.newFixedThreadPool(consumerTop.listTopics().size()/2);
 
             Runnable runnable = new Runnable() {
@@ -119,35 +116,30 @@ public class ConsumerController {
                     //Pour chaque topic on va créer un daemon pour pouvoir écouter l'arrivée de nouveau mmessage
                     consumerTop.listTopics().forEach((topic, partitionInfos) ->
 
-                    {
-                        executorServiceForTopics.submit(()-> {
-                            if (!topic.equals("__consumer_offsets")) {
-                                // Créer le consumer Kafka
-                                KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
+                            executorServiceForTopics.submit(()-> {
+                                if (!topic.equals("__consumer_offsets")) {
+                                    // Créer le consumer Kafka
+                                    KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
 
 
-                                try (consumer) {
-                                    consumer.subscribe(Collections.singleton(topic));
-                                    System.out.println("Écoute des messages du topic : " + topic);
-                                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
+                                    try (consumer) {
+                                        consumer.subscribe(Collections.singleton(topic));
+                                        System.out.println("Écoute des messages du topic : " + topic);
+                                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
 
-                                    for (ConsumerRecord<String, String> record : records) {
+                                        for (ConsumerRecord<String, String> record : records) {
 
 
-                                        System.out.println("Message reçu : " + record.value());
+                                            System.out.println("Message reçu : " + record.value());
 
-                                        // Ajouter la logique pour envoyer un email
-                                        new Thread(() -> {
-                                            planifierMail(topic);
-                                        }).run();
+                                            // Ajouter la logique pour envoyer un email
+                                            executorService.execute(()-> planifierMail(topic));
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
                                 }
-                            }
-                        });
-
-                        });
+                            }));
                     executorService.execute(this);
 
                 }

@@ -19,7 +19,6 @@ public class DatabaseConnection {
 
             // Se connecter à la base de données
 
-
         } catch (ClassNotFoundException e) {
             throw new SQLException("JDBC Driver not found", e);
         } catch (SQLException e) {

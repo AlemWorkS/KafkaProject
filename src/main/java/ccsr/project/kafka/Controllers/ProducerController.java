@@ -64,10 +64,6 @@ public class ProducerController {
 
                 // Envoi du message
                 String content = message;
-                ProducerRecord<String, String> record = new ProducerRecord<>(sanitizedTopicName, content);
-
-                Future<RecordMetadata> future = producer.send(record);
-                future.get(); // Attendre la confirmation de Kafka avant de continuer
 
                 // Enregistrer le message dans la base de données
                 Message.creerMessage(sanitizedTopicName, titre, content, session.getAttribute("userProducerEmail").toString());

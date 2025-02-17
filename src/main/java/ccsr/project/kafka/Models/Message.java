@@ -42,6 +42,7 @@ public class Message {
      * @return
      */
     public static HashMap<Integer, HashMap<String, String>> getMessagesFromTopic(String topicName, boolean fromBeginning, KafkaConsumer<String, String> consumer, String userEmail) {
+
         HashMap<Integer, HashMap<String, String>> recordMap = new HashMap<>();
         HashMap<String, String> messageNull = new HashMap<>();
 
@@ -64,25 +65,25 @@ public class Message {
                 if (fromBeginning) {
                     onLineConsumer.seekToBeginning(partitions);
                 }
+                    // Récupération des messages
+                    ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(500));
+                    while (!records.isEmpty()) {
+                        for (ConsumerRecord<String, String> record : records) {
+                            HashMap<String, String> message = new HashMap<>();
+                            message.put("message", record.value());
+                            // Ajout de l'offset pour permettre l'identification unique
+                            message.put("offset", String.valueOf(record.offset()));
+                            message.put("theme", Optional.ofNullable(record.headers().lastHeader("theme"))
+                                    .map(header -> new String(header.value(), StandardCharsets.UTF_8))
+                                    .orElse("Thème inconnu"));
+                            message.put("producer", Optional.ofNullable(record.key()).orElse("Producteur inconnu"));
+                            message.put("topic", sanitizedTopicName);
+                            recordMap.put(recordMap.size() + 1, message);
+                        }
 
-                // Récupération des messages
-                ConsumerRecords<String, String> records = onLineConsumer.poll(Duration.ofMillis(500));
-                while (!records.isEmpty()) {
-                    for (ConsumerRecord<String, String> record : records) {
-                        HashMap<String, String> message = new HashMap<>();
-                        message.put("message", record.value());
-                        // Ajout de l'offset pour permettre l'identification unique
-                        message.put("offset", String.valueOf(record.offset()));
-                        message.put("theme", Optional.ofNullable(record.headers().lastHeader("theme"))
-                                .map(header -> new String(header.value(), StandardCharsets.UTF_8))
-                                .orElse("Thème inconnu"));
-                        message.put("producer", Optional.ofNullable(record.key()).orElse("Producteur inconnu"));
-                        message.put("topic", sanitizedTopicName);
-                        recordMap.put(recordMap.size() + 1, message);
+                        records = onLineConsumer.poll(Duration.ofMillis(500));
                     }
 
-                    records = onLineConsumer.poll(Duration.ofMillis(500));
-                }
 
                 onLineConsumer.close();
             } else {

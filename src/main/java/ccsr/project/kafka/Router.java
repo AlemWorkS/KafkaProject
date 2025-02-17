@@ -34,12 +34,6 @@ public class Router {
     }
 
 
-    // Endpoint pour afficher la page Publisher
-    @GetMapping("/publisher")
-    public String publisher(Model model) {
-        return "Publisher";
-    }
-
     @GetMapping("/")
     public String redirectToLogin() {
         return "login"; // Redirige vers la page de connexion
@@ -48,7 +42,17 @@ public class Router {
 
     // Endpoint pour afficher la page Publisher
     @GetMapping("/producer")
-    public String producer(Model model) {
+    public String producer(HttpSession session,Model model) {
+        model.addAttribute("message", "Bienvenue");
+
+        String userEmail = (String) session.getAttribute("userProducerEmail");
+        System.out.println("Session userEmail home : " + userEmail); // Ajoutez ceci pour déboguer
+
+        if (userEmail == null) {
+            System.out.println("Utilisateur non connecté, redirection vers /");
+            return "redirect:/";
+        }
+
         return "producer";
     }
 
