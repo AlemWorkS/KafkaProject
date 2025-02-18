@@ -12,7 +12,7 @@ Version de Java Utilisée: Java22
 ----------Configuration de docker----------
 
 4.	Activer docker
-5.	Ouvrir le dossier deploy en ligne de commande (‘’Assurez-vous que le fichier zookafnew.yml est présent dans le dossier deploy’’)
+5.	Ouvrir le dossier deploy en ligne de commande (''Assurez-vous que le fichier zookafnew.yml est présent dans le dossier deploy'')
 6.	Entrer la commande docker-compose -f zookafnew.yml up -d
 7.	Les brockeurs devraient se mettre en marche dans docker
 
@@ -34,3 +34,26 @@ db_password: password
 12.	Lancer le projet kafka (La class KafkaApplication.java)
 13.	Entrez dans un navigateur et testez ‘’localhost:8080’’
 	
+
+---------------------------------------------------------------------------------TEST DU DEPLOIEMENT DOCKER----------------------------------------------------------------------------
+
+Ouvrir le dossier  deploy 
+
+Configurer le fichier config.yaml:
+
+4.	Dans le fichier config.yaml, modifier les information nécessaires tel que:
+
+	servers_kafka: kafka1:19092,kafka2:19092,kafka3:19092
+	db_host: mysql
+	db_port: 3306
+	db_name: omegadb
+	db_user: user
+	db_password: password
+
+5.	Ensuite ouvrir le dossier deploy en ligne de commande 
+6.	Entrer la commande : docker build -t kafka_app:v1 .
+7.	Entrer la commande docker-compose -f zookafnew.yml up -d
+8.	Patienter 10 secondes le temps de lancement de tout
+
+Ouvrir docker et vérifier que tous les servers sont lancés 
+Tester dans un navigateur l’adresse localhost:8080

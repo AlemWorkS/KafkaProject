@@ -1,14 +1,31 @@
-# Utiliser une image de base compatible avec Java 22
-FROM openjdk:22
+# Utiliser l'image de base Ubuntu
+FROM ubuntu:latest
+
+# Mettre à jour les paquets et installer OpenJDK 22 en utilisant un PPA
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:openjdk-r/ppa && \
+    apt-get update && \
+    apt-get install -y openjdk-22-jdk && \
+# Installer les outils nécessaires pour ifconfig et ping
+    apt-get update && \
+    apt-get install -y net-tools iputils-ping && \
+# Mettre à jour les paquets et installer MySQL client
+    apt-get update && \
+    apt-get install -y mysql-client && \
+    apt-get update && \
+    apt-get install mysql-server && \
+    apt-get clean
+
 
 # Définir le répertoire de travail
 WORKDIR /app
 
-# Copier le fichier .jar dans l'image
+# Copier les fichiers JAR dans l'image Docker
 COPY kafka-0.0.1-SNAPSHOT.jar kafka-0.0.1-SNAPSHOT.jar
-COPY kafka-0.0.1-SNAPSHOT-plain.jar kafka-0.0.1-SNAPSHOT-plain.jarr
+COPY kafka-0.0.1-SNAPSHOT-plain.jar kafka-0.0.1-SNAPSHOT-plain.jar
 
-# Exposer le port sur lequel l'application Spring Boot fonctionne
+# Exposer le port utilisé par l'application Spring Boot (généralement 8080)
 EXPOSE 8080
 
 # Définir la commande pour exécuter l'application

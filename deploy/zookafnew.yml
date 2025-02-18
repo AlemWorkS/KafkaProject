@@ -140,7 +140,23 @@ services:
       - 8080:8080 # Mapper les ports
     networks:
       - kafka_network
-      
+  
+  mysql:
+        image: mysql:latest
+        container_name: mysql-container
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: omegadb
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+        ports:
+          - "3309:3306"
+        volumes:
+          - ./omegadb.sql:/docker-entrypoint-initdb.d/omegadb.sql
+        networks:
+          - kafka_network
+
 networks:
   kafka_network:
     driver: bridge
