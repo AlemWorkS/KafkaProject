@@ -11,6 +11,6 @@
     </root>
 
     <!-- Configuration spécifique d'un package ou d'un composant -->
-<logger name="org.apache.kafka" level="ERROR" />><!--level="WARN"/> -->
+<logger name="org.apache.kafka" level="WARN" />><!--level="WARN"/> -->
 
 </configuration>

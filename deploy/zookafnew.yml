@@ -137,7 +137,8 @@ services:
     environment:
       CONFIG_PATH: /app/config/config.yaml # Définit le chemin vers le fichier
     ports:
-      - 8080:8080 # Mapper les ports
+      - 8080:8080 # Mapper les ports ou autrePort:8080
+      - 587
     networks:
       - kafka_network
     depends_on:

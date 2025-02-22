@@ -40,17 +40,6 @@ public class ConsumerController {
 
 
     public class KafkaListener {
-        static ScheduledExecutorService topicScheduler = Executors.newScheduledThreadPool(1);
-        static ExecutorService topicExecutor;
-
-        static {
-            try {
-                topicExecutor = Executors.newFixedThreadPool(Agents.getAdminClient().listTopics().names().get().size()/2);
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
 
         public static void listenToPlanning() {
             ExecutorService executorService = Executors.newFixedThreadPool(5);
@@ -105,6 +94,8 @@ public class ConsumerController {
         }
 
         public static void listenToTopic(String topicName) {
+            ExecutorService topicExecutor = Executors.newFixedThreadPool(1);
+            ScheduledExecutorService topicScheduler = Executors.newScheduledThreadPool(1);
 
             // Configurer les propriétés du consumer
 
@@ -156,7 +147,7 @@ public class ConsumerController {
                 }
             };
 
-            topicScheduler.scheduleAtFixedRate(runnable,0,1,TimeUnit.SECONDS);
+            topicScheduler.scheduleAtFixedRate(runnable,0,15,TimeUnit.SECONDS);
         }
 
 
