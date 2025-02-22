@@ -1,5 +1,6 @@
 package ccsr.project.kafka.Controllers;
 
+import ccsr.project.kafka.Models.Agents;
 import ccsr.project.kafka.config.Config;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -39,10 +40,20 @@ public class ConsumerController {
 
 
     public class KafkaListener {
+        static ScheduledExecutorService topicScheduler = Executors.newScheduledThreadPool(1);
+        static ExecutorService topicExecutor;
 
-        private static final ExecutorService executorService = Executors.newFixedThreadPool(25);
+        static {
+            try {
+                topicExecutor = Executors.newFixedThreadPool(Agents.getAdminClient().listTopics().names().get().size()/2);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
 
         public static void listenToPlanning() {
+            ExecutorService executorService = Executors.newFixedThreadPool(5);
 
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -94,6 +105,7 @@ public class ConsumerController {
         }
 
         public static void listenToTopic(String topicName) {
+
             // Configurer les propriétés du consumer
 
             Properties props = new Properties();
@@ -107,45 +119,44 @@ public class ConsumerController {
 
             // Créer le consumer Kafka
             KafkaConsumer<String, String> consumerTop = new KafkaConsumer<>(props);
-            ExecutorService executorServiceForTopics = Executors.newFixedThreadPool(consumerTop.listTopics().size()/2);
 
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
 
                     //Pour chaque topic on va créer un daemon pour pouvoir écouter l'arrivée de nouveau mmessage
-                    consumerTop.listTopics().forEach((topic, partitionInfos) ->
-
-                            executorServiceForTopics.submit(()-> {
-                                if (!topic.equals("__consumer_offsets")) {
-                                    // Créer le consumer Kafka
-                                    KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
-
-
-                                    try (consumer) {
-                                        consumer.subscribe(Collections.singleton(topic));
-                                        System.out.println("Écoute des messages du topic : " + topic);
-                                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
-
-                                        for (ConsumerRecord<String, String> record : records) {
+                    consumerTop.listTopics().forEach((topic, partitionInfos) -> {
+                        topicExecutor.submit(() -> {
+                            if (!topic.equals("__consumer_offsets")) {
+                                // Créer le consumer Kafka
+                                KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
 
 
-                                            System.out.println("Message reçu : " + record.value());
+                                try (consumer) {
+                                    consumer.subscribe(Collections.singleton(topic));
+                                    System.out.println("Écoute des messages du topic : " + topic);
+                                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
 
-                                            // Ajouter la logique pour envoyer un email
-                                            executorService.execute(()-> planifierMail(topic));
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                    for (ConsumerRecord<String, String> record : records) {
+
+
+                                        System.out.println("Message reçu : " + record.value());
+
+                                        // Ajouter la logique pour envoyer un email
+                                        new Thread(() -> {
+                                            planifierMail(topic);
+                                        }).run();
                                     }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            }));
-                    executorService.execute(this);
-
+                            }
+                        });
+                    });
                 }
             };
 
-            executorService.execute(runnable);
+            topicScheduler.scheduleAtFixedRate(runnable,0,1,TimeUnit.SECONDS);
         }
 
 

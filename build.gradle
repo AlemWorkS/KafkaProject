@@ -39,8 +39,6 @@ dependencies {
     // Dépendances Flyway et MySQL
     implementation 'mysql:mysql-connector-java:8.0.33'
 
-    // Dépendance pour la lecture du fichier .env
-    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
     // Dépendance pour l'envoi d'e-mails
     implementation 'org.apache.commons:commons-email:1.5'

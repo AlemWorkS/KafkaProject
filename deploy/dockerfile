@@ -7,14 +7,6 @@ RUN apt-get update && \
     add-apt-repository ppa:openjdk-r/ppa && \
     apt-get update && \
     apt-get install -y openjdk-22-jdk && \
-# Installer les outils nécessaires pour ifconfig et ping
-    apt-get update && \
-    apt-get install -y net-tools iputils-ping && \
-# Mettre à jour les paquets et installer MySQL client
-    apt-get update && \
-    apt-get install -y mysql-client && \
-    apt-get update && \
-    apt-get install mysql-server && \
     apt-get clean
 
 

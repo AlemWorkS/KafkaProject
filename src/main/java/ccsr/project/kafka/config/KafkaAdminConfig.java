@@ -1,6 +1,5 @@
 package ccsr.project.kafka.config;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.context.annotation.Bean;

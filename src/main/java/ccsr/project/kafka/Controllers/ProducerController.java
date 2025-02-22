@@ -3,21 +3,15 @@ package ccsr.project.kafka.Controllers;
 import ccsr.project.kafka.Models.Agents;
 import ccsr.project.kafka.Models.Message;
 import ccsr.project.kafka.config.Config;
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.servlet.http.HttpSession;
-import org.apache.kafka.clients.KafkaClient;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 @RestController
 @RequestMapping("/producer")
@@ -39,7 +33,6 @@ public class ProducerController {
 
         // Nettoyage du nom du topic
         String sanitizedTopicName = sanitizeTopicName(topicName);
-        System.out.println(Dotenv.load().get("KAFKA_SERVERS") + 1);
 
         // ** Verrouillage pour éviter la concurrence**
         synchronized (this) {
@@ -67,6 +60,8 @@ public class ProducerController {
 
                 // Enregistrer le message dans la base de données
                 Message.creerMessage(sanitizedTopicName, titre, content, session.getAttribute("userProducerEmail").toString());
+
+
 
                 return ResponseEntity.ok("Message envoyé avec succès au topic \"" + sanitizedTopicName + "\".");
             } catch (Exception e) {

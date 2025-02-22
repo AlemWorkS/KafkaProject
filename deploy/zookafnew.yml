@@ -140,6 +140,11 @@ services:
       - 8080:8080 # Mapper les ports
     networks:
       - kafka_network
+    depends_on:
+      - mysql
+      - broker-1
+      - broker-2
+      - broker-3
   
   mysql:
         image: mysql:latest
