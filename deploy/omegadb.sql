@@ -38,14 +38,6 @@ CREATE TABLE IF NOT EXISTS `mailplanning` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb3;
 
---
--- Déchargement des données de la table `mailplanning`
---
-
-INSERT INTO `mailplanning` (`id`, `topic`, `interval_de_jour`, `heure_env`, `user_mail`, `mail_lu`) VALUES
-(12, 'topic1', NULL, NULL, 'freddegny@gmail.com', 0),
-(13, 'Test', NULL, NULL, 'freddegny@gmail.com', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -62,14 +54,6 @@ CREATE TABLE IF NOT EXISTS `subscription` (
   KEY `email` (`email`),
   KEY `topics_id` (`topic_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `subscription`
---
-
-INSERT INTO `subscription` (`id`, `email`, `topic_name`, `created_at`) VALUES
-(29, 'freddegny@gmail.com', 'topic1', '2025-02-01 00:43:21'),
-(30, 'freddegny@gmail.com', 'Test', '2025-02-01 16:12:05');
 
 -- --------------------------------------------------------
 
@@ -116,16 +100,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`email`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `users`
---
-
-INSERT INTO `users` (`email`, `username`, `created_at`, `first_name`, `last_name`, `password`, `role`) VALUES
-('eooyotode@gmail.com', 'jojo225@', '2024-12-07 21:22:14', '', '', 'jk', 'Consumer'),
-('eoyotode@gmail.com', 'jojo20', '2024-12-26 14:22:26', 'eunice', 'oyotodé', 'jojo225', 'Consumer'),
-('eun@gmail.com', 'n@gmail.com', '2024-12-29 15:47:06', 'aaa', 'bbb', 'nnn', 'Producer'),
-('freddegny@gmail.com', 'morales', '2024-12-12 10:30:27', '', '', '0101', 'Consumer');
 
 --
 -- Contraintes pour les tables déchargées
